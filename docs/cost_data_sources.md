@@ -1,4 +1,4 @@
-# Cost data sources (Part 3)
+# Cost data sources (Parts 3–4)
 
 Checked on 2026-10-15. Retrieval timestamps and checksums of each load are
 stored in `data_source` and in the raw snapshot sidecars
@@ -83,3 +83,21 @@ no tariff values).
   licensed.
 - **Airline handling or fuel contracts:** private.
 - **Bypassing access controls:** never done.
+
+## 6. Part 4 financial cost sources
+
+The register is `data/reference/cost_benchmark_sources.csv`. Each entry
+records the organisation, dataset, URL, publication date, effective period,
+currency, units, licence, cost categories, use in the repository,
+limitations and verification status. Rationale for each source is in
+[cost_assumptions.md](cost_assumptions.md).
+
+| Source | Licence | Status |
+|---|---|---|
+| FAA, *Economic Values for FAA Investment and Regulatory Decisions*, Section 4 (2024 update), Table 4-7 (YE June 2023, USD/block hour) | US Government work | **Used**: three cited values in `data/scenarios/benchmark_faa_us_narrowbody_partial.json`: maintenance 954, crew 1,378, insurance 6 (US Part 121 passenger narrowbody ≥165k lb). Depreciation and rentals are not used because they are owned/leased fleet blends. |
+| BTS Form 41 Schedule P-5.2 (TranStats) | US Government work | Registered, not ingested. **Priority Part 5 benchmarking source**, particularly for all-cargo carriers: carrier accounting expense in $000 per quarter; needs T-2 block hours and carrier/type mapping |
+| BLS OEWS 53-2011, national annual mean wage (May 2025: 288,650 USD), via the official API | US Government work | Registered, not used: wage only, all US pilots |
+| Lease rates, insurance premiums, aircraft market values, LLP and maintenance reserves | n/a | No reusable public source; must be user-supplied |
+
+Part 4 adds no EUROCONTROL, DFS, Fraport or manufacturer data. Part 3's
+restrictions on redistribution and commercial use remain in force.

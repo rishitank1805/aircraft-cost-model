@@ -265,3 +265,49 @@ def test_0005_backfills_existing_navigation_rates(tmp_path):
                                 "FROM navigation_rate")).one()
     engine.dispose()
     assert tuple(row) == ("100.00", "en_route", "sqrt_mtow_over_50", None)
+
+
+PART4_TABLES = {"cost_scenario", "cost_assumption", "full_cost_estimate", "full_cost_component"}
+
+
+def test_0006_is_additive_and_preserves_part3_rows(tmp_path):
+    url = _url(tmp_path)
+    _legacy_part1_database(url)
+    command.stamp(_alembic_config(url), BASELINE_REVISION)
+    command.upgrade(_alembic_config(url), "0005_terminal_navigation")
+    engine = create_db_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(
+            "INSERT INTO navigation_rate (source_id, charging_zone, charging_zone_name, valid_from, valid_to, unit_rate, "
+            "currency, source_reference, verification_status, charge_type, service_unit_formula, created_at, updated_at)"
+            " VALUES (1, 'GERMANY', 'Germany', '2025-01-01', '2025-12-31', '100.12345', 'EUR', 'synthetic', "
+            "'verified_against_source', 'en_route', 'sqrt_mtow_over_50', '2026-10-15', '2026-10-15')"))
+    assert not PART4_TABLES & set(inspect(engine).get_table_names())
+    engine.dispose()
+    assert migrate_database(url)["to"] == "0006_part4_full_costs" == head_revision()
+    engine = create_db_engine(url)
+    assert PART4_TABLES <= set(inspect(engine).get_table_names())
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT unit_rate FROM navigation_rate")).scalar_one() == "100.12345"
+        assert conn.execute(text("SELECT COUNT(*) FROM airport")).scalar_one() == 2
+    engine.dispose()
+    command.downgrade(_alembic_config(url), "0005_terminal_navigation")
+    engine = create_db_engine(url)
+    assert not PART4_TABLES & set(inspect(engine).get_table_names())
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT unit_rate FROM navigation_rate")).scalar_one() == "100.12345"
+    engine.dispose()
+
+
+def test_full_cost_foreign_keys(engine):
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(text(
+                "INSERT INTO full_cost_estimate (flight_estimate_id, variable_cost_estimate_id, scenario_id, pricing_date,"
+                " reporting_currency, ownership_mode, cost_coverage_status, operational_validity_status, "
+                "source_quality_summary, calculation_version, input_hash, created_at) VALUES (999, 999, 999, "
+                "'2025-01-15', 'EUR', 'owned', 'incomplete', 'calculated', 'none', 'v', 'h', '2026-10-15')"))
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(text("INSERT INTO cost_assumption (scenario_id, component, parameter_name, value_decimal, unit,"
+                              " source_type) VALUES (999, 'x', 'x', '1', 'ratio', 'user_assumption')"))

@@ -43,6 +43,7 @@ class ComponentStatus(str, Enum):
     UNSUPPORTED_TARIFF_RULE = "unsupported_tariff_rule"
     NOT_APPLICABLE = "not_applicable"
     CALCULATION_ERROR = "calculation_error"
+    FAILED_VALIDATION = "failed_validation"  # Part 4: inputs contradict each other (e.g. double counting)
 
     @property
     def is_calculated(self) -> bool:
@@ -58,6 +59,7 @@ CALCULATED_STATUSES = frozenset({
 # When sub-results (e.g. origin and destination airport) are combined, the
 # component reports the first non-calculated status in this order.
 STATUS_PRECEDENCE = (
+    ComponentStatus.FAILED_VALIDATION,
     ComponentStatus.CALCULATION_ERROR,
     ComponentStatus.UNSUPPORTED_AIRCRAFT,
     ComponentStatus.UNAVAILABLE_PUBLIC_TARIFF,
@@ -71,6 +73,7 @@ STATUS_PRECEDENCE = (
 class SourceType(str, Enum):
     PUBLIC_TARIFF = "public_tariff"
     PUBLIC_MARKET_BENCHMARK = "public_market_benchmark"
+    PUBLIC_FINANCIAL_BENCHMARK = "public_financial_benchmark"  # Part 4: e.g. FAA/BTS averages
     USER_ASSUMPTION = "user_assumption"
     NONE = "none"
 

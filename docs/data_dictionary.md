@@ -1,7 +1,7 @@
 # Data dictionary
 
 SQLite database: `database/aircraft_costs.db`. The schema is managed by
-Alembic; the current revision is `0005_terminal_navigation`. All
+Alembic; the current revision is `0006_part4_full_costs`. All
 timestamps are stored in UTC as timezone-naive `DATETIME`, because SQLite has
 no timezone type. "Required" means `NOT NULL`.
 
@@ -334,3 +334,85 @@ Unique on `(variable_cost_estimate_id, component_name)`; cascades with its estim
 | breakdown_json | TEXT | yes | Every step and conversion, with values |
 | assumptions_json | TEXT | yes | Labelled assumptions |
 | warnings_json | TEXT | yes | Warnings, including missing inputs |
+
+## Part 4 tables (migration 0006)
+
+Money and scenario values use `DecimalText` (exact decimal strings). Every
+`amount`/subtotal column is NULL when not calculated, never 0 for missing.
+
+### `cost_scenario`
+
+Unique on `content_hash`; one row per distinct scenario content.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| scenario_id | INTEGER PK | yes | |
+| name, description | VARCHAR(200), TEXT | name yes | From the scenario file |
+| scenario_version | VARCHAR(40) | yes | Author's version label |
+| ownership_mode | VARCHAR(30) | yes | `owned`, `operating_lease`, `custom` |
+| flight_type | VARCHAR(20) | yes | `passenger`, `cargo` |
+| reporting_currency | VARCHAR(3) | yes | ISO 4217 |
+| pricing_date | DATE | no | Scenario pricing date, if given |
+| source_quality_summary | VARCHAR(200) | yes | Dimension C at first use |
+| source_path | VARCHAR(500) | no | File the scenario was loaded from |
+| content_hash | VARCHAR(64) | yes | SHA-256 of the canonical JSON |
+| content_json | TEXT | yes | Canonical JSON (exact reproduction) |
+| created_at | DATETIME | yes | UTC |
+
+### `cost_assumption`
+
+Unique on `(scenario_id, parameter_name)`; cascades with its scenario.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| assumption_id | INTEGER PK | yes | |
+| scenario_id | INTEGER FK | yes | → `cost_scenario` |
+| component | VARCHAR(60) | yes | Top-level section, e.g. `maintenance` |
+| parameter_name | VARCHAR(200) | yes | Value path, e.g. `crew.salaries.roles[0].annual_compensation` |
+| value_decimal | DecimalText | yes | Exact value |
+| unit | VARCHAR(40) | yes | e.g. `EUR/block_hour`, `ratio` |
+| currency | VARCHAR(3) | no | For money units |
+| effective_from / effective_to | DATE | no | Period the value is asserted to apply |
+| reference_period | VARCHAR(100) | no | Period the source data describes |
+| source_type | VARCHAR(40) | yes | `illustrative_assumption`, `user_assumption`, `public_financial_benchmark`, `observed_public_data` |
+| source_reference, notes | TEXT | no | Citation and notes |
+
+### `full_cost_estimate`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| full_cost_estimate_id | INTEGER PK | yes | |
+| flight_estimate_id | INTEGER FK | yes | → `flight_estimate` |
+| variable_cost_estimate_id | INTEGER FK | yes | → the exact Part 3 `variable_cost_estimate` used (same flight) |
+| scenario_id | INTEGER FK | yes | → `cost_scenario` |
+| pricing_date, reporting_currency | DATE, VARCHAR(3) | yes | From the Part 3 estimate |
+| ownership_mode | VARCHAR(30) | yes | |
+| direct_variable_subtotal, direct_fixed_subtotal, indirect_subtotal, noncash_subtotal, financing_subtotal | DecimalText | no | **Calculated subtotals** (calculated components only) |
+| cash_operating_subtotal, total_operating_subtotal, total_cost_subtotal | DecimalText | no | Calculated COC / TOC / total subtotals |
+| complete_coc, complete_toc, complete_total_costs | DecimalText | no | Set only when every applicable component below is calculated with full scope |
+| cost_coverage_status | VARCHAR(30) | yes | Dimension A: `complete`, `incomplete`, `failed_validation` |
+| operational_validity_status | VARCHAR(50) | yes | Dimension B: the Part 2 flight estimate's status, unchanged |
+| source_quality_summary | VARCHAR(200) | yes | Dimension C |
+| calculation_version | VARCHAR(100) | yes | e.g. `full_costs v1 (aircraft_cost_model …)` |
+| input_hash | VARCHAR(64) | yes | SHA-256 of IDs, Part 3 input hash, scenario hash and all components (indexed) |
+| created_at | DATETIME | yes | UTC |
+
+### `full_cost_component`
+
+Unique on `(full_cost_estimate_id, component_name)`; cascades with its estimate.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| full_cost_component_id | INTEGER PK | yes | |
+| full_cost_estimate_id | INTEGER FK | yes | → `full_cost_estimate` |
+| component_name | VARCHAR(40) | yes | One of the 17 taxonomy components (full_cost_model.md §3) |
+| category | VARCHAR(30) | yes | `direct_variable`, `direct_fixed`, `indirect`, `noncash`, `financing` |
+| amount | DecimalText | no | NULL whenever not calculated |
+| currency | VARCHAR(3) | yes | Reporting currency |
+| status | VARCHAR(40) | yes | Component status, incl. `not_applicable` and `failed_validation` |
+| source_type | VARCHAR(40) | yes | Component source type |
+| source_quality | VARCHAR(40) | yes | Dimension C for the component |
+| origin | VARCHAR(40) | yes | `part3_variable_cost_estimate` or `part4_scenario` |
+| part3_cost_component_id | INTEGER FK | no | → the original Part 3 `cost_component` (Part 3 components only) |
+| source_reference, calculation_method | TEXT | no | |
+| breakdown_json, assumptions_json, warnings_json | TEXT | yes | Steps, inputs used, warnings and missing inputs |

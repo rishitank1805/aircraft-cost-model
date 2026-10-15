@@ -11,14 +11,19 @@ from aircraft_cost_model.models.navigation_rate import NavigationRate, Navigatio
 from aircraft_cost_model.models.airport_tariff import AirportTariff
 from aircraft_cost_model.models.variable_cost import VariableCostEstimate
 from aircraft_cost_model.models.cost_component import CostComponent
+from aircraft_cost_model.models.full_cost import CostAssumption, CostScenario, FullCostComponent, FullCostEstimate
 
 __all__ = [
     "AircraftType",
     "Airport",
     "AirportTariff",
+    "CostAssumption",
     "CostComponent",
+    "CostScenario",
     "ExchangeRate",
     "FuelPrice",
+    "FullCostComponent",
+    "FullCostEstimate",
     "NavigationRate",
     "NavigationZoneAerodrome",
     "VariableCostEstimate",

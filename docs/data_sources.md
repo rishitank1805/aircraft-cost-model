@@ -142,3 +142,8 @@ revision, section and page, SHA-256 and terms evidence.
 - **ICAO Doc 8643 bulk data:** copyrighted, and terms for bulk reuse are unclear.
   Not ingested.
 - **OpenAP synonyms:** not used, because they substitute different aircraft.
+
+Cost data sources (fuel prices, exchange rates, navigation charges, airport
+tariffs and Part 4 financial benchmarks) are documented in
+[cost_data_sources.md](cost_data_sources.md). The Part 4 source register is
+`data/reference/cost_benchmark_sources.csv`.

@@ -1,0 +1,207 @@
+{
+  "schema_version": "1",
+  "scenario_version": "1",
+  "flight_type": "passenger",
+  "reporting_currency": "EUR",
+  "pricing_date": "2025-01-15",
+  "effective_from": "2025-01-01",
+  "effective_to": "2025-12-31",
+  "utilization": {
+    "annual_aircraft_block_hours": {
+      "value": "3000",
+      "unit": "block_hour/year",
+      "source_type": "illustrative_assumption",
+      "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+    },
+    "annual_flights": {
+      "value": "1500",
+      "unit": "flight/year",
+      "source_type": "illustrative_assumption",
+      "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+    }
+  },
+  "maintenance": {
+    "airframe": {
+      "covers": [
+        "airframe"
+      ],
+      "hourly_rate_includes_cycle_costs": false,
+      "rate_per_block_hour": {
+        "value": "300.00",
+        "unit": "EUR/block_hour",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      },
+      "rate_per_flight_cycle": {
+        "value": "100.00",
+        "unit": "EUR/flight_cycle",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      }
+    },
+    "engine": {
+      "engine_hours_basis": "airborne_hours",
+      "includes_llp": false,
+      "hourly_rate_includes_cycle_costs": true,
+      "rate_per_engine_flight_hour": {
+        "value": "150.00",
+        "unit": "EUR/engine_flight_hour",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      }
+    },
+    "engine_llp": {
+      "reserve_per_engine_cycle": {
+        "value": "100.00",
+        "unit": "EUR/engine_cycle",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      }
+    }
+  },
+  "crew": {
+    "salaries": {
+      "basis": "role_allocation",
+      "includes_allowances": false,
+      "staffing_factor": {
+        "value": "1",
+        "unit": "ratio",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; 1 = no reserve/relief crew included"
+      },
+      "roles": [
+        {
+          "role": "captain",
+          "count": {
+            "value": "1",
+            "unit": "count",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "annual_compensation": {
+            "value": "200000",
+            "unit": "EUR/year",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "employer_on_cost_rate": {
+            "value": "0.25",
+            "unit": "ratio",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "annual_allocable_block_hours": {
+            "value": "800",
+            "unit": "block_hour/year",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          }
+        },
+        {
+          "role": "first_officer",
+          "count": {
+            "value": "1",
+            "unit": "count",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "annual_compensation": {
+            "value": "120000",
+            "unit": "EUR/year",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "employer_on_cost_rate": {
+            "value": "0.25",
+            "unit": "ratio",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          },
+          "annual_allocable_block_hours": {
+            "value": "800",
+            "unit": "block_hour/year",
+            "source_type": "illustrative_assumption",
+            "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+          }
+        }
+      ]
+    },
+    "allowances": {
+      "crew_count": {
+        "value": "2",
+        "unit": "count",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      },
+      "per_diem_per_crew_member_per_duty_day": {
+        "value": "50.00",
+        "unit": "EUR/duty_day",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      },
+      "duty_days": {
+        "value": "1",
+        "unit": "days",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; same-day return, no overnight"
+      }
+    }
+  },
+  "insurance": {
+    "basis": "annual",
+    "allocation_basis": "block_hours",
+    "coverages": [
+      {
+        "name": "hull_and_liability_inclusive",
+        "inclusive": true,
+        "annual_premium": {
+          "value": "200000",
+          "unit": "EUR/year",
+          "source_type": "illustrative_assumption",
+          "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+        }
+      }
+    ]
+  },
+  "indirect": {
+    "administration": {
+      "scope": "flight-attributable station and operations administration",
+      "basis": "per_flight",
+      "rate": {
+        "value": "100.00",
+        "unit": "EUR/flight",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      }
+    },
+    "cargo_sales": {
+      "applicable": false,
+      "reason": "passenger flight scenario; no revenue cargo is assumed"
+    },
+    "general_administrative": {
+      "scope": "company-wide G&A allocated to this aircraft",
+      "excludes_administration": true,
+      "basis": "annual",
+      "allocation_basis": "block_hours",
+      "annual_amount": {
+        "value": "1000000",
+        "unit": "EUR/year",
+        "source_type": "illustrative_assumption",
+        "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+      }
+    }
+  },
+  "name": "Illustrative A320 operating lease",
+  "ownership_mode": "operating_lease",
+  "description": "ILLUSTRATIVE operating-lease economic-cost scenario (same assumptions as the owned example except ownership). Invented round numbers.",
+  "operating_lease": {
+    "allocation_basis": "block_hours",
+    "includes": [],
+    "monthly_payment": {
+      "value": "300000",
+      "unit": "EUR/month",
+      "source_type": "illustrative_assumption",
+      "notes": "ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost"
+    }
+  }
+}

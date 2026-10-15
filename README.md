@@ -22,8 +22,8 @@ never silently filled.
 |---|---|---|
 | 1 | **Data foundation**: airports, aircraft master data, provenance, SQLite | ✅ Implemented |
 | 2 | **Flight performance**: route distance, flight profile, block time, fuel burn via OpenAP | ✅ Implemented |
-| 3 | **Variable operating costs**: fuel (EIA benchmark + ECB FX), EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling, with explicit coverage | ✅ Implemented (awaiting review) |
-| 4 | Maintenance, fixed and financial costs from public benchmarks | Not started |
+| 3 | **Variable operating costs**: fuel (EIA benchmark + ECB FX), EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling, with explicit coverage | ✅ Implemented (8001a93) |
+| 4 | **Full operating costs**: maintenance, crew, insurance, leasing, depreciation, financing and indirect costs from cited benchmarks or explicit scenario assumptions; COC / TOC / Total with three separate quality dimensions | ✅ Implemented |
 | 5 | Analytics, scenarios, sensitivity analysis and validation | Not started |
 
 ## Installation
@@ -95,6 +95,29 @@ Unavailable components print as `N/A`, never zero. The output reports a
 which is shown only when every component is fully calculated. See
 [docs/variable_cost_model.md](docs/variable_cost_model.md).
 
+### Full operating costs (Part 4)
+
+```bash
+python scripts/calculate_full_costs.py --flight-estimate-id 2 --variable-cost-estimate-id 2 \
+    --scenario data/scenarios/example_owned_aircraft.json --save
+python scripts/calculate_full_costs.py --flight-estimate-id 2 --variable-cost-estimate-id 2 \
+    --scenario data/scenarios/benchmark_faa_us_narrowbody_partial.json
+```
+
+Part 4 reads the saved Part 3 components and prices the rest from a JSON
+scenario (see [docs/cost_assumptions.md](docs/cost_assumptions.md)). The
+shipped `example_*` scenarios use **illustrative values that are not airline
+costs**. The output reports:
+
+- calculated subtotals for each category, COC, TOC and Total;
+- separately, a **Complete COC / TOC / Total Costs**, shown only when every
+  applicable component was calculated;
+- three independent dimensions: **cost coverage**, **operational validity**
+  (from Part 2) and **source quality**.
+
+Results are economic cost estimates, not accounting expense. See
+[docs/full_cost_model.md](docs/full_cost_model.md).
+
 ### Database migrations
 
 The schema is managed with Alembic, and every script brings the database up to
@@ -117,7 +140,8 @@ Outputs:
 | `data/processed/aircraft/aircraft_types.csv`, `cargo_aircraft_coverage.csv` | Aircraft master data; freighter coverage |
 | `data/processed/*/*_validation_report.json` | Validation reports |
 | `data/processed/flights/flight_estimate_<id>_<hash>.csv` | Per-time-step trajectory of saved flight estimates |
-| `data/reference/*.csv` | Version-controlled curated inputs (freighter targets, manufacturer document references) |
+| `data/reference/*.csv` | Version-controlled curated inputs and source registers (freighter targets, manufacturer documents, navigation, tariff and cost benchmark sources) |
+| `data/scenarios/*.json` | Version-controlled Part 4 cost scenarios (illustrative examples and a cited FAA benchmark) |
 | `database/aircraft_costs.db` | SQLite database |
 
 ## Tests
@@ -135,6 +159,9 @@ databases. They need no internet access and never touch `database/aircraft_costs
 - [docs/flight_performance.md](docs/flight_performance.md): Part 2 pipeline, equations, coverage, limitations
 - [docs/flight_assumptions.md](docs/flight_assumptions.md): every flight-estimate assumption and its effect
 - [docs/variable_cost_model.md](docs/variable_cost_model.md): Part 3 methods, statuses, coverage, precision
+- [docs/full_cost_model.md](docs/full_cost_model.md): Part 4 taxonomy, completeness, the three dimensions, worked example
+- [docs/maintenance_costs.md](docs/maintenance_costs.md), [docs/crew_costs.md](docs/crew_costs.md), [docs/ownership_and_financing.md](docs/ownership_and_financing.md): Part 4 component methods
+- [docs/cost_assumptions.md](docs/cost_assumptions.md): scenario file schema, shipped scenarios, public financial sources
 - [docs/tariff_methodology.md](docs/tariff_methodology.md): EUROCONTROL, FRA/CDG and handling tariff rules
 - [docs/cost_data_sources.md](docs/cost_data_sources.md): EIA, ECB, EUROCONTROL and airport sources and licences
 - [docs/data_dictionary.md](docs/data_dictionary.md): every table and column
@@ -170,3 +197,11 @@ databases. They need no internet access and never touch `database/aircraft_costs
   - Landing: FRA has a tariff only from 1 Aug 2026; CDG is unavailable.
   - Ground handling has no public tariff.
   - No estimate is "complete" yet. See [docs/variable_cost_model.md](docs/variable_cost_model.md) §12.
+- **Full costs depend on scenario inputs.**
+  - No reusable public source exists for lease rates, insurance premiums,
+    aircraft values, LLP reserves or European crew pay. These must be
+    supplied by the user.
+  - The FAA benchmark is a US passenger-narrowbody average from YE June 2023.
+    It is applied unadjusted and is not freighter-specific.
+  - No complete COC exists for the example flight, because the Part 3
+    components are incomplete.

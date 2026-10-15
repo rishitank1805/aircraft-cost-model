@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -248,3 +248,49 @@ def cost_db(flight_db: str, openap_provider) -> str:
     load_navigation_rates(engine, COST_FIXTURES / "navigation")  # synthetic values
     engine.dispose()
     return flight_db
+
+
+# ---------------------------------------------------------------------------
+# Part 4 fixtures (illustrative scenario values, fixed time bases)
+# ---------------------------------------------------------------------------
+
+import copy as _copy  # noqa: E402
+
+SCENARIOS = REPO_ROOT / "data" / "scenarios"
+
+
+def illustrative(value: str, unit: str, **extra) -> dict:
+    return {"value": value, "unit": unit, "source_type": "illustrative_assumption", "notes": "test", **extra}
+
+
+@pytest.fixture
+def owned_scenario_data() -> dict:
+    """The shipped illustrative owned-aircraft scenario as a mutable dict."""
+    return _json.loads((SCENARIOS / "example_owned_aircraft.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def lease_scenario_data() -> dict:
+    return _json.loads((SCENARIOS / "example_operating_lease.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def basis():
+    """2.0 block hours, 1.5 airborne hours, 1 cycle, 2 engines, EUR, 2025-01-15."""
+    from aircraft_cost_model.fullcost.common import FlightBasis
+
+    return FlightBasis(1, "A320", Decimal("2.0"), Decimal("1.5"), Decimal("2.0"), Decimal(1), 2, Decimal("10000"),
+                       date(2025, 1, 15), "EUR", "calculated_limits_unverified")
+
+
+@pytest.fixture
+def fx():
+    from aircraft_cost_model.costs.currency import StaticRateProvider
+
+    return StaticRateProvider({"USD": (Decimal("1.25"), date(2025, 1, 15))})
+
+
+def scenario_from(data: dict):
+    from aircraft_cost_model.fullcost.scenario import parse_scenario
+
+    return parse_scenario(_copy.deepcopy(data))

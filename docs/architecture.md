@@ -1,4 +1,4 @@
-# Architecture (Parts 1–3: data foundation, flight performance, variable costs)
+# Architecture (Parts 1–4: data foundation, flight performance, variable costs, full operating costs)
 
 ## Components
 
@@ -13,16 +13,18 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation` |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs` |
 | `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
 | `costs/*` | Part 3: pricing-date policy, ECB currency conversion, fuel cost, EUROCONTROL route charges, airport movement-charge engine, ground handling, coverage and aggregation, persistence (see [variable_cost_model.md](variable_cost_model.md)) |
+| `fullcost/*` | Part 4: scenario schema and validation (`scenario.py`), shared input reader and allocation (`common.py`), maintenance, crew, insurance, ownership/financing and indirect components, taxonomy aggregation with the three dimensions (`aggregate.py`), orchestration (`calculator.py`) and persistence (see [full_cost_model.md](full_cost_model.md)) |
+| `data/scenarios/*.json` | Version-controlled cost scenarios: illustrative examples and a cited FAA benchmark scenario |
 | `ingestion/snapshots.py` | Generic immutable snapshot downloader (temporary file, SHA-256, atomic rename, sidecar), used for OurAirports, EIA and ECB |
 | `ingestion/fuel_prices.py`, `exchange_rates.py`, `airport_tariffs.py` | EIA XLS/API parsing, ECB CSV parsing, reviewed EUROCONTROL CSV and local airport tariff loading |
 | `validation/cost_validator.py` | Observation and unit-rate validation (positivity, units, duplicates, overlapping validity) |
 | `models/types.py` | `DecimalText`: exact decimal storage for money in SQLite |
-| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources |
+| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources, cost benchmark sources (`cost_benchmark_sources.csv`) |
 | `data/local/` (git-ignored) | Locally transcribed rates and tariff values whose source terms do not permit (commercial) redistribution: EUROCONTROL/DFS navigation rates, Fraport tariff |
-| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`) |
+| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`, `calculate_variable_costs`, `calculate_full_costs`) |
 
 ## Data flow
 
@@ -168,6 +170,12 @@ erDiagram
     data_source ||--o{ airport_tariff : "airport document"
     airport ||--o{ airport_tariff : "tariff versions"
     data_source ||--o{ cost_component : "price/tariff used"
+    cost_scenario ||--o{ cost_assumption : "typed inputs"
+    cost_scenario ||--o{ full_cost_estimate : "scenario used"
+    flight_estimate ||--o{ full_cost_estimate : "time bases"
+    variable_cost_estimate ||--o{ full_cost_estimate : "exact Part 3 result"
+    full_cost_estimate ||--|{ full_cost_component : "17 components"
+    cost_component ||--o{ full_cost_component : "part3_cost_component_id"
 ```
 
 - `route` stores only stable airport-pair facts: the great-circle distance and
@@ -182,8 +190,10 @@ erDiagram
   stores one `cost_component` per component. Every price, rate and tariff
   references its `data_source`. Reference tables keep all historical versions
   (by observation date or validity interval).
-- Part 4 fixed and financial cost tables will reference `flight_estimate` and
-  `variable_cost_estimate` in the same way.
+- Part 4 `full_cost_estimate` references the flight estimate, the exact
+  variable-cost estimate and the `cost_scenario` (stored once per content
+  hash). Its Part 3 components link to the original `cost_component` rows,
+  so historical Part 3 results are reused rather than recomputed.
 
 ## Part 3 data flow
 
@@ -199,6 +209,18 @@ flowchart LR
     NR --> CALC
     AT --> CALC
     CALC --> AGG[coverage + subtotal] --> VCE[(variable_cost_estimate + cost_component)]
+```
+
+## Part 4 data flow
+
+```mermaid
+flowchart LR
+    SC[scenario JSON] --> PS[parse + validate: decimal strings, units, source types, periods] --> CALC4[calculate_full_costs]
+    FE[(flight_estimate v2)] -->|block, airborne, engines, validity| CALC4
+    VCE[(variable_cost_estimate + cost_component)] -->|saved Part 3 rows| CALC4
+    ER[(exchange_rate)] --> CALC4
+    CALC4 --> COMP[maintenance, crew, insurance, ownership, financing, indirect] --> AGG4[taxonomy: DV, DF, indirect, COC, TOC, total + 3 dimensions]
+    AGG4 --> FCE[(cost_scenario, cost_assumption, full_cost_estimate, full_cost_component)]
 ```
 
 ## Part 2 data flow
