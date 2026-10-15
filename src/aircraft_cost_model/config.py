@@ -1,0 +1,126 @@
+"""Central configuration: project paths, public dataset URLs and runtime settings.
+
+All modules obtain paths from :func:`get_settings` so that every script uses the
+same locations regardless of operating system or current working directory.
+Values can be overridden through environment variables (optionally loaded from a
+``.env`` file in the project root).
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+OURAIRPORTS_AIRPORTS_URL = "https://ourairports.com/data/airports.csv"
+OURAIRPORTS_DATA_PAGE_URL = "https://ourairports.com/data/"
+OURAIRPORTS_DATA_DICTIONARY_URL = "https://ourairports.com/help/data-dictionary.html"
+OPENAP_REPOSITORY_URL = "https://github.com/TUDelft-CNS-ATM/openap"
+OPENAP_DOCUMENTATION_URL = "https://openap.dev/"
+
+# Jet fuel density used by OpenAP itself (openap/mass.py: ``mfc * 0.8025  # L->kg``).
+# Used only to produce explicitly labelled *derived* fuel capacity values in kg.
+JET_FUEL_DENSITY_KG_PER_L = 0.8025
+
+_ENV_PREFIX = "ACM_"
+
+
+def _find_project_root() -> Path:
+    """Locate the project root.
+
+    Order of precedence:
+    1. ``ACM_PROJECT_ROOT`` environment variable.
+    2. The nearest parent of this file containing ``pyproject.toml``
+       (works for editable installs and running from a source checkout).
+    3. The nearest parent of the current working directory containing ``pyproject.toml``.
+    """
+    env_root = os.environ.get(f"{_ENV_PREFIX}PROJECT_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+
+    for start in (Path(__file__).resolve(), Path.cwd().resolve()):
+        for candidate in (start, *start.parents):
+            if (candidate / "pyproject.toml").is_file():
+                return candidate
+
+    raise RuntimeError(
+        "Could not determine the project root. Run from inside the repository or set "
+        f"{_ENV_PREFIX}PROJECT_ROOT."
+    )
+
+
+def _resolve(root: Path, value: str | None, default: Path) -> Path:
+    """Resolve an optional path override relative to the project root."""
+    if not value:
+        return default
+    path = Path(value).expanduser()
+    return path if path.is_absolute() else (root / path).resolve()
+
+
+@dataclass(frozen=True)
+class Settings:
+    """Immutable bundle of paths and settings used across the project."""
+
+    project_root: Path
+    raw_airports_dir: Path
+    raw_aircraft_dir: Path
+    processed_airports_dir: Path
+    processed_aircraft_dir: Path
+    database_path: Path
+    airports_url: str
+    http_connect_timeout_s: float
+    http_read_timeout_s: float
+    log_level: str
+
+    @property
+    def database_url(self) -> str:
+        """SQLAlchemy URL for the SQLite database."""
+        return f"sqlite:///{self.database_path.as_posix()}"
+
+    @property
+    def http_timeout(self) -> tuple[float, float]:
+        """(connect, read) timeout tuple for :mod:`requests`."""
+        return (self.http_connect_timeout_s, self.http_read_timeout_s)
+
+    def ensure_directories(self) -> None:
+        """Create all data and database directories if they do not exist."""
+        for directory in (
+            self.raw_airports_dir,
+            self.raw_aircraft_dir,
+            self.processed_airports_dir,
+            self.processed_aircraft_dir,
+            self.database_path.parent,
+        ):
+            directory.mkdir(parents=True, exist_ok=True)
+
+
+def get_settings(create_directories: bool = True) -> Settings:
+    """Build :class:`Settings` from defaults, ``.env`` and environment variables.
+
+    Args:
+        create_directories: Create the configured directories if missing.
+    """
+    root = _find_project_root()
+    load_dotenv(root / ".env", override=False)
+    env = os.environ.get
+
+    data_dir = root / "data"
+    settings = Settings(
+        project_root=root,
+        raw_airports_dir=data_dir / "raw" / "airports",
+        raw_aircraft_dir=data_dir / "raw" / "aircraft",
+        processed_airports_dir=data_dir / "processed" / "airports",
+        processed_aircraft_dir=data_dir / "processed" / "aircraft",
+        database_path=_resolve(
+            root, env(f"{_ENV_PREFIX}DATABASE_PATH"), root / "database" / "aircraft_costs.db"
+        ),
+        airports_url=env(f"{_ENV_PREFIX}AIRPORTS_URL", OURAIRPORTS_AIRPORTS_URL),
+        http_connect_timeout_s=float(env(f"{_ENV_PREFIX}HTTP_CONNECT_TIMEOUT", "10")),
+        http_read_timeout_s=float(env(f"{_ENV_PREFIX}HTTP_READ_TIMEOUT", "120")),
+        log_level=env(f"{_ENV_PREFIX}LOG_LEVEL", "INFO").upper(),
+    )
+    if create_directories:
+        settings.ensure_directories()
+    return settings

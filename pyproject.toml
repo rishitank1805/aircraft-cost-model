@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "open-aircraft-cost-model"
+version = "0.1.0"
+description = "Open Aircraft Operating Cost Model - Part 1: data foundation (airports, aircraft master data, SQLite)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - to be decided by project owner" }
+dependencies = [
+    "pandas>=2.1",
+    "requests>=2.31",
+    "SQLAlchemy>=2.0",
+    "python-dotenv>=1.0",
+    # OpenAP is the aircraft performance library for Part 2. In Part 1 it is
+    # already needed to read the aircraft master data it ships with.
+    "openap>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

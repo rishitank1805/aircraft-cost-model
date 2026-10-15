@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Local configuration
+.env
+
+# Downloaded and generated data (reproducible via scripts/)
+data/raw/**/*
+data/processed/**/*
+!data/raw/**/
+!data/processed/**/
+!**/.gitkeep
+
+# Database files
+database/*.db
+database/*.db-journal
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

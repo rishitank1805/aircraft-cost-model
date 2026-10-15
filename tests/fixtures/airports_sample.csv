@@ -1,0 +1,11 @@
+id,ident,type,name,latitude_deg,longitude_deg,elevation_ft,continent,iso_country,iso_region,municipality,scheduled_service,icao_code,iata_code,gps_code,local_code,home_link,wikipedia_link,keywords
+2212,EDDF,large_airport,Frankfurt Main Airport,50.026706,8.55835,364,EU,DE,DE-HE,Frankfurt am Main,yes,EDDF,FRA,EDDF,,https://www.frankfurt-airport.de/,https://en.wikipedia.org/wiki/Frankfurt_Airport,"EDAF, Rhein-Main"
+3622,KJFK,large_airport,John F. Kennedy International Airport,40.639447,-73.779317,13,NA,US,US-NY,New York,yes,KJFK,JFK,KJFK,JFK,,,
+9001,  xs01 ,small_airport,  Example Strip  ,10.5,20.25,,AF,ng,ng-la,Lagos,no,,,xs01,,,,
+9002,XH02,heliport,Example Heliport,-33.9,151.2,50,OC,AU,AU-NSW,Sydney,no,,,,,,,
+9003,XC03,closed,Closed Example Field,45.0,-100.0,1200,NA,US,US-SD,,no,,abc,,,,,
+9004,XB04,small_airport,Bad Latitude,95.0,10.0,100,EU,DE,DE-BY,,no,,,,,,,
+9005,XB05,small_airport,Bad Longitude,10.0,abc,100,EU,DE,DE-BY,,no,,,,,,,
+9006,,small_airport,No Ident,10.0,10.0,100,EU,DE,DE-BY,,no,,,,,,,
+2212,EDDF,large_airport,Frankfurt Duplicate,50.0,8.5,364,EU,DE,DE-HE,Frankfurt am Main,yes,EDDF,FRA,EDDF,,,,
+9007,XS07,seaplane_base,Unknown Service,1.0,1.0,not-a-number,AS,JP,JP-13,Tokyo,maybe,,,,,,,
