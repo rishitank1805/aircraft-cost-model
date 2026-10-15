@@ -1,8 +1,9 @@
 # Data dictionary
 
-SQLite database: `database/aircraft_costs.db`. All timestamps are stored in UTC
-as timezone-naive `DATETIME`, because SQLite has no timezone type.
-"Required" means `NOT NULL`.
+SQLite database: `database/aircraft_costs.db`. The schema is managed by
+Alembic; the current revision is `0003_touchdown_fuel_boundaries`. All
+timestamps are stored in UTC as timezone-naive `DATETIME`, because SQLite has
+no timezone type. "Required" means `NOT NULL`.
 
 ## `data_source`
 
@@ -47,9 +48,11 @@ Non-unique indexes: `iata_code`, `icao_code`, `gps_code`, `country_code`, `airpo
 | gps_code | VARCHAR(16) | no | | `gps_code` | Uppercased |
 | iata_code | VARCHAR(3) | no | | `iata_code` | Uppercased. NULL when absent. Not unique by design (duplicates reported as warnings) |
 | local_code | VARCHAR(16) | no | | `local_code` | National code (e.g. FAA LID), uppercased |
-| source_id | INTEGER FK | yes | | | → `data_source.source_id` of the snapshot that last updated the row |
+| source_id | INTEGER FK | yes | | | → `data_source.source_id` of the snapshot that supplied the row's *current values*. Changes only when airport data changes |
+| last_seen_source_id | INTEGER FK | no | | | → latest snapshot that still contained this airport. Rows missing from newer snapshots keep an older value and are **not deleted** (added in 0002, back-filled from `source_id`) |
+| last_seen_at | DATETIME | no | UTC | | Retrieval time of `last_seen_source_id` |
 | created_at | DATETIME | yes | UTC | | First insert |
-| updated_at | DATETIME | yes | UTC | | Last real change (unchanged re-loads do not touch it) |
+| updated_at | DATETIME | yes | UTC | | Last real data change. Re-loads and new snapshots with identical data do not touch it, and neither does last-seen tracking |
 
 `home_link`, `wikipedia_link` and `keywords` are kept in
 `data/processed/airports/airports_clean.csv` but not stored in the table.
@@ -81,7 +84,8 @@ label.
 | oew_kg | FLOAT | no | kg | source `oew` | Operating empty weight (OpenAP's definition; may differ from operator OEW) |
 | max_payload_kg | FLOAT | no | kg | — | **Not available; NULL.** Not derived from MZFW − OEW |
 | fuel_capacity_l | FLOAT | no | litres | source `mfc` | Maximum fuel capacity as supplied. > 0 when present |
-| fuel_capacity_kg | FLOAT | no | kg | **derived** | `fuel_capacity_l × 0.8025 kg/L` (density used in OpenAP `mass.py`). > 0 when present |
+| fuel_capacity_kg | FLOAT | no | kg | **derived** | `fuel_capacity_l × fuel_capacity_density_kg_per_l`. A model input, not a manufacturer-certified value. > 0 when present |
+| fuel_capacity_density_kg_per_l | FLOAT | no | kg/L | assumption | Density used to derive `fuel_capacity_kg` (0.8025, from OpenAP `mass.py`). Added in 0002 and back-filled only where the Part 1 provenance label records 0.8025. Part 2 calculations use `fuel_capacity_l` with their own recorded density |
 | cruise_mach | FLOAT | no | Mach | source `cruise.mach` | Nominal cruise Mach |
 | cruise_altitude_m | FLOAT | no | m | source `cruise.height` | Nominal cruise altitude |
 | cruise_speed_kt | FLOAT | no | kt (TAS) | **derived** | True airspeed of `cruise_mach` at `cruise_altitude_m` in the ISA standard atmosphere (`openap.aero.mach2tas`) |
@@ -100,3 +104,101 @@ values are accepted because definitions differ between sources.
 Fields kept only in `data/processed/aircraft/aircraft_types.csv`: `vmo_kt`
 (kt), `mmo` (Mach), `ceiling_m` (m), `openap_nominal_cruise_range_km` (km;
 nominal only, **not** a payload-independent range), `engine_options` (JSON).
+
+## `route` (Part 2)
+
+Stable airport-pair reference data. Unique on `(origin_airport_id, destination_airport_id)`.
+
+| Column | Type | Required | Unit | Description |
+|---|---|---|---|---|
+| route_id | INTEGER PK | yes | | Surrogate key |
+| origin_airport_id | INTEGER FK | yes | | → `airport.airport_id` (indexed) |
+| destination_airport_id | INTEGER FK | yes | | → `airport.airport_id` (indexed) |
+| great_circle_distance_km | FLOAT | yes | km | Haversine distance between airport coordinates |
+| great_circle_distance_nm | FLOAT | yes | NM | `km / 1.852` |
+| distance_method | VARCHAR(200) | yes | | e.g. `haversine, spherical Earth, R = 6371.0088 km (IUGG mean radius)` |
+| created_at / updated_at | DATETIME | yes | UTC | `updated_at` changes if airport coordinates change upstream |
+
+## `flight_estimate` (Part 2)
+
+One modelled flight. These are **estimates, not dispatch plans**. Only
+feasible estimates are stored. Indexes: `aircraft_type_id`, `route_id`,
+`(origin_airport_id, destination_airport_id)`, `input_hash`.
+
+| Column | Type | Required | Unit | Description |
+|---|---|---|---|---|
+| flight_estimate_id | INTEGER PK | yes | | Surrogate key |
+| aircraft_type_id | INTEGER FK | yes | | → `aircraft_type` |
+| origin_airport_id, destination_airport_id | INTEGER FK | yes | | → `airport` |
+| route_id | INTEGER FK | yes | | → `route` |
+| payload_kg | FLOAT | yes | kg | User input, ≥ 0 |
+| great_circle_distance_nm | FLOAT | yes | NM | Copy at calculation time |
+| estimated_route_distance_nm | FLOAT | yes | NM | Distance flown in the model |
+| route_distance_method | VARCHAR(50) | yes | | `great_circle`, `great_circle_x_factor`, `user_supplied` |
+| route_factor | FLOAT | no | ratio | NULL for a user-supplied distance |
+| cruise_altitude_ft | FLOAT | yes | ft | Altitude actually used (may be below the requested altitude on short routes) |
+| taxi_out_min, taxi_in_min | FLOAT | yes | min | User input or default (see flight_assumptions.md) |
+| airborne_time_min | FLOAT | yes | min | Lift-off → touchdown |
+| trip_time_min | FLOAT | yes | min | v2: brake release → touchdown (v1: → end of landing roll) |
+| landing_roll_time_min | FLOAT | no | min | Touchdown → rest (NULL for v1 rows) |
+| block_time_min | FLOAT | yes | min | v2: taxi-out + trip + landing roll + taxi-in |
+| zero_fuel_weight_kg | FLOAT | yes | kg | OEW + payload |
+| ramp_weight_kg, takeoff_weight_kg, landing_weight_kg | FLOAT | yes | kg | Ramp; brake release; v2 touchdown (v1: end of landing roll). See flight_performance.md §5–6 |
+| trip_fuel_kg | FLOAT | yes | kg | v2: brake release → touchdown, equal to `takeoff_weight_kg − landing_weight_kg` (v1: → end of landing roll) |
+| landing_roll_fuel_kg | FLOAT | no | kg | Touchdown → rest, ground idle (NULL for v1 rows) |
+| taxi_out_fuel_kg, taxi_in_fuel_kg, taxi_fuel_kg | FLOAT | yes | kg | Ground idle fuel |
+| block_fuel_kg | FLOAT | yes | kg | taxi-out + trip + landing roll + taxi-in (same total in v1 and v2) |
+| reserve_fuel_kg | FLOAT | yes | kg | User-supplied contingency + alternate + final reserve |
+| planned_fuel_load_kg | FLOAT | yes | kg | Fuel at ramp |
+| fuel_per_nm_kg | FLOAT | yes | kg/NM | trip fuel / estimated route distance |
+| fuel_per_block_hour_kg | FLOAT | yes | kg/h | block fuel / block hours |
+| fuel_density_kg_per_l | FLOAT | yes | kg/L | Density used for the capacity check |
+| time_step_s | FLOAT | yes | s | Maximum integration step |
+| planning_iterations | INTEGER | yes | | Iterations to converge |
+| model_name, model_version | VARCHAR | yes | | e.g. `aircraft_cost_model 0.2.0; openap 2.6.2` |
+| performance_model_code | VARCHAR(8) | yes | | Exact OpenAP model used (no synonyms) |
+| engine_model | VARCHAR(100) | no | | OpenAP default engine |
+| calculation_status | VARCHAR(50) | yes | | `calculated` or `calculated_limits_unverified` |
+| limit_checks | TEXT (JSON) | yes | | Every check: name, status (`passed`/`failed`/`not_performed`), value, limit, unit, note |
+| warnings | TEXT (JSON) | no | | Warnings shown to the user |
+| input_hash | VARCHAR(64) | yes | | SHA-256 of the normalized inputs and model versions (identical inputs give the same hash) |
+| fuel_accounting_basis | VARCHAR(10) | yes | | `v2` = take-off mass at brake release, landing mass at touchdown, trip fuel between them, landing roll separate. `v1` = rows saved before migration 0003 (trip fuel and landing mass to end of landing roll; values kept unchanged) |
+| trajectory_file | VARCHAR(500) | no | | CSV of per-step states (`time_s`, `phase`, `mode`, `altitude_ft`, `true_airspeed_kt`, `vertical_speed_fpm`, `ground_speed_kt`, `distance_nm`, `aircraft_mass_kg`) |
+| created_at | DATETIME | yes | UTC | |
+
+## `flight_phase` (Part 2)
+
+Eight rows per v2 estimate, in this sequence: `taxi_out`, `takeoff`, `climb`,
+`cruise`, `descent`, `approach`, `landing_roll`, `taxi_in`. (v1 rows have
+seven, with the landing roll inside `approach_landing`.) Unique on
+`(flight_estimate_id, sequence_number)`. Rows are deleted with their estimate
+(`ON DELETE CASCADE`).
+
+| Column | Type | Required | Unit | Description |
+|---|---|---|---|---|
+| flight_phase_id | INTEGER PK | yes | | |
+| flight_estimate_id | INTEGER FK | yes | | → `flight_estimate` (indexed) |
+| phase_name | VARCHAR(30) | yes | | See sequence above |
+| sequence_number | INTEGER | yes | | 1–8 (1–7 for v1) |
+| start_time_s | FLOAT | yes | s | Relative to off-block |
+| duration_s | FLOAT | yes | s | ≥ 0; phase durations sum to block time |
+| distance_nm | FLOAT | no | NM | NULL for taxi (taxi distance not modelled); airborne phases sum to route distance |
+| start_altitude_ft, end_altitude_ft | FLOAT | yes | ft | Pressure altitude (ISA) |
+| start_mass_kg, end_mass_kg | FLOAT | yes | kg | Continuous across phases |
+| fuel_burn_kg | FLOAT | yes | kg | Phases sum to block fuel |
+| fuel_flow_method | VARCHAR(200) | yes | | e.g. `OpenAP FuelFlow.enroute (clean-configuration drag polar)` |
+
+## `flight_assumption` (Part 2)
+
+Unique on `(flight_estimate_id, assumption_name)`. Cascades with its estimate.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| assumption_id | INTEGER PK | yes | |
+| flight_estimate_id | INTEGER FK | yes | → `flight_estimate` (indexed) |
+| assumption_name | VARCHAR(100) | yes | e.g. `taxi_out_min`, `fuel_density_kg_per_l`, `wind` |
+| assumption_value | TEXT | yes | Value as text |
+| assumption_unit | VARCHAR(30) | no | Unit, if any |
+| source_type | VARCHAR(30) | yes | `user_input`, `project_default`, `openap_model`, `database`, `physical_constant`, `modelling_assumption` |
+| source_reference | TEXT | no | Where the value comes from |
+| notes | TEXT | no | Caveats |

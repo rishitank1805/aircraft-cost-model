@@ -15,12 +15,12 @@ from datetime import datetime, timezone
 import pandas as pd
 
 from aircraft_cost_model.config import OPENAP_REPOSITORY_URL, get_settings
-from aircraft_cost_model.database import SourceMetadata, create_db_engine, create_schema, load_aircraft_types
+from aircraft_cost_model.database import SourceMetadata, create_db_engine, load_aircraft_types, migrate_database
 from aircraft_cost_model.ingestion.aircraft import (
-    CARGO_AIRCRAFT_TARGETS,
     CARGO_TARGETS_REFERENCE_URL,
     CARGO_TARGETS_SOURCE_NAME,
     cargo_targets_checksum,
+    load_cargo_targets,
     read_openap_aircraft,
     save_openap_snapshot,
 )
@@ -56,12 +56,14 @@ def main(argv: list[str] | None = None) -> int:
 
     snapshot = save_openap_snapshot(read_openap_aircraft(), settings.raw_aircraft_dir)
     openap_rows = normalize_openap_aircraft(snapshot.records)
-    cargo_rows, cargo_warnings = build_cargo_target_rows(CARGO_AIRCRAFT_TARGETS, set(snapshot.records))
+    targets_path = settings.cargo_targets_path
+    targets = load_cargo_targets(targets_path)
+    cargo_rows, cargo_warnings = build_cargo_target_rows(targets, set(snapshot.records))
     master = pd.concat([openap_rows, cargo_rows], ignore_index=True)
 
     report = validate_aircraft(
         master,
-        total_source_records=len(snapshot.records) + len(CARGO_AIRCRAFT_TARGETS),
+        total_source_records=len(snapshot.records) + len(targets),
         source_name="OpenAP + project-curated cargo targets",
         source_url=OPENAP_REPOSITORY_URL,
         retrieved_at=snapshot.retrieved_at.isoformat(),
@@ -75,8 +77,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Validation failed; nothing loaded. See {report_path}")
         return 1
 
+    migrate_database(settings.database_url)
     engine = create_db_engine(settings.database_url)
-    create_schema(engine)
     openap_source = SourceMetadata(
         source_name="OpenAP",
         source_url=OPENAP_REPOSITORY_URL,
@@ -94,10 +96,10 @@ def main(argv: list[str] | None = None) -> int:
         dataset_name="cargo_aircraft_targets",
         license="Project-authored list. ICAO type designators are individual facts from ICAO Doc 8643 "
         "(ICAO copyright); the ICAO database itself is not redistributed.",
-        access_type="Manual curation (src/aircraft_cost_model/ingestion/aircraft.py)",
+        access_type="Manual curation, version-controlled CSV (data/reference/cargo_aircraft_targets.csv)",
         retrieved_at=datetime.now(timezone.utc).replace(microsecond=0),
-        source_version=f"sha256:{cargo_targets_checksum()[:12]}",
-        checksum=cargo_targets_checksum(),
+        source_version=f"sha256:{cargo_targets_checksum(targets_path)[:12]}",
+        checksum=cargo_targets_checksum(targets_path),
         notes="Freighter types required by the cost model. Coverage only: no weights or performance "
         "values; related OpenAP passenger models are recorded, never substituted.",
     )

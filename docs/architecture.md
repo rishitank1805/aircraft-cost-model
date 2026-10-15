@@ -1,4 +1,4 @@
-# Architecture (Part 1: data foundation)
+# Architecture (Parts 1–2: data foundation and flight performance)
 
 ## Components
 
@@ -13,7 +13,10 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `scripts/*` | Command-line orchestration and summaries |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries` |
+| `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
+| `data/reference/*.csv` | Version-controlled curated inputs: freighter targets, manufacturer document references |
+| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`) |
 
 ## Data flow
 
@@ -99,6 +102,32 @@ may be loaded. Keeping them separate:
 
 Missing optional fields are warnings, never grounds to reject a dataset.
 
+## Schema migrations
+
+The schema is managed with Alembic. Migrations live in the package
+(`src/aircraft_cost_model/migrations`), so they work after installation and
+from any working directory.
+
+- `database.migrate_database(url)` runs at the start of every script.
+  - An empty database gets all migrations.
+  - A versioned database gets any pending migrations.
+  - An **unversioned** Part 1 database is first compared with the schema the
+    baseline migration would create: columns, types, nullability, indexes and
+    unique and foreign keys. Only an exact match is *stamped* at
+    `0001_part1_baseline` and then upgraded. A mismatch raises
+    `SchemaVerificationError` and leaves the database untouched.
+- Migrations are additive. `0002` adds columns with `ALTER TABLE … ADD COLUMN`
+  and back-fills them from existing data; Part 1 tables are never recreated.
+- The CLI equivalent is `alembic upgrade head`, run from the repository root.
+- Tests check that the ORM models and the migrated schema match exactly
+  (`alembic.autogenerate.compare_metadata`), and that the
+  downgrade/upgrade round trip preserves Part 1 data.
+
+On 2026-10-15 the live database was backed up to
+`database/aircraft_costs.pre-part2-<UTC>.db` (git-ignored), verified, stamped
+and upgraded. Its 86,251 airports, 42 aircraft types and data sources were
+preserved.
+
 ## Why SQLite
 
 - It needs no server: one file, part of the Python standard library, and works
@@ -110,29 +139,36 @@ Missing optional fields are warnings, never grounds to reject a dataset.
   replacing the SQLite-specific upsert (`sqlalchemy.dialects.sqlite.insert`)
   with the PostgreSQL equivalent.
 
-Schema creation currently uses `Base.metadata.create_all`, which only creates
-missing tables. **Future schema changes must use migrations (e.g. Alembic).**
+All schema changes go through Alembic migrations (see above).
 
-## How future tables will connect (Parts 2–5, not implemented)
+## How the tables connect
 
 ```mermaid
 erDiagram
-    data_source ||--o{ airport : "provenance"
-    data_source ||--o{ aircraft_type : "provenance"
-    airport ||--o{ flight : "origin / destination (Part 2)"
-    aircraft_type ||--o{ flight : "operated by (Part 2)"
-    flight ||--o{ flight_cost_item : "cost lines (Parts 3-4)"
-    data_source ||--o{ flight_cost_item : "benchmark / tariff source"
+    data_source ||--o{ airport : "source_id / last_seen_source_id"
+    data_source ||--o{ aircraft_type : "source_id"
+    airport ||--o{ route : "origin / destination"
+    route ||--o{ flight_estimate : "route_id"
+    airport ||--o{ flight_estimate : "origin / destination"
+    aircraft_type ||--o{ flight_estimate : "aircraft_type_id"
+    flight_estimate ||--|{ flight_phase : "8 phases (7 for v1 rows)"
+    flight_estimate ||--o{ flight_assumption : "assumptions"
+    flight_estimate ||--o{ cost_item : "Part 3-4 (not implemented)"
 ```
 
-- A future `flight` (or `route`) table will reference `airport.airport_id` for
-  origin and destination and `aircraft_type.aircraft_type_id` for the aircraft.
-  It will also store distance, block time and fuel burn, computed with OpenAP
-  using `aircraft_type.icao_type_designator` / `aircraft_code` and
-  `openap_supported`.
-- Cost tables (fuel price series, navigation unit rates, airport tariffs,
-  maintenance benchmarks) will each reference `data_source`, so every cost line
-  can be traced to its source or labelled assumption.
-- Freighter rows (`openap_supported = false`) show which aircraft need a
-  documented performance source or an explicitly labelled proxy decision before
-  Part 2 can model them.
+- `route` stores only stable airport-pair facts: the great-circle distance and
+  its method. Scenario-specific route factors and distances belong to
+  `flight_estimate`.
+- `flight_estimate` stores inputs, results, the model name and version, the
+  exact OpenAP model code and engine, the loading checks (JSON), warnings, a
+  hash of the inputs and the path of the trajectory CSV. Per-time-step states
+  are written to `data/processed/flights/flight_estimate_<id>_<hash>.csv`
+  rather than the database.
+- Part 3 cost tables will reference `flight_estimate`, using block time, block
+  and trip fuel, distances and take-off and landing mass. Each cost table will
+  also reference `data_source` for tariffs and benchmarks.
+
+## Part 2 data flow
+
+See [flight_performance.md](flight_performance.md) for the full pipeline
+diagram, equations and limitations.

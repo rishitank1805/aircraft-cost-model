@@ -17,7 +17,7 @@ from aircraft_cost_model.config import (
     OURAIRPORTS_DATA_PAGE_URL,
     get_settings,
 )
-from aircraft_cost_model.database import SourceMetadata, create_db_engine, create_schema, load_airports
+from aircraft_cost_model.database import SourceMetadata, create_db_engine, load_airports, migrate_database
 from aircraft_cost_model.ingestion.airports import DownloadError, download_airports, latest_snapshot
 from aircraft_cost_model.logging_config import configure_logging
 from aircraft_cost_model.processing.airport_cleaner import clean_airports, read_raw_airports, save_cleaned_airports
@@ -69,8 +69,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Validation failed; nothing loaded. See {report_path}")
         return 1
 
+    migrate_database(settings.database_url)
     engine = create_db_engine(settings.database_url)
-    create_schema(engine)
     summary = load_airports(
         engine,
         result.cleaned,

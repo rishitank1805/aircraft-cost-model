@@ -35,6 +35,7 @@ class AircraftType(TimestampMixin, Base):
     max_payload_kg: Mapped[float | None] = mapped_column(Float)
     fuel_capacity_l: Mapped[float | None] = mapped_column(Float)
     fuel_capacity_kg: Mapped[float | None] = mapped_column(Float)
+    fuel_capacity_density_kg_per_l: Mapped[float | None] = mapped_column(Float)
     cruise_mach: Mapped[float | None] = mapped_column(Float)
     cruise_altitude_m: Mapped[float | None] = mapped_column(Float)
     cruise_speed_kt: Mapped[float | None] = mapped_column(Float)

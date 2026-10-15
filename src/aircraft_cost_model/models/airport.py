@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from aircraft_cost_model.models.base import Base, TimestampMixin
@@ -13,6 +15,11 @@ class Airport(TimestampMixin, Base):
 
     IATA codes are indexed but deliberately *not* unique: the source does not
     guarantee uniqueness and closed/historic airports may reuse codes.
+
+    ``source_id`` is the snapshot that supplied the row's current values; it
+    only changes (with ``updated_at``) when airport data actually changes.
+    ``last_seen_source_id`` / ``last_seen_at`` record the latest snapshot that
+    still contained the airport. Rows missing from newer snapshots are kept.
     """
 
     __tablename__ = "airport"
@@ -22,6 +29,7 @@ class Airport(TimestampMixin, Base):
         Index("ix_airport_gps_code", "gps_code"),
         Index("ix_airport_country_code", "country_code"),
         Index("ix_airport_airport_type", "airport_type"),
+        Index("ix_airport_last_seen_source_id", "last_seen_source_id"),
     )
 
     airport_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -42,3 +50,5 @@ class Airport(TimestampMixin, Base):
     iata_code: Mapped[str | None] = mapped_column(String(3))
     local_code: Mapped[str | None] = mapped_column(String(16))
     source_id: Mapped[int] = mapped_column(ForeignKey("data_source.source_id"), nullable=False)
+    last_seen_source_id: Mapped[int | None] = mapped_column(ForeignKey("data_source.source_id"))
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime)

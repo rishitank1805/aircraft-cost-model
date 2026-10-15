@@ -1,0 +1,6 @@
+aircraft_code,manufacturer,model,variant,icao_type_designator,openap_related_code,designator_reference,notes
+A330-200F,Airbus,A330-200F,production freighter,A332,A332,ICAO Doc 8643 (individual designator),OpenAP A332 models the A330-200 passenger aircraft; its weights and performance are not applicable to the freighter without validation.
+B777F,Boeing,777F,production freighter,B77L,,ICAO Doc 8643 (individual designator); B77L for the 777F also listed at https://en.wikipedia.org/wiki/List_of_aircraft_type_designators,"No OpenAP model for designator B77L. OpenAP's synonym table maps B77L to B77W (777-300ER), a different airframe; this project does not use it."
+B767-300F,Boeing,767-300F,production freighter,B763,B763,ICAO Doc 8643 (individual designator),OpenAP B763 models the 767-300 passenger aircraft; not substituted.
+B747-400F,Boeing,747-400F,production freighter,B744,B744,ICAO Doc 8643 (individual designator),OpenAP B744 models the 747-400 passenger aircraft; not substituted.
+A321P2F,Airbus,A321P2F,passenger-to-freighter conversion,A321,A321,ICAO Doc 8643 (individual designator),"Conversion of the A321 passenger aircraft. OpenAP A321 models the passenger aircraft; conversion changes OEW and payload limits; not substituted."

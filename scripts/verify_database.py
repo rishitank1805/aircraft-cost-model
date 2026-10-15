@@ -15,7 +15,7 @@ import pandas as pd
 from sqlalchemy import inspect, text
 
 from aircraft_cost_model.config import get_settings
-from aircraft_cost_model.database import create_db_engine
+from aircraft_cost_model.database import create_db_engine, current_revision, head_revision
 
 PERFORMANCE_FIELDS = (
     "engine_type",
@@ -54,9 +54,16 @@ def main(argv: list[str] | None = None) -> int:
     pd.set_option("display.width", 200)
     pd.set_option("display.max_columns", 20)
     pd.set_option("display.max_colwidth", 60)
+    revision = current_revision(engine)
     with engine.connect() as conn:
+        _section("Schema")
+        print(f"Alembic revision: {revision} (head: {head_revision()})")
+        if revision != head_revision():
+            print("Database is not at the latest revision; run an ingestion script or `alembic upgrade head`.")
+
         _section("Record counts")
-        for table in ("airport", "aircraft_type", "data_source"):
+        part2 = ("route", "flight_estimate", "flight_phase", "flight_assumption")
+        for table in ("airport", "aircraft_type", "data_source") + tuple(t for t in part2 if t in tables):
             count = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).scalar_one()  # fixed identifiers
             print(f"{table:<14} {count:,}")
 
@@ -93,6 +100,27 @@ def main(argv: list[str] | None = None) -> int:
         for field in PERFORMANCE_FIELDS:  # fixed identifiers, not user input
             nulls = conn.execute(text(f"SELECT COUNT(*) FROM aircraft_type WHERE {field} IS NULL")).scalar_one()
             print(f"{field:<18} {nulls:>3} / {total}")
+
+        if "last_seen_source_id" in {c["name"] for c in inspect(engine).get_columns("airport")}:
+            _section("Airport snapshot coverage")
+            stale = conn.execute(text(
+                "SELECT COUNT(*) FROM airport WHERE last_seen_source_id IS NOT "
+                "(SELECT MAX(source_id) FROM data_source WHERE dataset_name = :ds)"
+            ), {"ds": "ourairports_airports_csv"}).scalar_one()
+            print(f"Airports not present in the latest OurAirports snapshot (kept, not deleted): {stale:,}")
+
+        if "flight_estimate" in tables:
+            _section("Recent flight estimates (model estimates, not dispatch plans)")
+            print(pd.read_sql(text(
+                "SELECT fe.flight_estimate_id AS id, a.aircraft_code AS aircraft, o.iata_code AS orig, "
+                "d.iata_code AS dest, fe.payload_kg, ROUND(fe.estimated_route_distance_nm, 1) AS route_nm, "
+                "ROUND(fe.block_time_min, 1) AS block_min, ROUND(fe.trip_fuel_kg) AS trip_fuel_kg, "
+                "ROUND(fe.block_fuel_kg) AS block_fuel_kg, fe.calculation_status AS status "
+                "FROM flight_estimate fe JOIN aircraft_type a USING (aircraft_type_id) "
+                "JOIN airport o ON o.airport_id = fe.origin_airport_id "
+                "JOIN airport d ON d.airport_id = fe.destination_airport_id "
+                "ORDER BY fe.flight_estimate_id DESC LIMIT :n"
+            ), conn, params={"n": 10}).to_string(index=False))
 
         _section("Data sources")
         sources = pd.read_sql(text(

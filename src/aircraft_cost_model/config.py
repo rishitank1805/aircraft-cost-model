@@ -68,11 +68,18 @@ class Settings:
     raw_aircraft_dir: Path
     processed_airports_dir: Path
     processed_aircraft_dir: Path
+    processed_flights_dir: Path
+    reference_dir: Path
     database_path: Path
     airports_url: str
     http_connect_timeout_s: float
     http_read_timeout_s: float
     log_level: str
+
+    @property
+    def cargo_targets_path(self) -> Path:
+        """Version-controlled freighter target list."""
+        return self.reference_dir / "cargo_aircraft_targets.csv"
 
     @property
     def database_url(self) -> str:
@@ -91,6 +98,7 @@ class Settings:
             self.raw_aircraft_dir,
             self.processed_airports_dir,
             self.processed_aircraft_dir,
+            self.processed_flights_dir,
             self.database_path.parent,
         ):
             directory.mkdir(parents=True, exist_ok=True)
@@ -113,6 +121,8 @@ def get_settings(create_directories: bool = True) -> Settings:
         raw_aircraft_dir=data_dir / "raw" / "aircraft",
         processed_airports_dir=data_dir / "processed" / "airports",
         processed_aircraft_dir=data_dir / "processed" / "aircraft",
+        processed_flights_dir=data_dir / "processed" / "flights",
+        reference_dir=data_dir / "reference",
         database_path=_resolve(
             root, env(f"{_ENV_PREFIX}DATABASE_PATH"), root / "database" / "aircraft_costs.db"
         ),
