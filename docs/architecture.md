@@ -1,4 +1,4 @@
-# Architecture (Parts 1–2: data foundation and flight performance)
+# Architecture (Parts 1–3: data foundation, flight performance, variable costs)
 
 ## Components
 
@@ -13,9 +13,15 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries` |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation` |
 | `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
-| `data/reference/*.csv` | Version-controlled curated inputs: freighter targets, manufacturer document references |
+| `costs/*` | Part 3: pricing-date policy, ECB currency conversion, fuel cost, EUROCONTROL route charges, airport movement-charge engine, ground handling, coverage and aggregation, persistence (see [variable_cost_model.md](variable_cost_model.md)) |
+| `ingestion/snapshots.py` | Generic immutable snapshot downloader (temporary file, SHA-256, atomic rename, sidecar), used for OurAirports, EIA and ECB |
+| `ingestion/fuel_prices.py`, `exchange_rates.py`, `airport_tariffs.py` | EIA XLS/API parsing, ECB CSV parsing, reviewed EUROCONTROL CSV and local airport tariff loading |
+| `validation/cost_validator.py` | Observation and unit-rate validation (positivity, units, duplicates, overlapping validity) |
+| `models/types.py` | `DecimalText`: exact decimal storage for money in SQLite |
+| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources |
+| `data/local/` (git-ignored) | Locally transcribed rates and tariff values whose source terms do not permit (commercial) redistribution: EUROCONTROL/DFS navigation rates, Fraport tariff |
 | `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`) |
 
 ## Data flow
@@ -153,7 +159,15 @@ erDiagram
     aircraft_type ||--o{ flight_estimate : "aircraft_type_id"
     flight_estimate ||--|{ flight_phase : "8 phases (7 for v1 rows)"
     flight_estimate ||--o{ flight_assumption : "assumptions"
-    flight_estimate ||--o{ cost_item : "Part 3-4 (not implemented)"
+    flight_estimate ||--o{ variable_cost_estimate : "priced for a pricing date"
+    variable_cost_estimate ||--|{ cost_component : "fuel, navigation, terminal, landing, handling"
+    data_source ||--o{ fuel_price : "EIA snapshot"
+    data_source ||--o{ exchange_rate : "ECB snapshot"
+    data_source ||--o{ navigation_rate : "en-route and terminal rates"
+    data_source ||--o{ navigation_zone_aerodrome : "terminal zone lists"
+    data_source ||--o{ airport_tariff : "airport document"
+    airport ||--o{ airport_tariff : "tariff versions"
+    data_source ||--o{ cost_component : "price/tariff used"
 ```
 
 - `route` stores only stable airport-pair facts: the great-circle distance and
@@ -164,9 +178,28 @@ erDiagram
   hash of the inputs and the path of the trajectory CSV. Per-time-step states
   are written to `data/processed/flights/flight_estimate_<id>_<hash>.csv`
   rather than the database.
-- Part 3 cost tables will reference `flight_estimate`, using block time, block
-  and trip fuel, distances and take-off and landing mass. Each cost table will
-  also reference `data_source` for tariffs and benchmarks.
+- Part 3 `variable_cost_estimate` references `flight_estimate` (v2 only) and
+  stores one `cost_component` per component. Every price, rate and tariff
+  references its `data_source`. Reference tables keep all historical versions
+  (by observation date or validity interval).
+- Part 4 fixed and financial cost tables will reference `flight_estimate` and
+  `variable_cost_estimate` in the same way.
+
+## Part 3 data flow
+
+```mermaid
+flowchart LR
+    EIA[EIA XLS / API] --> SF[raw snapshot] --> PF[parse + validate] --> FP[(fuel_price)]
+    ECB[ECB Data Portal CSV] --> SE[raw snapshot] --> PE[parse + validate] --> ER[(exchange_rate)]
+    CIRC[EUROCONTROL / DFS PDFs] -->|manual transcription, local only| NCSV[local CSV] --> NR[(navigation_rate + zone aerodromes)]
+    TAR[Airport tariff PDF] -->|manual transcription, local only| TJ[local JSON] --> AT[(airport_tariff)]
+    FE[(flight_estimate v2)] --> CALC[calculate_variable_costs]
+    FP --> CALC
+    ER --> CALC
+    NR --> CALC
+    AT --> CALC
+    CALC --> AGG[coverage + subtotal] --> VCE[(variable_cost_estimate + cost_component)]
+```
 
 ## Part 2 data flow
 

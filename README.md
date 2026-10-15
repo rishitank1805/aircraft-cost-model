@@ -21,8 +21,8 @@ never silently filled.
 | Part | Scope | Status |
 |---|---|---|
 | 1 | **Data foundation**: airports, aircraft master data, provenance, SQLite | ✅ Implemented |
-| 2 | **Flight performance**: route distance, flight profile, block time, fuel burn via OpenAP | ✅ Implemented (awaiting review) |
-| 3 | Variable operating costs (fuel prices, EUROCONTROL charges, airport tariffs) | Not started |
+| 2 | **Flight performance**: route distance, flight profile, block time, fuel burn via OpenAP | ✅ Implemented |
+| 3 | **Variable operating costs**: fuel (EIA benchmark + ECB FX), EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling, with explicit coverage | ✅ Implemented (awaiting review) |
 | 4 | Maintenance, fixed and financial costs from public benchmarks | Not started |
 | 5 | Analytics, scenarios, sensitivity analysis and validation | Not started |
 
@@ -75,6 +75,26 @@ error (for example an unsupported freighter), and 2 means infeasible loading
 (nothing is saved). Flight estimates are **model estimates for cost analysis,
 not dispatch fuel plans.**
 
+### Variable costs (Part 3)
+
+```bash
+python scripts/ingest_fuel_prices.py            # EIA jet fuel spot (XLS, no key); --offline / --api
+python scripts/ingest_exchange_rates.py         # ECB reference rates (USD, GBP, CHF by default)
+python scripts/ingest_navigation_rates.py       # en-route + terminal rates (data/local, git-ignored)
+python scripts/ingest_airport_tariffs.py        # locally transcribed tariffs (data/local, git-ignored)
+python scripts/calculate_variable_costs.py --flight-estimate-id 2 --pricing-date 2025-01-15 --currency EUR --save
+python scripts/calculate_variable_costs.py --flight-estimate-id 2 --pricing-date 2025-01-15 \
+    --nav-zone GERMANY:170:1:0 --nav-zone FRANCE:290:0:1 \
+    --certificated-mtow-kg 78000     # explicit zone distances + AFM certificated MTOW (illustrative values)
+# --type-level-mtow-scenario uses OpenAP's type MTOW instead, labelled as a scenario assumption
+python scripts/verify_cost_database.py
+```
+
+Unavailable components print as `N/A`, never zero. The output reports a
+**Calculated Component Subtotal** and a separate **Complete Variable Cost**,
+which is shown only when every component is fully calculated. See
+[docs/variable_cost_model.md](docs/variable_cost_model.md).
+
 ### Database migrations
 
 The schema is managed with Alembic, and every script brings the database up to
@@ -114,6 +134,9 @@ databases. They need no internet access and never touch `database/aircraft_costs
 - [docs/architecture.md](docs/architecture.md): components, data flow, migrations, design decisions
 - [docs/flight_performance.md](docs/flight_performance.md): Part 2 pipeline, equations, coverage, limitations
 - [docs/flight_assumptions.md](docs/flight_assumptions.md): every flight-estimate assumption and its effect
+- [docs/variable_cost_model.md](docs/variable_cost_model.md): Part 3 methods, statuses, coverage, precision
+- [docs/tariff_methodology.md](docs/tariff_methodology.md): EUROCONTROL, FRA/CDG and handling tariff rules
+- [docs/cost_data_sources.md](docs/cost_data_sources.md): EIA, ECB, EUROCONTROL and airport sources and licences
 - [docs/data_dictionary.md](docs/data_dictionary.md): every table and column
 - [docs/data_sources.md](docs/data_sources.md): sources, licences, limitations
 - [AGENTS.md](AGENTS.md): rules for AI coding sessions
@@ -138,3 +161,12 @@ databases. They need no internet access and never touch `database/aircraft_costs
 - **Type-level OEW and limits from OpenAP.** They are not operator- or
   weight-variant-specific.
 - **Not every airport suits cargo operations.** This is not assessed yet.
+- **Variable costs are partial.**
+  - Fuel uses a U.S. Gulf Coast spot benchmark.
+  - En-route navigation needs explicit charging-zone distances and a
+    certificated MTOW. Terminal charges are loaded for France (2025–2026)
+    and Germany (2026); Germany 2025 is pending review.
+  - Navigation and Fraport rates are local only (licensing).
+  - Landing: FRA has a tariff only from 1 Aug 2026; CDG is unavailable.
+  - Ground handling has no public tariff.
+  - No estimate is "complete" yet. See [docs/variable_cost_model.md](docs/variable_cost_model.md) §12.

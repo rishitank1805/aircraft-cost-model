@@ -1,7 +1,7 @@
 # Data dictionary
 
 SQLite database: `database/aircraft_costs.db`. The schema is managed by
-Alembic; the current revision is `0003_touchdown_fuel_boundaries`. All
+Alembic; the current revision is `0005_terminal_navigation`. All
 timestamps are stored in UTC as timezone-naive `DATETIME`, because SQLite has
 no timezone type. "Required" means `NOT NULL`.
 
@@ -202,3 +202,135 @@ Unique on `(flight_estimate_id, assumption_name)`. Cascades with its estimate.
 | source_type | VARCHAR(30) | yes | `user_input`, `project_default`, `openap_model`, `database`, `physical_constant`, `modelling_assumption` |
 | source_reference | TEXT | no | Where the value comes from |
 | notes | TEXT | no | Caveats |
+
+## Part 3 tables
+
+Money, prices and rates use **`DecimalText`**: the exact decimal string
+stored as VARCHAR(64) and read back as `Decimal`. Floats are rejected. SQL
+comparisons on these columns are textual, so don't sort or filter them by
+value in SQL.
+
+### `fuel_price`
+
+Unique on `(series_identifier, observation_period, observation_date)`; index
+on `(series_identifier, observation_date)`.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| fuel_price_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` (snapshot that supplied the current value) |
+| series_identifier | VARCHAR(64) | yes | e.g. `EER_EPJK_PF4_RGC_DPG` |
+| market_location | VARCHAR(100) | yes | `U.S. Gulf Coast, FOB` |
+| product | VARCHAR(100) | yes | `Kerosene-type jet fuel` |
+| observation_date | DATE | yes | Trading day the price refers to |
+| observation_period | VARCHAR(20) | yes | `daily` = single trading-day assessment (not an average) |
+| price | DecimalText | yes | > 0 |
+| currency | VARCHAR(3) | yes | ISO 4217 (`USD`) |
+| price_unit | VARCHAR(30) | yes | `USD/USgal` |
+| retrieved_at | DATETIME | yes | UTC download time (separate from observation date) |
+| created_at / updated_at | DATETIME | yes | `updated_at` changes only if the value changes |
+
+### `exchange_rate`
+
+Unique on `(base_currency, quote_currency, observation_date)`.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| exchange_rate_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` |
+| observation_date | DATE | yes | ECB publication date (TARGET business days) |
+| base_currency | VARCHAR(3) | yes | `EUR` |
+| quote_currency | VARCHAR(3) | yes | e.g. `USD` |
+| rate | DecimalText | yes | units of quote currency per 1 base currency (USD per EUR) |
+| series_key | VARCHAR(64) | yes | e.g. `EXR.D.USD.EUR.SP00.A` |
+| retrieved_at | DATETIME | yes | UTC |
+| created_at / updated_at | DATETIME | yes | |
+
+### `navigation_rate`
+
+Unique on `(charging_zone, valid_from)`. Superseded versions are kept. Holds
+en-route and terminal rates (`charge_type`). Values come from git-ignored
+local transcriptions.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| navigation_rate_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` (reviewed CSV version) |
+| charging_zone | VARCHAR(40) | yes | Project zone code (e.g. `GERMANY`), indexed |
+| charging_zone_name | VARCHAR(100) | yes | Name as printed in the circular |
+| valid_from / valid_to | DATE | yes / no | Validity interval (inclusive) |
+| unit_rate | DecimalText | yes | Global unit rate t_i (national + administrative), EUR |
+| national_unit_rate | DecimalText | no | National unit rate |
+| currency | VARCHAR(3) | yes | `EUR` (CoA Art. 7) |
+| source_reference | TEXT | yes | Document, section, URL, extraction method |
+| verification_status | VARCHAR(40) | yes | `verified_against_source` or `pending_review` (pending rows are never priced) |
+| charge_type | VARCHAR(20) | yes | `en_route` (default) or `terminal` (added in 0005) |
+| service_unit_formula | VARCHAR(40) | yes | `sqrt_mtow_over_50` (en-route) or `mtow_over_50_pow_0_7` (terminal) |
+| charged_movement | VARCHAR(20) | no | Terminal: `departure` or `arrival`, the movement the zone charges |
+
+### `navigation_zone_aerodrome` (0005)
+
+Unique on `(charging_zone, aerodrome_icao, valid_from)`; index on `aerodrome_icao`.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| navigation_zone_aerodrome_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` |
+| charging_zone | VARCHAR(40) | yes | Terminal charging zone, e.g. `FRANCE_TCZ1` |
+| aerodrome_icao | VARCHAR(4) | yes | Aerodrome in the zone |
+| valid_from / valid_to | DATE | yes / no | Membership validity |
+
+### `airport_tariff`
+
+Unique on `(airport_id, tariff_type, valid_from)`. Superseded versions are kept.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| airport_tariff_id | INTEGER PK | yes | |
+| airport_id | INTEGER FK | yes | → `airport` (indexed) |
+| source_id | INTEGER FK | yes | → `data_source` (transcription file version) |
+| tariff_type | VARCHAR(40) | yes | `landing_takeoff` or `ground_handling` |
+| valid_from / valid_to | DATE | yes / no | Validity interval |
+| currency | VARCHAR(3) | yes | Tariff currency |
+| calculation_method | VARCHAR(80) | yes | Rule implementation, e.g. `fra_movement_charges_2026`, `per_unit_handling` |
+| parameters_json | TEXT | yes | Reviewed rates and bands (decimals as strings) |
+| source_reference | TEXT | yes | Document title, URL, sections, pages |
+| verification_status | VARCHAR(40) | yes | e.g. `transcribed_reviewed_local` |
+
+### `variable_cost_estimate`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| variable_cost_estimate_id | INTEGER PK | yes | |
+| flight_estimate_id | INTEGER FK | yes | → `flight_estimate` (v2 only), indexed |
+| pricing_date | DATE | yes | Date used to select prices, rates and tariffs |
+| reporting_currency | VARCHAR(3) | yes | ISO 4217 |
+| calculated_subtotal | DecimalText | no | Sum of calculated components only; NULL if none was calculated. **Not a total** |
+| complete_variable_cost | DecimalText | no | Set **only** when every applicable component is calculated with full scope; otherwise NULL |
+| coverage_status | VARCHAR(30) | yes | `complete`, `partial` or `none` |
+| components_calculated / components_applicable | INTEGER | yes | Component counts (not a share of cost) |
+| calculation_version | VARCHAR(100) | yes | e.g. `variable_costs v1 (aircraft_cost_model 0.2.0)` |
+| input_hash | VARCHAR(64) | yes | SHA-256 of the request and every selected observation, rate and amount (indexed) |
+| created_at | DATETIME | yes | UTC |
+
+### `cost_component`
+
+Unique on `(variable_cost_estimate_id, component_name)`; cascades with its estimate.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| cost_component_id | INTEGER PK | yes | |
+| variable_cost_estimate_id | INTEGER FK | yes | → `variable_cost_estimate` |
+| component_name | VARCHAR(30) | yes | `fuel`, `navigation` (en-route), `terminal_navigation`, `landing`, `ground_handling`. Estimates saved before 0005 have four components, and their `navigation` is `partial_scope` |
+| amount | DecimalText | no | NULL whenever not calculated (never 0 for missing) |
+| currency | VARCHAR(3) | yes | Reporting currency |
+| status | VARCHAR(40) | yes | See variable_cost_model.md §7 |
+| source_type | VARCHAR(40) | yes | `public_tariff`, `public_market_benchmark`, `user_assumption`, `none` |
+| partial_scope | BOOLEAN | yes | True if the component deliberately excludes part of the cost (e.g. terminal navigation charges) |
+| source_id | INTEGER FK | no | → `data_source` of the price or tariff used |
+| source_reference | TEXT | no | Human-readable source |
+| pricing_observation_date | DATE | no | Observation date (fuel) or tariff/rate effective date |
+| calculation_method | TEXT | no | Method description |
+| breakdown_json | TEXT | yes | Every step and conversion, with values |
+| assumptions_json | TEXT | yes | Labelled assumptions |
+| warnings_json | TEXT | yes | Warnings, including missing inputs |

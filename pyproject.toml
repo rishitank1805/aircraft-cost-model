@@ -15,6 +15,8 @@ dependencies = [
     "requests>=2.31",
     "SQLAlchemy>=2.0",
     "alembic>=1.13",
+    # Reads the EIA historical .xls download (the only key-free machine-readable source).
+    "xlrd>=2.0",
     "python-dotenv>=1.0",
     # Aircraft master data (Part 1) and performance / fuel-flow models (Part 2).
     # Pinned to the inspected minor version: the adapter relies on its data layout.

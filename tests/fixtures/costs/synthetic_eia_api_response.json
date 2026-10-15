@@ -1,0 +1,5 @@
+{"response": {"total": "3", "frequency": "daily", "data": [
+  {"period": "2025-01-13", "duoarea": "RGC", "product": "EPJK", "series": "EER_EPJK_PF4_RGC_DPG", "value": "2.385", "units": "$/GAL"},
+  {"period": "2025-01-14", "duoarea": "RGC", "product": "EPJK", "series": "EER_EPJK_PF4_RGC_DPG", "value": "2.365", "units": "$/GAL"},
+  {"period": "2025-01-15", "duoarea": "RGC", "product": "EPJK", "series": "EER_EPJK_PF4_RGC_DPG", "value": "2.463", "units": "$/GAL"}
+]}, "request": {"command": "/v2/petroleum/pri/spt/data/"}, "apiVersion": "2.1"}

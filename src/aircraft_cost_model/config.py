@@ -20,6 +20,12 @@ OURAIRPORTS_DATA_DICTIONARY_URL = "https://ourairports.com/help/data-dictionary.
 OPENAP_REPOSITORY_URL = "https://github.com/TUDelft-CNS-ATM/openap"
 OPENAP_DOCUMENTATION_URL = "https://openap.dev/"
 
+EIA_JET_FUEL_SERIES = "EER_EPJK_PF4_RGC_DPG"
+EIA_JET_FUEL_XLS_URL = "https://www.eia.gov/dnav/pet/hist_xls/EER_EPJK_PF4_RGC_DPGd.xls"
+EIA_JET_FUEL_PAGE_URL = "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EER_EPJK_PF4_RGC_DPG&f=D"
+EIA_API_V2_URL = "https://api.eia.gov/v2/petroleum/pri/spt/data/"
+ECB_EXR_API_URL = "https://data-api.ecb.europa.eu/service/data/EXR/D.{currencies}.EUR.SP00.A"
+
 # Jet fuel density used by OpenAP itself (openap/mass.py: ``mfc * 0.8025  # L->kg``).
 # Used only to produce explicitly labelled *derived* fuel capacity values in kg.
 JET_FUEL_DENSITY_KG_PER_L = 0.8025
@@ -69,12 +75,17 @@ class Settings:
     processed_airports_dir: Path
     processed_aircraft_dir: Path
     processed_flights_dir: Path
+    raw_fuel_prices_dir: Path
+    raw_exchange_rates_dir: Path
+    local_tariffs_dir: Path
+    local_navigation_dir: Path
     reference_dir: Path
     database_path: Path
     airports_url: str
     http_connect_timeout_s: float
     http_read_timeout_s: float
     log_level: str
+    eia_api_key: str | None = None
 
     @property
     def cargo_targets_path(self) -> Path:
@@ -99,6 +110,10 @@ class Settings:
             self.processed_airports_dir,
             self.processed_aircraft_dir,
             self.processed_flights_dir,
+            self.raw_fuel_prices_dir,
+            self.raw_exchange_rates_dir,
+            self.local_tariffs_dir,
+            self.local_navigation_dir,
             self.database_path.parent,
         ):
             directory.mkdir(parents=True, exist_ok=True)
@@ -122,6 +137,10 @@ def get_settings(create_directories: bool = True) -> Settings:
         processed_airports_dir=data_dir / "processed" / "airports",
         processed_aircraft_dir=data_dir / "processed" / "aircraft",
         processed_flights_dir=data_dir / "processed" / "flights",
+        raw_fuel_prices_dir=data_dir / "raw" / "fuel_prices",
+        raw_exchange_rates_dir=data_dir / "raw" / "exchange_rates",
+        local_tariffs_dir=data_dir / "local" / "airport_tariffs",
+        local_navigation_dir=data_dir / "local" / "navigation_rates",
         reference_dir=data_dir / "reference",
         database_path=_resolve(
             root, env(f"{_ENV_PREFIX}DATABASE_PATH"), root / "database" / "aircraft_costs.db"
@@ -130,6 +149,7 @@ def get_settings(create_directories: bool = True) -> Settings:
         http_connect_timeout_s=float(env(f"{_ENV_PREFIX}HTTP_CONNECT_TIMEOUT", "10")),
         http_read_timeout_s=float(env(f"{_ENV_PREFIX}HTTP_READ_TIMEOUT", "120")),
         log_level=env(f"{_ENV_PREFIX}LOG_LEVEL", "INFO").upper(),
+        eia_api_key=env(f"{_ENV_PREFIX}EIA_API_KEY") or None,
     )
     if create_directories:
         settings.ensure_directories()

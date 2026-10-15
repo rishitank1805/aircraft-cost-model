@@ -1,0 +1,7 @@
+charge_type,charging_zone,charging_zone_name,valid_from,valid_to,national_unit_rate,unit_rate,currency,service_unit_formula,charged_movement,source_document,source_url,source_section,publication_date,extraction_method,verification_status,notes
+en_route,GERMANY,Germany (SYNTHETIC),2025-01-01,2025-12-31,99.90,100.00,EUR,sqrt_mtow_over_50,,SYNTHETIC TEST VALUES - not EUROCONTROL data,about:blank,n/a,2024-12,synthetic,verified_against_source,test fixture
+en_route,FRANCE,France (SYNTHETIC),2025-01-01,2025-12-31,79.90,80.00,EUR,sqrt_mtow_over_50,,SYNTHETIC TEST VALUES - not EUROCONTROL data,about:blank,n/a,2024-12,synthetic,verified_against_source,test fixture
+en_route,NETHERLANDS,Netherlands (SYNTHETIC),2025-01-01,2025-12-31,129.90,130.00,EUR,sqrt_mtow_over_50,,SYNTHETIC TEST VALUES,about:blank,n/a,2024-12,synthetic,pending_review,test fixture
+terminal,GERMANY_TCZ,Germany terminal zone (SYNTHETIC),2025-01-01,2025-12-31,,300.00,EUR,mtow_over_50_pow_0_7,departure,SYNTHETIC TEST VALUES - not DFS data,about:blank,n/a,2024-12,synthetic,verified_against_source,synthetic; subject to VAT in the real source
+terminal,FRANCE_TCZ1,France terminal zone 1 (SYNTHETIC),2025-01-01,2025-12-31,,200.00,EUR,mtow_over_50_pow_0_7,departure,SYNTHETIC TEST VALUES - not EUROCONTROL data,about:blank,n/a,2024-12,synthetic,verified_against_source,test fixture
+terminal,GERMANY_TCZ,Germany terminal zone (SYNTHETIC),2026-01-01,2026-12-31,,310.00,EUR,mtow_over_50_pow_0_7,departure,SYNTHETIC TEST VALUES,about:blank,n/a,2025-12,synthetic,pending_review,test fixture

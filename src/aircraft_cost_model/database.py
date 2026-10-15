@@ -279,34 +279,37 @@ def register_data_source(session: Session, meta: SourceMetadata) -> int:
     return existing.source_id
 
 
-def _upsert(
+def upsert_rows(
     session: Session,
     model: type[Base],
-    key_column: str,
+    key_columns: str | tuple[str, ...],
     records: list[dict[str, Any]],
     batch_size: int = 1000,
     compare_exclude: Iterable[str] = ("source_id",),
 ) -> tuple[int, int]:
-    """Upsert ``records`` on ``key_column``; rows whose data values are unchanged are not touched.
+    """Upsert ``records`` on a natural key; rows whose data values are unchanged are not touched.
 
-    Columns in ``compare_exclude`` are written on insert and on a real change
-    but do not by themselves trigger an update, so a new source snapshot with
-    identical data leaves ``updated_at`` (and ``source_id``) unchanged.
+    ``key_columns`` is one column name or a tuple for composite keys (there
+    must be a matching unique constraint). Columns in ``compare_exclude`` are
+    written on insert and on a real change but do not by themselves trigger an
+    update, so a new source snapshot with identical data leaves ``updated_at``
+    (and ``source_id``) unchanged.
 
     Returns:
         ``(inserted, updated)`` counts.
     """
     if not records:
         return 0, 0
+    keys = (key_columns,) if isinstance(key_columns, str) else tuple(key_columns)
     table = model.__table__
-    key = table.c[key_column]
-    existing_keys = set(session.scalars(select(key)))
-    update_columns = [c for c in records[0] if c != key_column]
+    key_cols = [table.c[k] for k in keys]
+    existing_keys = {tuple(row) for row in session.execute(select(*key_cols))}
+    update_columns = [c for c in records[0] if c not in keys]
     compared = [c for c in update_columns if c not in set(compare_exclude)]
 
     stmt = sqlite_insert(table)
     stmt = stmt.on_conflict_do_update(
-        index_elements=[key],
+        index_elements=key_cols,
         set_={**{c: stmt.excluded[c] for c in update_columns}, "updated_at": utc_now()},
         # Only rewrite rows whose data actually changed (NULL-safe comparison).
         where=or_(*(table.c[c].is_not(stmt.excluded[c]) for c in compared)),
@@ -316,8 +319,30 @@ def _upsert(
     for start in range(0, len(records), batch_size):
         batch = [{**r, "created_at": now, "updated_at": now} for r in records[start : start + batch_size]]
         affected += session.execute(stmt, batch).rowcount
-    inserted = sum(1 for r in records if r[key_column] not in existing_keys)
+    key_type = {k: table.c[k].type for k in keys}
+    inserted = sum(1 for r in records if tuple(_key_value(r[k], key_type[k]) for k in keys) not in existing_keys)
     return inserted, affected - inserted
+
+
+def _key_value(value: Any, column_type: Any) -> Any:
+    """Normalise a record's key value to what the database returns (e.g. date strings -> date)."""
+    from datetime import date as _date
+
+    if isinstance(value, str) and column_type.python_type is _date:
+        return _date.fromisoformat(value)
+    return value
+
+
+def _upsert(
+    session: Session,
+    model: type[Base],
+    key_column: str,
+    records: list[dict[str, Any]],
+    batch_size: int = 1000,
+    compare_exclude: Iterable[str] = ("source_id",),
+) -> tuple[int, int]:
+    """Single-column-key upsert (see :func:`upsert_rows`)."""
+    return upsert_rows(session, model, key_column, records, batch_size, compare_exclude)
 
 
 def _count_missing_from_source(session: Session, model: type[Base], key_column: str, keys: set[Any]) -> int:

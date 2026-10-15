@@ -179,3 +179,89 @@ def test_foreign_keys_enforced_on_new_tables(engine):
                 "great_circle_distance_nm, distance_method, created_at, updated_at) "
                 "VALUES (998, 999, 1, 1, 'x', '2026-10-15', '2026-10-15')"
             ))
+
+
+def test_part3_migration_preserves_part2_records(tmp_path):
+    url = _url(tmp_path)
+    _legacy_part1_database(url)
+    command.stamp(_alembic_config(url), BASELINE_REVISION)  # verified baseline, as migrate_database would do
+    command.upgrade(_alembic_config(url), "0003_touchdown_fuel_boundaries")
+    engine = create_db_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(
+            "INSERT INTO route (route_id, origin_airport_id, destination_airport_id, great_circle_distance_km, "
+            "great_circle_distance_nm, distance_method, created_at, updated_at) "
+            "VALUES (1, 1, 2, 6189, 3342, 'haversine', '2026-10-15', '2026-10-15')"))
+        columns = [c["name"] for c in inspect(engine).get_columns("flight_estimate")
+                   if c["name"] not in ("flight_estimate_id", "trajectory_file", "warnings", "route_factor",
+                                        "engine_model", "landing_roll_time_min", "landing_roll_fuel_kg")]
+        values = {c: 1 for c in columns}
+        values.update(aircraft_type_id=1, origin_airport_id=1, destination_airport_id=2, route_id=1,
+                      block_fuel_kg=2271.5, fuel_accounting_basis="v2", created_at="2026-10-15")
+        conn.execute(text(f"INSERT INTO flight_estimate ({', '.join(values)}) VALUES "
+                          f"({', '.join(':' + c for c in values)})"), values)
+    engine.dispose()
+    assert migrate_database(url)["to"] == head_revision()
+    engine = create_db_engine(url)
+    tables = set(inspect(engine).get_table_names())
+    assert {"fuel_price", "exchange_rate", "navigation_rate", "airport_tariff", "variable_cost_estimate",
+            "cost_component"} <= tables
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT block_fuel_kg, fuel_accounting_basis FROM flight_estimate")).one() == (2271.5, "v2")
+        assert conn.execute(text("SELECT COUNT(*) FROM airport")).scalar_one() == 2
+    engine.dispose()
+
+
+def test_tariff_versions_retained_and_selected_by_date(engine, tmp_path):
+    from datetime import date
+
+    from sqlalchemy.orm import Session
+
+    from aircraft_cost_model.costs import repository
+    from aircraft_cost_model.ingestion.airport_tariffs import load_airport_tariffs
+    from aircraft_cost_model.models import Airport, DataSource
+    from conftest import write_synthetic_tariff
+
+    with Session(engine) as session, session.begin():
+        session.add(DataSource(source_id=1, source_name="t", dataset_name="t", checksum="x"))
+        session.flush()  # no ORM relationship orders these inserts
+        session.add(Airport(airport_id=1, source_airport_id=2212, airport_ident="EDDF", latitude=50.0, longitude=8.5,
+                            source_id=1))
+    write_synthetic_tariff(tmp_path, "EDDF", "2025-01-01", "2025-12-31")
+    write_synthetic_tariff(tmp_path, "EDDF", "2026-01-01")
+    load_airport_tariffs(engine, tmp_path)
+    with Session(engine) as session:
+        assert [t.valid_from for t in repository.airport_tariffs_in_force(session, 1, "landing_takeoff", date(2025, 6, 1))] == [date(2025, 1, 1)]
+        assert [t.valid_from for t in repository.airport_tariffs_in_force(session, 1, "landing_takeoff", date(2026, 6, 1))] == [date(2026, 1, 1)]
+        assert repository.airport_tariffs_in_force(session, 1, "landing_takeoff", date(2024, 6, 1)) == []
+
+
+def test_cost_component_foreign_keys(engine):
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(text(
+                "INSERT INTO cost_component (variable_cost_estimate_id, component_name, currency, status, source_type, "
+                "partial_scope, breakdown_json, assumptions_json, warnings_json) "
+                "VALUES (999, 'fuel', 'EUR', 'unavailable_price', 'none', 0, '[]', '[]', '[]')"))
+
+
+def test_0005_backfills_existing_navigation_rates(tmp_path):
+    url = _url(tmp_path)
+    _legacy_part1_database(url)
+    command.stamp(_alembic_config(url), BASELINE_REVISION)
+    command.upgrade(_alembic_config(url), "0004_part3_variable_costs")
+    engine = create_db_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(
+            "INSERT INTO navigation_rate (source_id, charging_zone, charging_zone_name, valid_from, valid_to, unit_rate, "
+            "currency, source_reference, verification_status, created_at, updated_at) VALUES "
+            "(1, 'GERMANY', 'Germany', '2025-01-01', '2025-12-31', '100.00', 'EUR', 'synthetic', "
+            "'verified_against_source', '2026-10-15', '2026-10-15')"))
+    engine.dispose()
+    migrate_database(url)
+    engine = create_db_engine(url)
+    with engine.connect() as conn:
+        row = conn.execute(text("SELECT unit_rate, charge_type, service_unit_formula, charged_movement "
+                                "FROM navigation_rate")).one()
+    engine.dispose()
+    assert tuple(row) == ("100.00", "en_route", "sqrt_mtow_over_50", None)

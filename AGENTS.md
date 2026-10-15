@@ -7,8 +7,8 @@ total costs, RTNM and cost per RTNM from freely accessible public data.
 
 ## Roadmap
 1. **Data foundation**: airports, aircraft master data, provenance, SQLite. **COMPLETED**
-2. **Flight performance**: route distance, kinematic profile, block time, OpenAP fuel burn. **IMPLEMENTED, awaiting owner review**
-3. Variable operating costs (fuel prices, EUROCONTROL charges, airport tariffs)
+2. **Flight performance**: route distance, kinematic profile, block time, OpenAP fuel burn. **COMPLETED**
+3. **Variable operating costs**: fuel, EUROCONTROL route charges, airport tariffs, ground handling. **IMPLEMENTED, awaiting owner review (uncommitted on feature/part-3-variable-costs)**
 4. Maintenance, fixed and financial costs from documented public benchmarks
 5. Analytics, scenarios, sensitivity analysis, validation against public airline financials
 
@@ -40,6 +40,14 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
   `fuel`), OpenAP calls only in `openap_adapter`/`atmosphere`, database access
   only in `airport_lookup`/`persistence`, orchestration in `planner`.
 - Curated inputs live in version-controlled CSVs in `data/reference/`.
+- Part 3: money uses `Decimal` end to end and `DecimalText` columns (never
+  floats or SQLAlchemy `Numeric` on SQLite). Keep ingestion, tariff parsing,
+  pricing logic (`costs/*`) and persistence separate.
+- Every cost needs a pricing date. Select observations on or before it,
+  within the staleness window. Never use future or latest-overall data, and
+  never interpolate.
+- Missing costs are `amount = None` with an explicit status, never 0.
+  `ComponentResult` enforces this. Never label a partial subtotal as a total.
 - Use parameterized SQL for any user-supplied value.
 
 ## Data provenance (mandatory)
@@ -66,6 +74,21 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
 - Flight estimates are not dispatch fuel plans. Do not invent a regulatory
   fuel policy.
 - Every default must be recorded as a `flight_assumption` with its source.
+- Do not invent unit rates, tariff amounts, noise or emission categories,
+  zone distances, ULD counts or handling prices. Missing inputs give
+  `missing_required_input`; missing data gives `unavailable_*`.
+- Never price legacy `v1` flight estimates.
+- Treat the project as potentially commercial when assessing licences.
+  EUROCONTROL (non-commercial only), DFS and Fraport values stay in
+  git-ignored `data/local/`. Never put them in code, docs or tests; use
+  synthetic fixtures. Never bypass access controls (e.g. ADP's or EUR-Lex's
+  bot challenges).
+- Navigation charges need the certificated MTOW. The OpenAP type-level MTOW
+  is allowed only as an explicit scenario (`calculated_assumption`).
+- Record unresolved methodology interpretations as
+  `unresolved_interpretation` assumptions; never present them as verified.
+- Rates with `verification_status != verified_against_source` are never
+  priced.
 - Do not derive max payload from MZFW − OEW unless it is explicitly labelled as
   derived. Do not treat range as a fixed value.
 - Do not assume an airport with an IATA code is suitable for cargo.

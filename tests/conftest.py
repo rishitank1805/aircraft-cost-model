@@ -164,3 +164,87 @@ def a320_params() -> KinematicParameters:
         descent_vs_mach_ms=-5.76, descent_vs_cas_ms=-10.03, descent_vs_post_cas_ms=-6.08,
         approach_cas_ms=72.0, approach_vs_ms=-3.55, touchdown_speed_ms=69.4, landing_deceleration_ms2=-1.22,
     )
+
+
+# ---------------------------------------------------------------------------
+# Part 3 fixtures (offline; real public-domain/ECB excerpts + synthetic tariffs)
+# ---------------------------------------------------------------------------
+
+import json as _json  # noqa: E402
+from decimal import Decimal  # noqa: E402
+
+COST_FIXTURES = FIXTURES / "costs"
+
+
+def synthetic_fra_parameters() -> dict:
+    """SYNTHETIC parameters with the FRA rule's structure (not Fraport's values)."""
+    return {
+        "applicability_min_mtom_kg_exclusive": "66000",
+        "passenger_rate_per_departing_passenger": "2.00",
+        "freight_mail_rate_per_started_100kg": "0.10",
+        "emission_rate_per_kg_nox_eq": "4.00",
+        "noise_24h_by_category": {str(i): str(i * 10) for i in range(1, 17)},
+        "noise_night1_surcharge_by_category": {str(i): str(i * 5) for i in range(1, 17)},
+        "noise_night2_surcharge_by_category": {str(i): str(i * 20) for i in range(1, 17)},
+        "night_time_1": [["22:00", "22:59"], ["05:00", "05:59"]],
+        "night_time_2": ["23:00", "04:59"],
+        "nri_reduction_pct": {
+            "gt_34t_lt_136t": {f"R{i}": str(max(0, i - 4) * 2) for i in range(1, 11)},
+            "ge_136t": {f"R{i}": str(max(0, i - 5) * 3) for i in range(1, 11)},
+        },
+    }
+
+
+def write_synthetic_tariff(directory: Path, airport_ident: str = "EDDF", valid_from: str = "2025-01-01",
+                           valid_to: str | None = None) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{airport_ident}_synthetic_{valid_from}.json"
+    path.write_text(_json.dumps({
+        "airport_ident": airport_ident, "tariff_type": "landing_takeoff", "valid_from": valid_from,
+        "valid_to": valid_to, "currency": "EUR", "calculation_method": "fra_movement_charges_2026",
+        "verification_status": "synthetic_test_fixture",
+        "source": {"publisher": "TEST", "title": "synthetic test tariff", "url": "about:blank",
+                   "retrieved": "2026-10-15T00:00:00", "terms": "test fixture"},
+        "parameters": synthetic_fra_parameters(),
+    }), encoding="utf-8")
+    return path
+
+
+FRA_CONTEXT = {
+    "flight_type": "commercial", "noise_certification": "chapter_4_or_higher", "noise_category_takeoff": "4",
+    "noise_category_landing": "4", "movement_local_time": "10:30", "nri_category": "R6",
+    "departing_passengers": "150", "freight_mail_kg": "1250", "emission_value_kg_nox_eq": "10.1234",
+}
+
+
+def _snapshot(path: Path):
+    from aircraft_cost_model.ingestion.snapshots import RawSnapshot, sha256_file
+
+    return RawSnapshot(path=path, source_url=f"file://{path.name}", final_url=f"file://{path.name}",
+                       retrieved_at=datetime(2026, 10, 15, 12, 0, tzinfo=timezone.utc), sha256=sha256_file(path),
+                       size_bytes=path.stat().st_size, http_status=200)
+
+
+@pytest.fixture
+def cost_db(flight_db: str, openap_provider) -> str:
+    """Flight DB + a saved v2 A320 FRA->CDG estimate + fixture fuel prices, ECB rates and EUROCONTROL rates."""
+    from aircraft_cost_model.ingestion import exchange_rates as er
+    from aircraft_cost_model.ingestion import fuel_prices as fp
+    from aircraft_cost_model.ingestion.airport_tariffs import load_navigation_rates
+    from aircraft_cost_model.performance.persistence import save_flight_estimate
+    from aircraft_cost_model.performance.planner import FlightRequest, estimate_flight
+    from sqlalchemy.orm import Session
+
+    engine = create_db_engine(flight_db)
+    with Session(engine) as session:
+        result = estimate_flight(session, FlightRequest("A320", "FRA", "CDG", 10000), openap_provider)
+    assert save_flight_estimate(engine, result) == 1
+    snap = _snapshot(COST_FIXTURES / "eia_jet_2025-01_excerpt.xls")
+    parsed = fp.parse_snapshot(snap)
+    fp.load_fuel_prices(engine, parsed, fp.validate_fuel_prices(parsed), snap)
+    snap = _snapshot(COST_FIXTURES / "ecb_exr_2025-01_excerpt.csv")
+    rates = er.parse_ecb_csv(snap.path)
+    er.load_exchange_rates(engine, rates, er.validate_rates(rates), snap)
+    load_navigation_rates(engine, COST_FIXTURES / "navigation")  # synthetic values
+    engine.dispose()
+    return flight_db

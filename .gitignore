@@ -18,6 +18,9 @@ data/processed/**/*
 !data/processed/**/
 !**/.gitkeep
 
+# Locally extracted tariff parameters (source documents' reuse terms unclear; not redistributed)
+data/local/
+
 # Database files
 database/*.db
 database/*.db-journal
