@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "open-aircraft-cost-model"
 version = "0.2.0"
-description = "Open Aircraft Operating Cost Model - data foundation and flight performance (Parts 1-2)."
+description = "Open Aircraft Operating Cost Model - data, flight performance, operating costs and analytics (Parts 1-5)."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Proprietary - to be decided by project owner" }
@@ -21,6 +21,8 @@ dependencies = [
     # Aircraft master data (Part 1) and performance / fuel-flow models (Part 2).
     # Pinned to the inspected minor version: the adapter relies on its data layout.
     "openap>=2.6,<2.7",
+    # Static PNG charts for Part 5 analytical reports (Agg backend, no GUI).
+    "matplotlib>=3.8",
 ]
 
 [project.optional-dependencies]

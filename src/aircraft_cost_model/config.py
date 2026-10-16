@@ -93,6 +93,21 @@ class Settings:
         return self.reference_dir / "cargo_aircraft_targets.csv"
 
     @property
+    def raw_bts_dir(self) -> Path:
+        """Raw BTS TranStats snapshots (Part 5 benchmarks; git-ignored with data/raw)."""
+        return self.project_root / "data" / "raw" / "bts"
+
+    @property
+    def raw_price_indices_dir(self) -> Path:
+        """Raw BLS API responses (Part 5 index adjustment; git-ignored with data/raw)."""
+        return self.project_root / "data" / "raw" / "price_indices"
+
+    @property
+    def output_dir(self) -> Path:
+        """Generated analytics reports (git-ignored)."""
+        return self.project_root / "data" / "output"
+
+    @property
     def database_url(self) -> str:
         """SQLAlchemy URL for the SQLite database."""
         return f"sqlite:///{self.database_path.as_posix()}"

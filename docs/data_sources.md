@@ -147,3 +147,7 @@ Cost data sources (fuel prices, exchange rates, navigation charges, airport
 tariffs and Part 4 financial benchmarks) are documented in
 [cost_data_sources.md](cost_data_sources.md). The Part 4 source register is
 `data/reference/cost_benchmark_sources.csv`.
+
+Part 5 benchmark sources (BTS Form 41 P-5.2 and T2, FAA Table 4-7, BLS
+indices) are documented in [cost_data_sources.md](cost_data_sources.md) §7
+and [bts_form41_methodology.md](bts_form41_methodology.md).

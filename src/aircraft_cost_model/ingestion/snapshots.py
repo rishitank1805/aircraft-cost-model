@@ -208,6 +208,34 @@ def download_snapshot(
     return snapshot
 
 
+def store_snapshot_bytes(content: bytes, raw_dir: Path, prefix: str, suffix: str, source_url: str, final_url: str,
+                         http_status: int, retrieved_at: datetime | None = None, etag: str | None = None,
+                         last_modified: str | None = None) -> RawSnapshot:
+    """Store an already-downloaded body (e.g. a form POST response) as an immutable snapshot.
+
+    Same naming, sidecar and identical-content reuse as :func:`download_snapshot`.
+    """
+    if not content:
+        raise DownloadError(f"Empty response body from {source_url}")
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    retrieved_at = retrieved_at or datetime.now(timezone.utc).replace(microsecond=0)
+    sha256 = hashlib.sha256(content).hexdigest()
+    previous = latest_snapshot(raw_dir, prefix, suffix)
+    if previous is not None and previous.sha256 == sha256:
+        return previous
+    stamp = retrieved_at.strftime("%Y%m%dT%H%M%SZ")
+    final_path = raw_dir / f"{prefix}_{stamp}_{sha256[:12]}{suffix}"
+    tmp_path = raw_dir / f".{final_path.name}.part"
+    tmp_path.write_bytes(content)
+    os.replace(tmp_path, final_path)
+    snapshot = RawSnapshot(path=final_path, source_url=source_url, final_url=final_url, retrieved_at=retrieved_at,
+                           sha256=sha256, size_bytes=len(content), http_status=http_status, etag=etag,
+                           last_modified=last_modified)
+    snapshot.meta_path.write_text(json.dumps(snapshot.to_json_dict(), indent=2), encoding="utf-8")
+    logger.info("snapshot_stored", extra={"path": final_path.name, "sha256": sha256, "size_bytes": len(content)})
+    return snapshot
+
+
 def _redact(text: str, names: tuple[str, ...], params: dict[str, str] | None = None) -> str:
     """Remove secret query parameters (e.g. API keys) from URLs and messages."""
     import re

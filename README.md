@@ -23,8 +23,8 @@ never silently filled.
 | 1 | **Data foundation**: airports, aircraft master data, provenance, SQLite | ✅ Implemented |
 | 2 | **Flight performance**: route distance, flight profile, block time, fuel burn via OpenAP | ✅ Implemented |
 | 3 | **Variable operating costs**: fuel (EIA benchmark + ECB FX), EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling, with explicit coverage | ✅ Implemented (8001a93) |
-| 4 | **Full operating costs**: maintenance, crew, insurance, leasing, depreciation, financing and indirect costs from cited benchmarks or explicit scenario assumptions; COC / TOC / Total with three separate quality dimensions | ✅ Implemented |
-| 5 | Analytics, scenarios, sensitivity analysis and validation | Not started |
+| 4 | **Full operating costs**: maintenance, crew, insurance, leasing, depreciation, financing and indirect costs from cited benchmarks or explicit scenario assumptions; COC / TOC / Total with three separate quality dimensions | ✅ Implemented (a920004) |
+| 5 | **Analytics and validation**: unit metrics (block hour, NM, cycle, RTNM), scenario and sensitivity analysis, route/aircraft/ownership comparisons, BTS Form 41 benchmarks, optional index adjustment, validation, CSV/JSON/PNG reports | ✅ Implemented (uncommitted, awaiting review) |
 
 ## Installation
 
@@ -118,6 +118,35 @@ costs**. The output reports:
 Results are economic cost estimates, not accounting expense. See
 [docs/full_cost_model.md](docs/full_cost_model.md).
 
+### Analytics and validation (Part 5)
+
+```bash
+python scripts/ingest_bts_benchmarks.py --years 2024 2025 2026          # BTS Form 41 P-5.2 + T2 (public domain)
+python scripts/ingest_price_indices.py --start-year 2021 --end-year 2026 --adjust-target-date 2025-01-15
+python scripts/calculate_unit_metrics.py --full-cost-estimate-id 1 --distance-basis modelled_route
+python scripts/run_sensitivity_analysis.py --full-cost-estimate-id 1 --distance-basis modelled_route \
+    --parameter fuel_price --percent-changes=-20,-10,0,10,20 --output data/output/fuel_sensitivity.csv
+python scripts/compare_cost_scenarios.py --flight-estimate-id 2 --variable-cost-estimate-id 2 --distance-basis modelled_route \
+    --scenario-files data/scenarios/example_owned_aircraft.json data/scenarios/example_operating_lease.json --ownership
+python scripts/validate_cost_estimates.py --full-cost-estimate-id 1
+python scripts/generate_cost_report.py --full-cost-estimate-id 1 --distance-basis modelled_route \
+    --ownership-scenario data/scenarios/example_operating_lease.json --output-dir data/output/reports/example
+```
+
+Estimate IDs above are those of the reference database. Look up your own,
+because a fresh installation has different IDs.
+
+- **Partial labels.** A partial cost per block hour, NM or cycle is labelled
+  *Partial*. Complete unit costs exist only when the complete total does.
+- **RTNM** needs an explicitly supplied revenue cargo payload; the Part 2
+  modelled payload is never used.
+- **Recalculation.** Scenario variations go through the Part 3/4 engines and
+  never overwrite saved estimates.
+- **Benchmarks.** Comparisons report `comparable`, `comparable_with_caveats`
+  or `not_comparable` with reasons; differences are not called model error.
+
+See [docs/analytics.md](docs/analytics.md).
+
 ### Database migrations
 
 The schema is managed with Alembic, and every script brings the database up to
@@ -142,6 +171,8 @@ Outputs:
 | `data/processed/flights/flight_estimate_<id>_<hash>.csv` | Per-time-step trajectory of saved flight estimates |
 | `data/reference/*.csv` | Version-controlled curated inputs and source registers (freighter targets, manufacturer documents, navigation, tariff and cost benchmark sources) |
 | `data/scenarios/*.json` | Version-controlled Part 4 cost scenarios (illustrative examples and a cited FAA benchmark) |
+| `data/raw/bts/`, `data/raw/price_indices/` | Raw BTS ZIP and BLS JSON snapshots (git-ignored) |
+| `data/output/` | Generated Part 5 reports, CSV/JSON exports and charts (git-ignored) |
 | `database/aircraft_costs.db` | SQLite database |
 
 ## Tests
@@ -162,6 +193,8 @@ databases. They need no internet access and never touch `database/aircraft_costs
 - [docs/full_cost_model.md](docs/full_cost_model.md): Part 4 taxonomy, completeness, the three dimensions, worked example
 - [docs/maintenance_costs.md](docs/maintenance_costs.md), [docs/crew_costs.md](docs/crew_costs.md), [docs/ownership_and_financing.md](docs/ownership_and_financing.md): Part 4 component methods
 - [docs/cost_assumptions.md](docs/cost_assumptions.md): scenario file schema, shipped scenarios, public financial sources
+- [docs/analytics.md](docs/analytics.md): Part 5 overview, dimensions, scripts, reproducibility
+- [docs/unit_cost_metrics.md](docs/unit_cost_metrics.md), [docs/scenario_analysis.md](docs/scenario_analysis.md), [docs/benchmark_validation.md](docs/benchmark_validation.md), [docs/bts_form41_methodology.md](docs/bts_form41_methodology.md), [docs/inflation_adjustment.md](docs/inflation_adjustment.md), [docs/reporting.md](docs/reporting.md): Part 5 methods
 - [docs/tariff_methodology.md](docs/tariff_methodology.md): EUROCONTROL, FRA/CDG and handling tariff rules
 - [docs/cost_data_sources.md](docs/cost_data_sources.md): EIA, ECB, EUROCONTROL and airport sources and licences
 - [docs/data_dictionary.md](docs/data_dictionary.md): every table and column
@@ -205,3 +238,12 @@ databases. They need no internet access and never touch `database/aircraft_costs
     It is applied unadjusted and is not freighter-specific.
   - No complete COC exists for the example flight, because the Part 3
     components are incomplete.
+- **Analytics inherit every gap above.**
+  - Unit costs for the example are partial.
+  - RTNM is unavailable without an explicit revenue cargo payload.
+  - The target freighters remain unsupported; BTS gives benchmark-only values
+    for them.
+  - Public benchmarks are U.S. carrier accounting expense, so comparisons
+    with European flights are at best `comparable_with_caveats`.
+  - Index adjustment uses proxy indices pending owner approval; maintenance
+    has no verified index.

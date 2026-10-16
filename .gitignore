@@ -21,6 +21,9 @@ data/processed/**/*
 # Locally extracted tariff parameters (source documents' reuse terms unclear; not redistributed)
 data/local/
 
+# Generated analytics outputs (reports, charts, CSV/JSON exports; reproducible via scripts/)
+data/output/
+
 # Database files
 database/*.db
 database/*.db-journal

@@ -1,7 +1,7 @@
 # Data dictionary
 
 SQLite database: `database/aircraft_costs.db`. The schema is managed by
-Alembic; the current revision is `0006_part4_full_costs`. All
+Alembic; the current revision is `0007_part5_analytics`. All
 timestamps are stored in UTC as timezone-naive `DATETIME`, because SQLite has
 no timezone type. "Required" means `NOT NULL`.
 
@@ -416,3 +416,133 @@ Unique on `(full_cost_estimate_id, component_name)`; cascades with its estimate.
 | part3_cost_component_id | INTEGER FK | no | → the original Part 3 `cost_component` (Part 3 components only) |
 | source_reference, calculation_method | TEXT | no | |
 | breakdown_json, assumptions_json, warnings_json | TEXT | yes | Steps, inputs used, warnings and missing inputs |
+
+## Part 5 tables (migration 0007)
+
+Decimal values use `DecimalText` (exact decimal strings). NULL means
+unavailable or undefined, never zero. Analytics runs are immutable; benchmark
+and index observations are kept per source snapshot.
+
+### `analytics_run`
+
+Unique on `input_hash`. Saving the same request again returns the existing run.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| analytics_run_id | INTEGER PK | yes | |
+| analysis_type | VARCHAR(40) | yes | `unit_metrics`, `sensitivity_1d`, `sensitivity_2d`, `comparison`, `ownership_comparison`, `validation` |
+| status | VARCHAR(30) | yes | `calculated`, or the validation status `pass` / `warn` / `fail` |
+| flight_estimate_id, variable_cost_estimate_id, full_cost_estimate_id | INTEGER FK | no | Source estimates |
+| base_scenario_id | INTEGER FK | no | → `cost_scenario` (never modified) |
+| pricing_date, reporting_currency | DATE, VARCHAR(3) | no | |
+| distance_basis, payload_basis | VARCHAR(30), TEXT | no | e.g. `modelled_route`; "revenue cargo payload not provided" |
+| coverage_status | VARCHAR(30) | yes | complete / partial / missing_required_input / unsupported / calculation_error |
+| operational_validity | VARCHAR(50) | no | Part 2 status, unchanged |
+| source_quality_summary | VARCHAR(200) | yes | |
+| parameters_json | TEXT | yes | Canonical request (incl. the input hashes of the source estimates) |
+| result_json | TEXT | yes | Canonical result (timestamps excluded); used for the reproducibility check |
+| warnings_json | TEXT | yes | |
+| calculation_version | VARCHAR(100) | yes | e.g. `analytics v1` |
+| input_hash | VARCHAR(64) | yes | SHA-256 of type + parameters + version |
+| created_at | DATETIME | yes | UTC |
+
+### `unit_cost_metric`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| metric_id | INTEGER PK | yes | |
+| analytics_run_id | INTEGER FK | yes | → `analytics_run` (cascade) |
+| case_label, flight_estimate_id | VARCHAR(200), INTEGER FK | label yes | |
+| metric_name, label | VARCHAR(60), VARCHAR(120) | yes | e.g. `coc_per_block_hour`, "Partial COC per block hour" |
+| cost_basis, cost_measure | VARCHAR(30) | yes | basis (`direct_variable` … `total_costs`); `calculated_subtotal` or `complete_total` |
+| numerator_amount, denominator_value, metric_value | DecimalText | no | Exact; NULL when unavailable or undefined |
+| currency, denominator_unit, metric_unit | VARCHAR | yes | e.g. EUR, `block_hour`, `EUR/block_hour` |
+| denominator_basis | TEXT | yes | e.g. distance basis and source |
+| metric_status | VARCHAR(20) | yes | `calculated`, `unavailable`, `undefined` |
+| coverage_status, operational_validity, source_quality | VARCHAR | yes | The three dimensions |
+| pricing_date | DATE | yes | |
+| fx_basis, payload_basis, calculation_method | TEXT | fx/method yes | |
+| components_json, warnings_json | TEXT | yes | Included and missing components; warnings |
+
+### `scenario_result`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| scenario_result_id | INTEGER PK | yes | |
+| analytics_run_id | INTEGER FK | yes | → `analytics_run` (cascade) |
+| label | VARCHAR(300) | yes | e.g. `fuel_price +10%` |
+| variations_json, modified_values_json | TEXT | yes | Parameter, change type and value; for each modified input: path, original and new value, unit, original and new source type |
+| variant_scenario_id | INTEGER FK | no | → `cost_scenario` row of the variant (new content hash; NULL when the base is reproduced) |
+| status | VARCHAR(30) | yes | `calculated` / `calculation_error` |
+| fuel_cost, direct_variable_subtotal, cash_operating_subtotal, total_operating_subtotal, total_cost_subtotal | DecimalText | no | Calculated subtotals |
+| complete_coc, complete_toc, complete_total_costs | DecimalText | no | Only when complete |
+| components_json, deltas_json | TEXT | yes | Component amounts and statuses; absolute and percent deltas versus the base (NULL when withheld) |
+| coverage_status, operational_validity, source_quality | VARCHAR | coverage yes | |
+| calculated_at | VARCHAR(40) | yes | UTC timestamp of the recalculation |
+| input_hash, warnings_json | VARCHAR(64), TEXT | yes | |
+
+### `benchmark_observation`
+
+Unique on (source_id, benchmark_source, carrier_code, aircraft_type_code,
+aircraft_config, region, period_label, cost_category).
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| benchmark_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` (P-5.2 snapshot, or the FAA reference CSV) |
+| traffic_source_id | INTEGER FK | no | → `data_source` (T2 snapshot) |
+| benchmark_source, source_table | VARCHAR | yes | `bts_form41_p52_t2` or `faa_econ_values_s4_t4_7` |
+| carrier_code, carrier_name, carrier_group | VARCHAR | code yes | BTS unique carrier; FAA: `US_P121_PAX` |
+| operation_scope | VARCHAR(40) | yes | `passenger_configuration`, `freight_configuration_all_cargo_carrier`, `freight_configuration_mixed_carrier`, `combi_configuration` |
+| aircraft_type_code, aircraft_type_description, aircraft_config | VARCHAR | code/config yes | BTS codes (e.g. 694, config 1); FAA class `NB165K` |
+| region | VARCHAR(5) | yes | BTS reporting region (D, A, L, P, I, S); FAA `US` |
+| period_label, period_start, period_end | VARCHAR, DATE | yes | e.g. `2025Q1`; FAA `YE2023Q2` |
+| cost_category | VARCHAR(40) | yes | See bts_form41_methodology.md §3 |
+| amount | DecimalText | no | Source currency (USD); NULL when a required account is blank |
+| currency | VARCHAR(3) | yes | |
+| block_hours, airborne_hours, departures, revenue_tonne_nm, available_tonne_nm, aircraft_miles_nm | DecimalText | no | Converted denominators (FAA: block_hours = 1) |
+| source_fields, methodology | TEXT | yes | Accounts summed; derivation |
+| quality_status, quality_notes | VARCHAR, TEXT | status yes | `ok`, `low_hours`, `no_traffic_match`, `missing_fields`, `negative_amount`, `hours_mismatch`, `region_mismatch`, `partial_quarter` |
+| created_at | DATETIME | yes | |
+
+### `price_index_observation`
+
+Unique on (source_id, series_id, period).
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| index_observation_id | INTEGER PK | yes | |
+| source_id | INTEGER FK | yes | → `data_source` (BLS API snapshot) |
+| series_id, series_title | VARCHAR | id yes | e.g. `CIU2014300000000I` |
+| period, period_start, period_end | VARCHAR(10), DATE | yes | e.g. `2024-Q03`, `2024-M11` |
+| value | DecimalText | yes | As published |
+| preliminary | BOOLEAN | yes | BLS footnote `P` |
+| footnotes | TEXT | no | |
+
+### `benchmark_adjustment`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| adjustment_id | INTEGER PK | yes | |
+| benchmark_id | INTEGER FK | yes | → `benchmark_observation` (never modified) |
+| status | VARCHAR(20) | yes | `adjusted` / `unavailable` |
+| original_amount, original_currency, original_period | | currency/period yes | |
+| index_series_id, index_source_id | VARCHAR, INTEGER FK | series yes | Empty series and NULL source when no verified index exists |
+| base_period, base_index, target_period, target_index, factor, adjusted_amount | VARCHAR / DecimalText | no | adjusted = original × factor; factor = target / base |
+| target_date | DATE | yes | |
+| methodology, reason | TEXT | methodology yes | Windows, publication-lag rule, suitability label, reason when unavailable |
+| created_at | DATETIME | yes | |
+
+### `benchmark_comparison`
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| comparison_id | INTEGER PK | yes | |
+| analytics_run_id | INTEGER FK | yes | → `analytics_run` (cascade) |
+| model_metric, model_value, model_unit | | metric/unit yes | e.g. `fuel_per_block_hour`, EUR/block_hour |
+| benchmark_metric, benchmark_value, benchmark_value_converted, benchmark_unit | | metric/unit yes | Original currency value and converted value |
+| benchmark_selection_json | TEXT | yes | Selection, rows used and excluded, carriers, periods, stage length, adjustment |
+| comparability | VARCHAR(30) | yes | `comparable`, `comparable_with_caveats`, `not_comparable` |
+| checks_json, reasons_json | TEXT | yes | Every check with its result; failure reasons |
+| absolute_difference, percentage_difference | DecimalText | no | NULL when not comparable (percent also NULL when the benchmark is 0) |
+| fx_basis | TEXT | no | |

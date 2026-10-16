@@ -11,14 +11,11 @@ total costs, RTNM and cost per RTNM from freely accessible public data.
 3. **Variable operating costs**: fuel, EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling. **COMPLETED** (approved; commit `8001a93` on `feature/part-3-variable-costs`)
 4. **Full operating costs**: maintenance, crew, insurance, leasing, depreciation, financing and
    indirect costs from cited benchmarks or explicit scenario assumptions; COC/TOC/Total.
-   **COMPLETED** (approved subject to final checks; committed on `feature/part-4-full-operating-costs`)
-5. Analytics, scenarios, sensitivity analysis, validation against public airline financials.
-   Carried over from the Part 4 review: BTS Form 41 (P-5.2 + T-2) is the priority benchmarking
-   source, especially for all-cargo carriers; optional benchmark inflation adjustment only with a
-   verified public index and documented original/target periods (originals never overwritten).
-
-**Do not start a later part without explicit approval from the project owner.** Part 5 must not
-start until the owner approves Part 4 and provides the Task 5 instructions.
+   **COMPLETED** (commit `a920004` on `feature/part-4-full-operating-costs`)
+5. **Analytics and validation**: unit metrics, scenario/sensitivity analysis, comparisons, BTS Form
+   41 benchmarks, optional index adjustment, validation, reports. **IMPLEMENTED, uncommitted on
+   `feature/part-5-analytics-validation`, awaiting owner review.** This is the final planned phase
+   of the initial model; do not start further phases without new owner instructions.
 
 ## Owner decisions in force (recorded after Part 3 approval)
 1. **Germany 2025 terminal navigation:** rules and rate stay `pending_review` and are not
@@ -36,9 +33,20 @@ start until the owner approves Part 4 and provides the Task 5 instructions.
    `origin/main`).
 6. **Part 4 requirement:** report cost-component coverage, the validity of the underlying
    flight-performance estimate, and source/assumption quality as **separate** dimensions.
-7. **Preservation:** keep all Part 1–3 data, migrations (`0001`–`0006`), historical estimates
+7. **Preservation:** keep all Part 1–3 data, migrations (`0001`–`0007`), historical estimates
    (including `v1` flight estimates and the 4-component cost estimate #1) and source
    provenance. Back up the database before any migration.
+
+### Recorded at Part 4 approval
+8. **FAA benchmarks:** keep the published FAA Table 4-7 figures unchanged. Index adjustment only
+   with a verified public index and documented original/target periods. Adjusted values are
+   separate records (Part 5: crew/insurance proxies pending approval; maintenance unavailable).
+9. **BTS Form 41** was the priority Part 5 benchmarking source, especially for all-cargo carriers
+   (implemented in Part 5 for P-5.2 + T2).
+10. **Illustrative scenario values** stay clearly labelled; real lease, insurance and acquisition
+    values are not required.
+11. **Source classification:** EIA jet fuel is a `public_market_benchmark`, never an observed
+    airline expense.
 
 ## Stack
 Python ≥ 3.11, pandas, NumPy, requests, SQLAlchemy 2 + SQLite, Alembic,
@@ -142,6 +150,26 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
 - Results are economic costs, not accounting expense: LLP is an accrual,
   principal repayment is excluded, and FAA depreciation/rental fleet blends
   are not used.
+
+### Part 5 (analytics)
+- Analytics transform, compare and validate saved estimates. Never put cost formulas in
+  `analytics/`; recalculate through the Part 3 fuel engine or the Part 4 calculator.
+- Never mutate saved estimates, scenario files or saved scenario rows. Variants are new
+  scenarios (new content hash); analytics runs are immutable and keyed by input hash.
+- A partial subtotal divided by any denominator is a *partial* unit cost and must be labelled
+  so. Complete unit costs need complete totals.
+- RTNM needs an explicit revenue cargo payload. Never use the Part 2 modelled payload. For a
+  passenger scenario only an explicitly labelled hypothetical cargo payload is accepted. Zero
+  payload gives an undefined (not zero) cost per RTNM.
+- Distance bases (`great_circle`, `modelled_route`, `actual_flown`) are explicit and never mixed.
+- Benchmarks: never invent BTS observations or index values. Use only `ok`-quality BTS rows by
+  default. Never divide fleet-level (type 999) expenses by a type denominator. Report
+  `not_comparable` with reasons rather than a deviation. Never call a difference against a
+  differently defined benchmark a model error.
+- Index adjustments never modify the original benchmark. Categories without a verified index
+  stay `unavailable`. The crew/insurance proxy indices are pending owner approval.
+- BTS and BLS data are public domain (citation required). Do not bypass access controls: BLS
+  bulk files returned 403 and are not used.
 
 ## Testing
 - `pytest` must pass before claiming completion. Never claim results for tests

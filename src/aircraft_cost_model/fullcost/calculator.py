@@ -78,7 +78,14 @@ def _maintenance_modelled(scenario: Scenario) -> bool:
 
 
 def calculate_full_costs(session: Session, flight_estimate_id: int, variable_cost_estimate_id: int,
-                         scenario: Scenario, fx: RateProvider | None = None) -> FullCostResult:
+                         scenario: Scenario, fx: RateProvider | None = None,
+                         part3_overrides: dict[str, ComponentResult] | None = None) -> FullCostResult:
+    """Combine the saved Part 3 components with Part 4 components priced from ``scenario``.
+
+    ``part3_overrides`` (Part 5 analytics only) replaces named Part 3
+    components with results recalculated by the Part 3 engine, e.g. fuel at a
+    varied price. Overrides enter the input hash; saved rows are never changed.
+    """
     flight = session.get(FlightEstimate, flight_estimate_id)
     if flight is None:
         raise FullCostInputError(f"flight_estimate_id {flight_estimate_id} does not exist")
@@ -113,6 +120,15 @@ def calculate_full_costs(session: Session, flight_estimate_id: int, variable_cos
     rows = {c.component_name: c for c in session.scalars(
         select(CostComponent).where(CostComponent.variable_cost_estimate_id == variable.variable_cost_estimate_id))}
     components: dict[str, ComponentResult] = {n: _part3_result(rows.get(n), n, variable) for n in PART3_COMPONENTS}
+    overrides = dict(part3_overrides or {})
+    unknown = set(overrides) - set(PART3_COMPONENTS)
+    if unknown:
+        raise FullCostInputError(f"part3_overrides may only replace Part 3 components, not {sorted(unknown)}")
+    for name, result in overrides.items():
+        if result.currency != variable.reporting_currency or result.pricing_date != variable.pricing_date:
+            raise FullCostInputError(f"override for {name} must use {variable.reporting_currency} and "
+                                     f"{variable.pricing_date}")
+    components.update(overrides)
     components.update({
         "airframe_maintenance": maintenance.airframe_maintenance(scenario, basis, fx),
         "engine_maintenance": maintenance.engine_maintenance(scenario, basis, fx),
@@ -136,7 +152,9 @@ def calculate_full_costs(session: Session, flight_estimate_id: int, variable_cos
     summary = FullCostSummary(components, basis.reporting_currency, basis.operational_validity)
     payload = {"flight": flight_estimate_id, "variable": variable_cost_estimate_id, "variable_hash": variable.input_hash,
                "scenario": scenario.content_hash, "version": CALCULATION_VERSION,
+               **({"part3_overrides": sorted(overrides)} if overrides else {}),
                "components": {n: c.to_dict() for n, c in sorted(components.items())}}
     input_hash = hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
     return FullCostResult(flight_estimate_id, variable_cost_estimate_id, scenario, basis, summary,
-                          {n: (rows[n].cost_component_id if n in rows else None) for n in PART3_COMPONENTS}, input_hash)
+                          {n: (rows[n].cost_component_id if n in rows and n not in overrides else None)
+                           for n in PART3_COMPONENTS}, input_hash)

@@ -284,8 +284,9 @@ def test_0006_is_additive_and_preserves_part3_rows(tmp_path):
             "'verified_against_source', 'en_route', 'sqrt_mtow_over_50', '2026-10-15', '2026-10-15')"))
     assert not PART4_TABLES & set(inspect(engine).get_table_names())
     engine.dispose()
-    assert migrate_database(url)["to"] == "0006_part4_full_costs" == head_revision()
+    command.upgrade(_alembic_config(url), "0006_part4_full_costs")
     engine = create_db_engine(url)
+    assert current_revision(engine) == "0006_part4_full_costs"
     assert PART4_TABLES <= set(inspect(engine).get_table_names())
     with engine.connect() as conn:
         assert conn.execute(text("SELECT unit_rate FROM navigation_rate")).scalar_one() == "100.12345"

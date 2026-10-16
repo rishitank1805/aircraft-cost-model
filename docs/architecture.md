@@ -1,4 +1,4 @@
-# Architecture (Parts 1–4: data foundation, flight performance, variable costs, full operating costs)
+# Architecture (Parts 1–5: data foundation, flight performance, variable costs, full operating costs, analytics)
 
 ## Components
 
@@ -13,18 +13,20 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs` |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs`, `0007_part5_analytics` |
 | `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
 | `costs/*` | Part 3: pricing-date policy, ECB currency conversion, fuel cost, EUROCONTROL route charges, airport movement-charge engine, ground handling, coverage and aggregation, persistence (see [variable_cost_model.md](variable_cost_model.md)) |
 | `fullcost/*` | Part 4: scenario schema and validation (`scenario.py`), shared input reader and allocation (`common.py`), maintenance, crew, insurance, ownership/financing and indirect components, taxonomy aggregation with the three dimensions (`aggregate.py`), orchestration (`calculator.py`) and persistence (see [full_cost_model.md](full_cost_model.md)) |
+| `analytics/*` | Part 5: cost cases, unit metrics, scenario variations (recalculated through Part 3/4 engines), sensitivity, comparisons, BTS/FAA benchmarks and comparability, index adjustment, validation, reporting, immutable run persistence (see [analytics.md](analytics.md)) |
+| `ingestion/bts_form41.py`, `processing/bts_form41.py`, `ingestion/price_indices.py` | BTS TranStats P-5.2 + T2 snapshots and benchmark records; BLS API index observations |
 | `data/scenarios/*.json` | Version-controlled cost scenarios: illustrative examples and a cited FAA benchmark scenario |
 | `ingestion/snapshots.py` | Generic immutable snapshot downloader (temporary file, SHA-256, atomic rename, sidecar), used for OurAirports, EIA and ECB |
 | `ingestion/fuel_prices.py`, `exchange_rates.py`, `airport_tariffs.py` | EIA XLS/API parsing, ECB CSV parsing, reviewed EUROCONTROL CSV and local airport tariff loading |
 | `validation/cost_validator.py` | Observation and unit-rate validation (positivity, units, duplicates, overlapping validity) |
 | `models/types.py` | `DecimalText`: exact decimal storage for money in SQLite |
-| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources, cost benchmark sources (`cost_benchmark_sources.csv`) |
+| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources, cost benchmark sources (`cost_benchmark_sources.csv`), FAA Table 4-7 values, BTS aircraft-type mapping, benchmark index mapping |
 | `data/local/` (git-ignored) | Locally transcribed rates and tariff values whose source terms do not permit (commercial) redistribution: EUROCONTROL/DFS navigation rates, Fraport tariff |
-| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`, `calculate_variable_costs`, `calculate_full_costs`) |
+| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`, `calculate_variable_costs`, `calculate_full_costs`, `calculate_unit_metrics`, `run_sensitivity_analysis`, `compare_cost_scenarios`, `generate_cost_report`, `validate_cost_estimates`) |
 
 ## Data flow
 
@@ -176,6 +178,15 @@ erDiagram
     variable_cost_estimate ||--o{ full_cost_estimate : "exact Part 3 result"
     full_cost_estimate ||--|{ full_cost_component : "17 components"
     cost_component ||--o{ full_cost_component : "part3_cost_component_id"
+    full_cost_estimate ||--o{ analytics_run : "base estimate"
+    cost_scenario ||--o{ analytics_run : "base scenario"
+    analytics_run ||--o{ unit_cost_metric : "metrics"
+    analytics_run ||--o{ scenario_result : "variations"
+    cost_scenario ||--o{ scenario_result : "variant scenario (immutable)"
+    analytics_run ||--o{ benchmark_comparison : "comparisons"
+    data_source ||--o{ benchmark_observation : "BTS/FAA snapshot"
+    benchmark_observation ||--o{ benchmark_adjustment : "index-adjusted copies"
+    data_source ||--o{ price_index_observation : "BLS snapshot"
 ```
 
 - `route` stores only stable airport-pair facts: the great-circle distance and
@@ -221,6 +232,22 @@ flowchart LR
     ER[(exchange_rate)] --> CALC4
     CALC4 --> COMP[maintenance, crew, insurance, ownership, financing, indirect] --> AGG4[taxonomy: DV, DF, indirect, COC, TOC, total + 3 dimensions]
     AGG4 --> FCE[(cost_scenario, cost_assumption, full_cost_estimate, full_cost_component)]
+```
+
+## Part 5 data flow
+
+```mermaid
+flowchart LR
+    FCE[(full_cost_estimate + components)] --> CASE[CostCase: saved rows as stored]
+    CASE --> UM[unit metrics] --> RUN[(analytics_run + unit_cost_metric)]
+    CASE --> VAR[scenario variation] --> P3[Part 3 fuel engine] & P4[Part 4 calculator] --> SENS[sensitivity / grid] --> SR[(scenario_result + variant cost_scenario)]
+    CASE --> CMP[comparisons / owned vs leased / common components]
+    BTS[TranStats P-5.2 + T2 ZIP] --> SNAP[raw snapshot] --> JOIN[join service class Z, convert units, flag quality] --> BO[(benchmark_observation)]
+    FAA[FAA Table 4-7 CSV] --> BO
+    BLS[BLS API JSON] --> PIO[(price_index_observation)] --> ADJ[(benchmark_adjustment)]
+    BO --> COMP[comparability checks] --> BC[(benchmark_comparison)]
+    CASE --> VAL[validation A-D] --> COMP
+    RUN & SR & BC --> REP[console / CSV / JSON / PNG + manifest]
 ```
 
 ## Part 2 data flow

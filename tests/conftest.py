@@ -294,3 +294,34 @@ def scenario_from(data: dict):
     from aircraft_cost_model.fullcost.scenario import parse_scenario
 
     return parse_scenario(_copy.deepcopy(data))
+
+
+# ---------------------------------------------------------------------------
+# Part 5 fixtures (saved Part 3 + Part 4 estimates for the A320 FRA->CDG example; real BTS/BLS excerpts)
+# ---------------------------------------------------------------------------
+
+BTS_FIXTURES = FIXTURES / "bts"
+BLS_FIXTURES = FIXTURES / "bls"
+
+
+@pytest.fixture
+def analytics_db(cost_db, owned_scenario_data):
+    """cost_db + a saved v2 Part 3 estimate (2025-01-15) + a saved owned full-cost estimate.
+
+    Returns ``(engine, ids)``; ids are looked up from the save calls, never assumed.
+    """
+    from aircraft_cost_model.costs.calculator import VariableCostRequest, calculate_variable_costs
+    from aircraft_cost_model.costs.persistence import save_variable_cost_estimate
+    from aircraft_cost_model.fullcost.calculator import calculate_full_costs
+    from aircraft_cost_model.fullcost.persistence import save_full_cost_estimate
+    from sqlalchemy.orm import Session
+
+    engine = create_db_engine(cost_db)
+    with Session(engine) as session:
+        variable = calculate_variable_costs(session, VariableCostRequest(1, date(2025, 1, 15)))
+    variable_id = save_variable_cost_estimate(engine, variable)
+    with Session(engine) as session:
+        full = calculate_full_costs(session, 1, variable_id, scenario_from(owned_scenario_data))
+    full_id = save_full_cost_estimate(engine, full)
+    yield engine, {"flight": 1, "variable": variable_id, "full": full_id, "db": cost_db}
+    engine.dispose()

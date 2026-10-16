@@ -1,4 +1,4 @@
-# Cost data sources (Parts 3–4)
+# Cost data sources (Parts 3–5)
 
 Checked on 2026-10-15. Retrieval timestamps and checksums of each load are
 stored in `data_source` and in the raw snapshot sidecars
@@ -95,9 +95,22 @@ limitations and verification status. Rationale for each source is in
 | Source | Licence | Status |
 |---|---|---|
 | FAA, *Economic Values for FAA Investment and Regulatory Decisions*, Section 4 (2024 update), Table 4-7 (YE June 2023, USD/block hour) | US Government work | **Used**: three cited values in `data/scenarios/benchmark_faa_us_narrowbody_partial.json`: maintenance 954, crew 1,378, insurance 6 (US Part 121 passenger narrowbody ≥165k lb). Depreciation and rentals are not used because they are owned/leased fleet blends. |
-| BTS Form 41 Schedule P-5.2 (TranStats) | US Government work | Registered, not ingested. **Priority Part 5 benchmarking source**, particularly for all-cargo carriers: carrier accounting expense in $000 per quarter; needs T-2 block hours and carrier/type mapping |
+| BTS Form 41 Schedule P-5.2 (TranStats) | US Government work | **Ingested in Part 5** (2024Q1–2026Q2) with T2 traffic; see §7 |
 | BLS OEWS 53-2011, national annual mean wage (May 2025: 288,650 USD), via the official API | US Government work | Registered, not used: wage only, all US pilots |
 | Lease rates, insurance premiums, aircraft market values, LLP and maintenance reserves | n/a | No reusable public source; must be user-supplied |
 
 Part 4 adds no EUROCONTROL, DFS, Fraport or manufacturer data. Part 3's
 restrictions on redistribution and commercial use remain in force.
+
+## 7. Part 5 benchmark and index sources
+
+| Source | Licence | Status |
+|---|---|---|
+| BTS TranStats Form 41 **Schedule P-5.2** (table FMK) and Air Carrier Summary **T2** (table FIH) | Public domain; citation required | **Ingested**: 2024Q1–2026Q2. Raw ZIP snapshots byte for byte in git-ignored `data/raw/bts/`; 52,080 benchmark observations; real excerpts as test fixtures. Method: [bts_form41_methodology.md](bts_form41_methodology.md) |
+| FAA Economic Values Table 4-7 (three Part 4 values) | US Government work | Loaded as `benchmark_observation` from `data/reference/faa_economic_values_table_4_7.csv`; originals preserved |
+| BLS ECI **CIU2014300000000I** and PPI **PCU524126524126** (official BLS API v2) | Public domain | Loaded (2021–2026). Used only for **proxy** index adjustment of the FAA crew and insurance values, pending owner approval. See [inflation_adjustment.md](inflation_adjustment.md) |
+| Aircraft-maintenance price index | — | **None verified.** PCU488190488190 was reported non-existent by the BLS API on 2026-10-15; maintenance adjustment is unavailable |
+| BLS bulk files (download.bls.gov) | — | HTTP 403 (access denied) to scripted access; **not used, not bypassed** |
+
+Part 5 adds no EUROCONTROL, DFS, Fraport or manufacturer data. The register
+is `data/reference/cost_benchmark_sources.csv`.
