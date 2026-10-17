@@ -1,0 +1,450 @@
+{
+  "analysis_type": "sensitivity_1d",
+  "base": {
+    "components_affected": [],
+    "cost_coverage": "incomplete",
+    "coverage_changed": [],
+    "delta_abs": {},
+    "delta_pct": {},
+    "error": null,
+    "label": "base",
+    "modified": [],
+    "notes": [],
+    "operational_validity": "calculated_limits_unverified",
+    "outputs": {
+      "coc": "3946.08",
+      "coc_per_block_hour": "3294.870028063808967872076150",
+      "coc_per_nautical_mile": "16.31896360437264540294355637",
+      "coc_per_revenue_tonne_nm": null,
+      "complete_coc": null,
+      "complete_toc": null,
+      "complete_total_costs": null,
+      "direct_variable": "2768.21",
+      "fuel": "1788.05",
+      "toc": "4844.31",
+      "total_costs": "5443.13"
+    },
+    "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+    "status": "calculated",
+    "variations": [],
+    "warnings": [
+      "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+    ]
+  },
+  "currency": "EUR",
+  "parameters": [
+    "annual_utilization"
+  ],
+  "rows": [
+    {
+      "components_affected": [
+        "depreciation",
+        "financing_interest",
+        "general_administrative",
+        "insurance"
+      ],
+      "cost_coverage": "incomplete",
+      "coverage_changed": [],
+      "delta_abs": {
+        "coc": "119.77",
+        "coc_per_block_hour": "100.004709296619024470370231",
+        "coc_per_nautical_mile": "0.49530731026631790027332181",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0.00",
+        "fuel": "0.00",
+        "toc": "344.33",
+        "total_costs": "494.04"
+      },
+      "delta_pct": {
+        "coc": "3.035164010866480152455094676",
+        "coc_per_block_hour": "3.035164010866480152455094681",
+        "coc_per_nautical_mile": "3.035164010866480152455094648",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0",
+        "fuel": "0",
+        "toc": "7.107926619064428164176115897",
+        "total_costs": "9.076395382803644226759235954"
+      },
+      "error": null,
+      "label": "annual_utilization -20%",
+      "modified": [
+        {
+          "modified_value": "2400.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "3000",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_aircraft_block_hours",
+          "source_type": "user_assumption",
+          "unit": "block_hour/year"
+        },
+        {
+          "modified_value": "1200.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "1500",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_flights",
+          "source_type": "user_assumption",
+          "unit": "flight/year"
+        }
+      ],
+      "notes": [],
+      "operational_validity": "calculated_limits_unverified",
+      "outputs": {
+        "coc": "4065.85",
+        "coc_per_block_hour": "3394.874737360427992342446381",
+        "coc_per_nautical_mile": "16.81427091463896330321687818",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "2768.21",
+        "fuel": "1788.05",
+        "toc": "5188.64",
+        "total_costs": "5937.17"
+      },
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "calculated",
+      "variations": [
+        {
+          "change": "-20",
+          "change_type": "percent",
+          "parameter": "annual_utilization"
+        }
+      ],
+      "warnings": [
+        "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+      ]
+    },
+    {
+      "components_affected": [
+        "depreciation",
+        "financing_interest",
+        "general_administrative",
+        "insurance"
+      ],
+      "cost_coverage": "incomplete",
+      "coverage_changed": [],
+      "delta_abs": {
+        "coc": "53.23",
+        "coc_per_block_hour": "44.445609717450368811537175",
+        "coc_per_nautical_mile": "0.22013198735473074919887217",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0.00",
+        "fuel": "0.00",
+        "toc": "153.04",
+        "total_costs": "219.58"
+      },
+      "delta_pct": {
+        "coc": "1.348933625268621011231399262",
+        "coc_per_block_hour": "1.348933625268621011231399278",
+        "coc_per_nautical_mile": "1.348933625268621011231399242",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0",
+        "fuel": "0",
+        "toc": "3.159170243027386769219971472",
+        "total_costs": "4.034075982017699375175680169"
+      },
+      "error": null,
+      "label": "annual_utilization -10%",
+      "modified": [
+        {
+          "modified_value": "2700.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "3000",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_aircraft_block_hours",
+          "source_type": "user_assumption",
+          "unit": "block_hour/year"
+        },
+        {
+          "modified_value": "1350.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "1500",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_flights",
+          "source_type": "user_assumption",
+          "unit": "flight/year"
+        }
+      ],
+      "notes": [],
+      "operational_validity": "calculated_limits_unverified",
+      "outputs": {
+        "coc": "3999.31",
+        "coc_per_block_hour": "3339.315637781259336683613325",
+        "coc_per_nautical_mile": "16.53909559172737615214242854",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "2768.21",
+        "fuel": "1788.05",
+        "toc": "4997.35",
+        "total_costs": "5662.71"
+      },
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "calculated",
+      "variations": [
+        {
+          "change": "-10",
+          "change_type": "percent",
+          "parameter": "annual_utilization"
+        }
+      ],
+      "warnings": [
+        "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+      ]
+    },
+    {
+      "components_affected": [],
+      "cost_coverage": "incomplete",
+      "coverage_changed": [],
+      "delta_abs": {
+        "coc": "0.00",
+        "coc_per_block_hour": "0.000000000000000000000000",
+        "coc_per_nautical_mile": "0.00000000000000000000000000",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0.00",
+        "fuel": "0.00",
+        "toc": "0.00",
+        "total_costs": "0.00"
+      },
+      "delta_pct": {
+        "coc": "0",
+        "coc_per_block_hour": "0",
+        "coc_per_nautical_mile": "0",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0",
+        "fuel": "0",
+        "toc": "0",
+        "total_costs": "0"
+      },
+      "error": null,
+      "label": "annual_utilization 0%",
+      "modified": [],
+      "notes": [],
+      "operational_validity": "calculated_limits_unverified",
+      "outputs": {
+        "coc": "3946.08",
+        "coc_per_block_hour": "3294.870028063808967872076150",
+        "coc_per_nautical_mile": "16.31896360437264540294355637",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "2768.21",
+        "fuel": "1788.05",
+        "toc": "4844.31",
+        "total_costs": "5443.13"
+      },
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "calculated",
+      "variations": [
+        {
+          "change": "0",
+          "change_type": "percent",
+          "parameter": "annual_utilization"
+        }
+      ],
+      "warnings": [
+        "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+      ]
+    },
+    {
+      "components_affected": [
+        "depreciation",
+        "financing_interest",
+        "general_administrative",
+        "insurance"
+      ],
+      "cost_coverage": "incomplete",
+      "coverage_changed": [],
+      "delta_abs": {
+        "coc": "-43.55",
+        "coc_per_block_hour": "-36.363071636200705649867442",
+        "coc_per_nautical_mile": "-0.18010047058610791147117947",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0.00",
+        "fuel": "0.00",
+        "toc": "-125.20",
+        "total_costs": "-179.64"
+      },
+      "delta_pct": {
+        "coc": "-1.103626890483720553055183879",
+        "coc_per_block_hour": "-1.103626890483720553055183872",
+        "coc_per_nautical_mile": "-1.103626890483720553055183883",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0",
+        "fuel": "0",
+        "toc": "-2.584475394844673441625329510",
+        "total_costs": "-3.300306992484103815268053491"
+      },
+      "error": null,
+      "label": "annual_utilization +10%",
+      "modified": [
+        {
+          "modified_value": "3300.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "3000",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_aircraft_block_hours",
+          "source_type": "user_assumption",
+          "unit": "block_hour/year"
+        },
+        {
+          "modified_value": "1650.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "1500",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_flights",
+          "source_type": "user_assumption",
+          "unit": "flight/year"
+        }
+      ],
+      "notes": [],
+      "operational_validity": "calculated_limits_unverified",
+      "outputs": {
+        "coc": "3902.53",
+        "coc_per_block_hour": "3258.506956427608262222208708",
+        "coc_per_nautical_mile": "16.13886313378653749147237690",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "2768.21",
+        "fuel": "1788.05",
+        "toc": "4719.11",
+        "total_costs": "5263.49"
+      },
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "calculated",
+      "variations": [
+        {
+          "change": "10",
+          "change_type": "percent",
+          "parameter": "annual_utilization"
+        }
+      ],
+      "warnings": [
+        "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+      ]
+    },
+    {
+      "components_affected": [
+        "depreciation",
+        "financing_interest",
+        "general_administrative",
+        "insurance"
+      ],
+      "cost_coverage": "incomplete",
+      "coverage_changed": [],
+      "delta_abs": {
+        "coc": "-79.83",
+        "coc_per_block_hour": "-66.655889982041385350836232",
+        "coc_per_nautical_mile": "-0.33013594872305383634315171",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0.00",
+        "fuel": "0.00",
+        "toc": "-229.53",
+        "total_costs": "-329.33"
+      },
+      "delta_pct": {
+        "coc": "-2.023020313830434253740420873",
+        "coc_per_block_hour": "-2.023020313830434253740420868",
+        "coc_per_nautical_mile": "-2.023020313830434253740420865",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "0",
+        "fuel": "0",
+        "toc": "-4.738136081299503954123497464",
+        "total_costs": "-6.050379101730070749734068450"
+      },
+      "error": null,
+      "label": "annual_utilization +20%",
+      "modified": [
+        {
+          "modified_value": "3600.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "3000",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_aircraft_block_hours",
+          "source_type": "user_assumption",
+          "unit": "block_hour/year"
+        },
+        {
+          "modified_value": "1800.0",
+          "note": "illustrative variation level, not a forecast",
+          "original_source_type": "illustrative_assumption",
+          "original_value": "1500",
+          "parameter": "annual_utilization",
+          "path": "utilization.annual_flights",
+          "source_type": "user_assumption",
+          "unit": "flight/year"
+        }
+      ],
+      "notes": [],
+      "operational_validity": "calculated_limits_unverified",
+      "outputs": {
+        "coc": "3866.25",
+        "coc_per_block_hour": "3228.214138081767582521239918",
+        "coc_per_nautical_mile": "15.98882765564959156660040466",
+        "coc_per_revenue_tonne_nm": null,
+        "complete_coc": null,
+        "complete_toc": null,
+        "complete_total_costs": null,
+        "direct_variable": "2768.21",
+        "fuel": "1788.05",
+        "toc": "4614.78",
+        "total_costs": "5113.80"
+      },
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "calculated",
+      "variations": [
+        {
+          "change": "20",
+          "change_type": "percent",
+          "parameter": "annual_utilization"
+        }
+      ],
+      "warnings": [
+        "revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)"
+      ]
+    }
+  ],
+  "statement": "Deterministic scenario outcomes for user-chosen input levels; not forecasts and not probability estimates."
+}

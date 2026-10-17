@@ -1,0 +1,18 @@
+category,component,amount,currency,status,source_type,source_quality,source_reference,pricing_date
+direct_variable,fuel,1788.05,EUR,calculated_benchmark,public_market_benchmark,public_market_benchmark,"U.S. Energy Information Administration (EIA) / eia_EER_EPJK_PF4_RGC_DPG_daily (Wed, 07 Oct 2026 13:16:58 GMT)",2025-01-15
+direct_variable,airframe_maintenance,459.29,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+direct_variable,engine_maintenance,220.87,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+direct_variable,engine_llp,200.00,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+direct_variable,navigation,,EUR,unavailable_route_geometry,none,none,,2025-01-15
+direct_variable,terminal_navigation,,EUR,unavailable_public_tariff,none,none,,2025-01-15
+direct_variable,landing,,EUR,unavailable_public_tariff,none,none,,2025-01-15
+direct_variable,ground_handling,,EUR,unavailable_public_tariff,none,none,,2025-01-15
+direct_variable,crew_allowances,100.00,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; same-day return, no overnight",2025-01-15
+direct_fixed,crew_salaries,598.82,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost; 1 = no reserve/relief crew included",2025-01-15
+direct_fixed,insurance,79.84,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+direct_fixed,operating_lease,,EUR,not_applicable,none,none,,2025-01-15
+indirect,administration,100.00,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+indirect,cargo_sales,,EUR,not_applicable,none,none,,2025-01-15
+indirect,general_administrative,399.21,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+noncash,depreciation,898.23,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15
+financing,financing_interest,598.82,EUR,calculated_assumption,user_assumption,explicit_user_assumption,"ILLUSTRATIVE value for demonstrating the cost engine - not a public benchmark, not an airline cost",2025-01-15

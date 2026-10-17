@@ -1,0 +1,226 @@
+UNIT COST METRICS - full_cost_estimate 1
+Flight estimate 2: A320 FRA-CDG; block 1.1976 h; distance modelled_route 241.81 NM; 1 cycle
+Payload: revenue cargo payload not provided; RTNM unavailable
+
+Metric                                                    Value  Status      Coverage               Source quality
+Partial direct variable cost per block hour          2,311.3804  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete direct variable cost per block hour                N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial direct variable cost per NM                     11.4479  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete direct variable cost per NM                        N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial direct variable cost per flight cycle        2,768.2100  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete direct variable cost per flight cycle              N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial direct variable cost per RTNM                       N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete direct variable cost per RTNM                      N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial direct variable cost per ATNM                       N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete direct variable cost per ATNM                      N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial COC per block hour                           3,294.8700  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete COC per block hour                                 N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial COC per NM                                      16.3190  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete COC per NM                                         N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial COC per flight cycle                         3,946.0800  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete COC per flight cycle                               N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial COC per RTNM                                        N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete COC per RTNM                                       N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial COC per ATNM                                        N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete COC per ATNM                                       N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial TOC per block hour                           4,044.8678  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete TOC per block hour                                 N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial TOC per NM                                      20.0336  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete TOC per NM                                         N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial TOC per flight cycle                         4,844.3100  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete TOC per flight cycle                               N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial TOC per RTNM                                        N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete TOC per RTNM                                       N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial TOC per ATNM                                        N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete TOC per ATNM                                       N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial total costs per block hour                   4,544.8663  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete total costs per block hour                         N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial total costs per NM                              22.5100  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete total costs per NM                                 N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial total costs per flight cycle                 5,443.1300  calculated  partial                mixed: explicit_user_assumption, public_market_benchmark
+Complete total costs per flight cycle                       N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial total costs per RTNM                                N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete total costs per RTNM                               N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+Partial total costs per ATNM                                N/A  unavailable missing_required_input mixed: explicit_user_assumption, public_market_benchmark
+Complete total costs per ATNM                               N/A  unavailable partial                mixed: explicit_user_assumption, public_market_benchmark
+
+Values are exact quotients shown to 4 decimals; 'Partial' metrics exclude unavailable components.
+A. Cost coverage: partial   B. Operational validity: calculated_limits_unverified   C. Source quality: mixed: explicit_user_assumption, public_market_benchmark
+  ! revenue cargo payload not provided: RTNM and cost per RTNM are unavailable (the Part 2 modelled payload is a mass assumption, not revenue cargo)
+
+SENSITIVITY (sensitivity_1d): fuel_price  [EUR]
+Deterministic scenario outcomes for user-chosen input levels; not forecasts and not probability estimates.
+
+Variation                                          Fuel  DV subtotal  COC subtotal       dCOC   dCOC %     COC/BH  Coverage / affected
+base                                           1,788.05     2,768.21      3,946.08                       3,294.87
+fuel_price -20%                                1,430.44     2,410.60      3,588.47    -357.61    -9.06   2,996.28  incomplete; fuel
+fuel_price -10%                                1,609.25     2,589.41      3,767.28    -178.80    -4.53   3,145.58  incomplete; fuel
+fuel_price 0%                                  1,788.05     2,768.21      3,946.08       0.00     0.00   3,294.87  incomplete; -
+fuel_price +10%                                1,966.86     2,947.02      4,124.89     178.81     4.53   3,444.17  incomplete; fuel
+fuel_price +20%                                2,145.66     3,125.82      4,303.69     357.61     9.06   3,593.46  incomplete; fuel
+Subtotals are PARTIAL calculated subtotals unless the coverage is complete.
+
+SENSITIVITY (sensitivity_1d): airframe_maintenance_rate  [EUR]
+Deterministic scenario outcomes for user-chosen input levels; not forecasts and not probability estimates.
+
+Variation                                          Fuel  DV subtotal  COC subtotal       dCOC   dCOC %     COC/BH  Coverage / affected
+base                                           1,788.05     2,768.21      3,946.08                       3,294.87
+airframe_maintenance_rate -20%                 1,788.05     2,696.35      3,874.22     -71.86    -1.82   3,234.87  incomplete; airframe_maintenance
+airframe_maintenance_rate -10%                 1,788.05     2,732.28      3,910.15     -35.93    -0.91   3,264.87  incomplete; airframe_maintenance
+airframe_maintenance_rate 0%                   1,788.05     2,768.21      3,946.08       0.00     0.00   3,294.87  incomplete; -
+airframe_maintenance_rate +10%                 1,788.05     2,804.14      3,982.01      35.93     0.91   3,324.87  incomplete; airframe_maintenance
+airframe_maintenance_rate +20%                 1,788.05     2,840.07      4,017.94      71.86     1.82   3,354.87  incomplete; airframe_maintenance
+Subtotals are PARTIAL calculated subtotals unless the coverage is complete.
+
+SENSITIVITY (sensitivity_1d): annual_utilization  [EUR]
+Deterministic scenario outcomes for user-chosen input levels; not forecasts and not probability estimates.
+
+Variation                                          Fuel  DV subtotal  COC subtotal       dCOC   dCOC %     COC/BH  Coverage / affected
+base                                           1,788.05     2,768.21      3,946.08                       3,294.87
+annual_utilization -20%                        1,788.05     2,768.21      4,065.85     119.77     3.04   3,394.87  incomplete; depreciation, financing_interest, general_administrative, insurance
+annual_utilization -10%                        1,788.05     2,768.21      3,999.31      53.23     1.35   3,339.32  incomplete; depreciation, financing_interest, general_administrative, insurance
+annual_utilization 0%                          1,788.05     2,768.21      3,946.08       0.00     0.00   3,294.87  incomplete; -
+annual_utilization +10%                        1,788.05     2,768.21      3,902.53     -43.55    -1.10   3,258.51  incomplete; depreciation, financing_interest, general_administrative, insurance
+annual_utilization +20%                        1,788.05     2,768.21      3,866.25     -79.83    -2.02   3,228.21  incomplete; depreciation, financing_interest, general_administrative, insurance
+Subtotals are PARTIAL calculated subtotals unless the coverage is complete.
+
+COMPARISON (ownership_comparison) [EUR]
+
+- full_cost_estimate 1: A320 FRA-CDG flight 2, scenario Illustrative A320 owned aircraft (owned), pricing 2025-01-15, block 1.1976 h
+    fuel_cost                   1788.05
+    maintenance                  880.16
+    crew                         698.82
+    charges_and_handling            N/A (unavailable)
+    insurance                     79.84
+    ownership                   1497.05
+    indirect                     499.21
+    COC                    calculated subtotal 3946.08; complete unavailable
+    TOC                    calculated subtotal 4844.31; complete unavailable
+    TOTAL_COSTS            calculated subtotal 5443.13; complete unavailable
+    coverage partial; validity calculated_limits_unverified; quality mixed: explicit_user_assumption, public_market_benchmark
+- example_operating_lease: A320 FRA-CDG flight 2, scenario Illustrative A320 operating lease (operating_lease), pricing 2025-01-15, block 1.1976 h
+    fuel_cost                   1788.05
+    maintenance                  880.16
+    crew                         698.82
+    charges_and_handling            N/A (unavailable)
+    insurance                     79.84
+    ownership                   1437.17
+    indirect                     499.21
+    COC                    calculated subtotal 5383.25; complete unavailable
+    TOC                    calculated subtotal 5383.25; complete unavailable
+    TOTAL_COSTS            calculated subtotal 5383.25; complete unavailable
+    coverage partial; validity calculated_limits_unverified; quality mixed: explicit_user_assumption, public_market_benchmark
+
+common_component_comparison (NOT a complete operating cost): components ['fuel', 'airframe_maintenance', 'engine_maintenance', 'engine_llp', 'crew_allowances', 'crew_salaries', 'insurance', 'administration', 'general_administrative']
+    full_cost_estimate 1: 3,946.08
+    example_operating_lease: 3,946.08
+    excluded operating_lease: not applicable in some cases
+    excluded depreciation: not applicable in some cases
+    excluded financing_interest: not applicable in some cases
+  ! applicability differs (not applicable by scenario convention, not missing): full_cost_estimate 1: ['operating_lease']; example_operating_lease: ['depreciation', 'financing_interest']
+  ! complete COC/TOC/Total are unavailable for at least one case; only calculated subtotals (partial) are shown
+  * Project taxonomy (Part 4): the operating lease payment is a direct fixed cost inside COC; depreciation is a noncash cost added in TOC; financing interest is added only in Total Costs.
+  * An owned aircraft's capital cost therefore appears only in TOC and Total, while a leased aircraft's appears already in COC. COC and TOC differences between modes reflect this convention.
+  * This is an economic-cost comparison under the scenarios' assumptions, not an IFRS 16 or US GAAP comparison: a lessee's accounting would show right-of-use depreciation and lease interest instead of rent.
+  * Owned: lease not applicable. Operating lease: aircraft depreciation and acquisition financing are excluded (not applicable) under this convention; incompatible treatments are never combined.
+
+Item                                                  Owned        Operating lease  Lease - owned
+maintenance                                          880.16                 880.16           0.00
+crew                                                 698.82                 698.82           0.00
+insurance                                             79.84                  79.84           0.00
+lease_payment                          n/a (not applicable)                1437.17              -
+depreciation                                         898.23   n/a (not applicable)              -
+financing_interest                                   598.82   n/a (not applicable)              -
+COC (calculated subtotal)                           3946.08                5383.25        1437.17
+TOC (calculated subtotal)                           4844.31                5383.25         538.94
+Total costs (calculated subtotal)                   5443.13                5383.25         -59.88
+
+COMPARISON (comparison) [EUR]
+
+- full_cost_estimate 1: A320 FRA-CDG flight 2, scenario Illustrative A320 owned aircraft (owned), pricing 2025-01-15, block 1.1976 h
+    fuel_cost                   1788.05
+    maintenance                  880.16
+    crew                         698.82
+    charges_and_handling            N/A (unavailable)
+    insurance                     79.84
+    ownership                   1497.05
+    indirect                     499.21
+    COC                    calculated subtotal 3946.08; complete unavailable
+    TOC                    calculated subtotal 4844.31; complete unavailable
+    TOTAL_COSTS            calculated subtotal 5443.13; complete unavailable
+    coverage partial; validity calculated_limits_unverified; quality mixed: explicit_user_assumption, public_market_benchmark
+- full_cost_estimate 2: A320 CDG-FRA flight 3, scenario Illustrative A320 owned aircraft (owned), pricing 2025-01-15, block 1.1978 h
+    fuel_cost                   1787.38
+    maintenance                  880.28
+    crew                         698.92
+    charges_and_handling            N/A (unavailable)
+    insurance                     79.86
+    ownership                   1497.30
+    indirect                     499.28
+    COC                    calculated subtotal 3945.72; complete unavailable
+    TOC                    calculated subtotal 4844.10; complete unavailable
+    TOTAL_COSTS            calculated subtotal 5443.02; complete unavailable
+    coverage partial; validity calculated_limits_unverified; quality mixed: explicit_user_assumption, public_market_benchmark
+- full_cost_estimate 3: A321 FRA-CDG flight 4, scenario Illustrative A320 owned aircraft (owned), pricing 2025-01-15, block 1.1962 h
+    fuel_cost                   1972.92
+    maintenance                  878.82
+    crew                         698.11
+    charges_and_handling            N/A (unavailable)
+    insurance                     79.75
+    ownership                   1495.27
+    indirect                     498.74
+    COC                    calculated subtotal 4128.34; complete unavailable
+    TOC                    calculated subtotal 5025.50; complete unavailable
+    TOTAL_COSTS            calculated subtotal 5623.61; complete unavailable
+    coverage partial; validity calculated_limits_unverified; quality mixed: explicit_user_assumption, public_market_benchmark
+
+common_component_comparison (NOT a complete operating cost): components ['fuel', 'airframe_maintenance', 'engine_maintenance', 'engine_llp', 'crew_allowances', 'crew_salaries', 'insurance', 'administration', 'general_administrative', 'depreciation', 'financing_interest']
+    full_cost_estimate 1: 5,443.13
+    full_cost_estimate 2: 5,443.02
+    full_cost_estimate 3: 5,623.61
+  ! the same cost scenario is applied to different aircraft types [['A320', 'A321']]: its maintenance, crew and ownership inputs are not aircraft-specific, so differences come from flight time, fuel and allocation only
+  ! complete COC/TOC/Total are unavailable for at least one case; only calculated subtotals (partial) are shown
+
+VALIDATION of full_cost_estimate 1: WARN
+Counts: {'arithmetic': {'pass': 13}, 'operational': {'pass': 7, 'warn': 1}, 'financial': {'pass': 7, 'warn': 1}, 'external': {'warn': 1, 'not_performed': 8}}
+
+[pass         ] arithmetic  direct_variable_subtotal             sum of calculated components 2768.21 vs stored 2768.21
+[pass         ] arithmetic  direct_fixed_subtotal                sum of calculated components 678.66 vs stored 678.66
+[pass         ] arithmetic  indirect_subtotal                    sum of calculated components 499.21 vs stored 499.21
+[pass         ] arithmetic  noncash_subtotal                     sum of calculated components 898.23 vs stored 898.23
+[pass         ] arithmetic  financing_subtotal                   sum of calculated components 598.82 vs stored 598.82
+[pass         ] arithmetic  cash_operating_subtotal              COC/TOC/Total chain: expected 3946.08, stored 3946.08
+[pass         ] arithmetic  total_operating_subtotal             COC/TOC/Total chain: expected 4844.31, stored 4844.31
+[pass         ] arithmetic  total_cost_subtotal                  COC/TOC/Total chain: expected 5443.13, stored 5443.13
+[pass         ] arithmetic  complete_totals_rule                 complete totals withheld; blocking components: ['navigation', 'terminal_navigation', 'landing', 'ground_handling']
+[pass         ] arithmetic  money_precision                      components not at 0.01: none
+[pass         ] arithmetic  exact_decimal_storage                amounts stored as exact decimal text; non-text: none
+[pass         ] arithmetic  fuel_conversion_recheck              2271.4893156832763 kg / 0.8025 kg/L / 3.785411784 L/gal x 2.463 USD/USgal / 1.03 USD/EUR = 1788.0502 -> 1788.05
+[pass         ] arithmetic  reproducibility                      recalculated from stored scenario: amounts identical, input hash identical
+[pass         ] operational block_hours_positive                 block hours 1.197643599410465
+[pass         ] operational distance_positive                    great-circle 241.80947366918895 NM, modelled route 241.80947366918895 NM
+[pass         ] operational flight_cycles                        one completed leg = 1 flight cycle
+[pass         ] operational supported_aircraft                   A320 performance model supported
+[pass         ] operational payload_basis                        Part 2 modelled payload 10000.0 kg (mass assumption; NOT revenue cargo payload)
+[pass         ] operational validity_carried_forward             stored calculated_limits_unverified; Part 2 calculated_limits_unverified
+[pass         ] operational fuel_accounting_v2                   fuel accounting v2
+[warn         ] operational flight_limits_verified               Part 2 status calculated_limits_unverified: some aircraft limits could not be verified; costs do not change this
+[pass         ] financial   coverage_status                      recomputed incomplete, stored incomplete
+[pass         ] financial   no_missing_as_zero                   uncalculated components are NULL; zero amounts only by tariff rule (violations: none)
+[pass         ] financial   ownership_mode_consistency           owned: lease not_applicable
+[pass         ] financial   no_double_counting                   overlapping components: none
+[pass         ] financial   source_quality_summary               recomputed 'mixed: explicit_user_assumption, public_market_benchmark', stored 'mixed: explicit_user_assumption, public_market_benchmark'
+[pass         ] financial   pricing_date_consistency             Part 3 2025-01-15, full cost 2025-01-15
+[pass         ] financial   historical_pricing_rule              no price, tariff or FX observation after the pricing date (violations: none)
+[warn         ] financial   assumption_disclosure                result depends on explicit user/illustrative assumptions (see source quality)
+[warn         ] external    fuel_per_block_hour vs bts_form41_p52_t2 comparable_with_caveats: model 1492.97 vs benchmark 1856.49 EUR/block_hour
+[not_performed] external    flight_crew_per_block_hour vs bts_form41_p52_t2 not_comparable: model 583.50 vs benchmark 1622.33 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything']
+[not_performed] external    maintenance_per_block_hour vs bts_form41_p52_t2 not_comparable: model 734.91 vs benchmark 1135.66 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything']
+[not_performed] external    insurance_per_block_hour vs bts_form41_p52_t2 not_comparable: model 66.66 vs benchmark 9.31 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything']
+[not_performed] external    depreciation_per_block_hour vs bts_form41_p52_t2 not_comparable: model 750.00 vs benchmark 404.68 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything']
+[not_performed] external    operating_lease_per_block_hour vs bts_form41_p52_t2 not_comparable: model None vs benchmark 228.83 EUR/block_hour; reasons: ['model_metric: operating_lease: not applicable in this scenario']
+[not_performed] external    flight_crew_per_block_hour vs faa_econ_values_s4_t4_7 not_comparable: model 583.50 vs benchmark 1337.86 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything', 'period: benchmark period 2022-07-01..2023-06-30 is 565 days from pricing date 2025-01-15 and no index adjustment is applied']
+[not_performed] external    maintenance_per_block_hour vs faa_econ_values_s4_t4_7 not_comparable: model 734.91 vs benchmark 926.21 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything', 'period: benchmark period 2022-07-01..2023-06-30 is 565 days from pricing date 2025-01-15 and no index adjustment is applied']
+[not_performed] external    insurance_per_block_hour vs faa_econ_values_s4_t4_7 not_comparable: model 66.66 vs benchmark 5.83 EUR/block_hour; reasons: ['model_source: model metric is built on ILLUSTRATIVE assumptions; comparing it with a public benchmark would not validate anything', 'period: benchmark period 2022-07-01..2023-06-30 is 565 days from pricing date 2025-01-15 and no index adjustment is applied']
+
+Wrote 27 files to data/output/reports/a320_fra_cdg

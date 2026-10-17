@@ -1,0 +1,350 @@
+{
+  "analysis_type": "comparison",
+  "common_component_comparison": {
+    "components": [
+      "fuel",
+      "airframe_maintenance",
+      "engine_maintenance",
+      "engine_llp",
+      "crew_allowances",
+      "crew_salaries",
+      "insurance",
+      "administration",
+      "general_administrative",
+      "depreciation",
+      "financing_interest"
+    ],
+    "excluded": {},
+    "label": "common-component subtotal (NOT a complete operating cost)",
+    "subtotals": {
+      "full_cost_estimate 1": "5443.13",
+      "full_cost_estimate 2": "5443.02",
+      "full_cost_estimate 3": "5623.61"
+    }
+  },
+  "complete_totals_comparable": false,
+  "coverage_mismatch": {},
+  "currency": "EUR",
+  "explanation": [],
+  "pricing_dates": [
+    "2025-01-15"
+  ],
+  "rows": [
+    {
+      "aircraft": "A320",
+      "block_fuel_kg": "2271.4893156832763",
+      "block_hours": "1.197643599410465",
+      "charges_and_handling": {
+        "calculated_subtotal": null,
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ],
+        "not_applicable": []
+      },
+      "coc": {
+        "calculated_subtotal": "3946.08",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "cost_coverage": "partial",
+      "crew": {
+        "calculated_subtotal": "698.82",
+        "complete": "698.82",
+        "missing": [],
+        "not_applicable": []
+      },
+      "currency": "EUR",
+      "destination": "CDG",
+      "distance_basis": "modelled_route",
+      "distance_nm": "241.80947366918895",
+      "flight_estimate_id": 2,
+      "fuel_cost": {
+        "calculated_subtotal": "1788.05",
+        "complete": "1788.05",
+        "missing": [],
+        "not_applicable": []
+      },
+      "full_cost_estimate_id": 1,
+      "indirect": {
+        "calculated_subtotal": "499.21",
+        "complete": "499.21",
+        "missing": [],
+        "not_applicable": [
+          "cargo_sales"
+        ]
+      },
+      "insurance": {
+        "calculated_subtotal": "79.84",
+        "complete": "79.84",
+        "missing": [],
+        "not_applicable": []
+      },
+      "label": "full_cost_estimate 1",
+      "maintenance": {
+        "calculated_subtotal": "880.16",
+        "complete": "880.16",
+        "missing": [],
+        "not_applicable": []
+      },
+      "operational_validity": "calculated_limits_unverified",
+      "origin": "FRA",
+      "ownership": {
+        "calculated_subtotal": "1497.05",
+        "complete": "1497.05",
+        "missing": [],
+        "not_applicable": [
+          "operating_lease"
+        ]
+      },
+      "ownership_mode": "owned",
+      "pricing_date": "2025-01-15",
+      "scenario": "Illustrative A320 owned aircraft",
+      "scenario_hash": "8e21282513cf",
+      "scenario_id": 1,
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "saved",
+      "toc": {
+        "calculated_subtotal": "4844.31",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "total_costs": {
+        "calculated_subtotal": "5443.13",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "variable_cost_estimate_id": 2
+    },
+    {
+      "aircraft": "A320",
+      "block_fuel_kg": "2270.635171086835",
+      "block_hours": "1.197845191813846166666666667",
+      "charges_and_handling": {
+        "calculated_subtotal": null,
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ],
+        "not_applicable": []
+      },
+      "coc": {
+        "calculated_subtotal": "3945.72",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "cost_coverage": "partial",
+      "crew": {
+        "calculated_subtotal": "698.92",
+        "complete": "698.92",
+        "missing": [],
+        "not_applicable": []
+      },
+      "currency": "EUR",
+      "destination": "FRA",
+      "distance_basis": "modelled_route",
+      "distance_nm": "241.80947366918895",
+      "flight_estimate_id": 3,
+      "fuel_cost": {
+        "calculated_subtotal": "1787.38",
+        "complete": "1787.38",
+        "missing": [],
+        "not_applicable": []
+      },
+      "full_cost_estimate_id": 2,
+      "indirect": {
+        "calculated_subtotal": "499.28",
+        "complete": "499.28",
+        "missing": [],
+        "not_applicable": [
+          "cargo_sales"
+        ]
+      },
+      "insurance": {
+        "calculated_subtotal": "79.86",
+        "complete": "79.86",
+        "missing": [],
+        "not_applicable": []
+      },
+      "label": "full_cost_estimate 2",
+      "maintenance": {
+        "calculated_subtotal": "880.28",
+        "complete": "880.28",
+        "missing": [],
+        "not_applicable": []
+      },
+      "operational_validity": "calculated_limits_unverified",
+      "origin": "CDG",
+      "ownership": {
+        "calculated_subtotal": "1497.30",
+        "complete": "1497.30",
+        "missing": [],
+        "not_applicable": [
+          "operating_lease"
+        ]
+      },
+      "ownership_mode": "owned",
+      "pricing_date": "2025-01-15",
+      "scenario": "Illustrative A320 owned aircraft",
+      "scenario_hash": "8e21282513cf",
+      "scenario_id": 1,
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "saved",
+      "toc": {
+        "calculated_subtotal": "4844.10",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "total_costs": {
+        "calculated_subtotal": "5443.02",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "variable_cost_estimate_id": 3
+    },
+    {
+      "aircraft": "A321",
+      "block_fuel_kg": "2506.34883128283",
+      "block_hours": "1.196215793566614666666666667",
+      "charges_and_handling": {
+        "calculated_subtotal": null,
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ],
+        "not_applicable": []
+      },
+      "coc": {
+        "calculated_subtotal": "4128.34",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "cost_coverage": "partial",
+      "crew": {
+        "calculated_subtotal": "698.11",
+        "complete": "698.11",
+        "missing": [],
+        "not_applicable": []
+      },
+      "currency": "EUR",
+      "destination": "CDG",
+      "distance_basis": "modelled_route",
+      "distance_nm": "241.80947366918895",
+      "flight_estimate_id": 4,
+      "fuel_cost": {
+        "calculated_subtotal": "1972.92",
+        "complete": "1972.92",
+        "missing": [],
+        "not_applicable": []
+      },
+      "full_cost_estimate_id": 3,
+      "indirect": {
+        "calculated_subtotal": "498.74",
+        "complete": "498.74",
+        "missing": [],
+        "not_applicable": [
+          "cargo_sales"
+        ]
+      },
+      "insurance": {
+        "calculated_subtotal": "79.75",
+        "complete": "79.75",
+        "missing": [],
+        "not_applicable": []
+      },
+      "label": "full_cost_estimate 3",
+      "maintenance": {
+        "calculated_subtotal": "878.82",
+        "complete": "878.82",
+        "missing": [],
+        "not_applicable": []
+      },
+      "operational_validity": "calculated_limits_unverified",
+      "origin": "FRA",
+      "ownership": {
+        "calculated_subtotal": "1495.27",
+        "complete": "1495.27",
+        "missing": [],
+        "not_applicable": [
+          "operating_lease"
+        ]
+      },
+      "ownership_mode": "owned",
+      "pricing_date": "2025-01-15",
+      "scenario": "Illustrative A320 owned aircraft",
+      "scenario_hash": "8e21282513cf",
+      "scenario_id": 1,
+      "source_quality": "mixed: explicit_user_assumption, public_market_benchmark",
+      "status": "saved",
+      "toc": {
+        "calculated_subtotal": "5025.50",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "total_costs": {
+        "calculated_subtotal": "5623.61",
+        "complete": null,
+        "missing": [
+          "navigation",
+          "terminal_navigation",
+          "landing",
+          "ground_handling"
+        ]
+      },
+      "variable_cost_estimate_id": 4
+    }
+  ],
+  "warnings": [
+    "the same cost scenario is applied to different aircraft types [['A320', 'A321']]: its maintenance, crew and ownership inputs are not aircraft-specific, so differences come from flight time, fuel and allocation only",
+    "complete COC/TOC/Total are unavailable for at least one case; only calculated subtotals (partial) are shown"
+  ]
+}
