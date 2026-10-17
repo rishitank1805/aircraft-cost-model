@@ -325,3 +325,37 @@ def analytics_db(cost_db, owned_scenario_data):
     full_id = save_full_cost_estimate(engine, full)
     yield engine, {"flight": 1, "variable": variable_id, "full": full_id, "db": cost_db}
     engine.dispose()
+
+
+# ---------------------------------------------------------------------------
+# Part 6 fixtures (aircraft specifications and the read-only explorer API)
+# ---------------------------------------------------------------------------
+
+FAA_FIXTURES = FIXTURES / "faa"
+
+
+@pytest.fixture
+def explorer_db(analytics_db, tmp_path):
+    """analytics_db + every Part 6 specification source (OpenAP, engines.csv, FAA ACD excerpt, FAA classes, freighter CSVs)."""
+    import json
+
+    from aircraft_cost_model.ingestion import aircraft_specs as specs
+    from aircraft_cost_model.ingestion.aircraft import read_openap_aircraft
+    from aircraft_cost_model.ingestion.snapshots import store_snapshot_bytes
+
+    engine, ids = analytics_db
+    snapshot = read_openap_aircraft()
+    raw = tmp_path / "raw_aircraft"
+    raw.mkdir()
+    (raw / "openap_aircraft_test.json").write_text(json.dumps({"data_checksum_sha256": snapshot.data_checksum,
+                                                                "records": snapshot.records}), encoding="utf-8")
+    faa = store_snapshot_bytes((FAA_FIXTURES / "faa_acd_excerpt.xlsx").read_bytes(), tmp_path / "faa", "faa_acd", ".xlsx",
+                               "fixture", "fixture", 200)
+    ref = REPO_ROOT / "data" / "reference"
+    report = {"openap": specs.load_openap_specs(engine, raw), "engines": specs.load_engine_specs(engine),
+              "faa": specs.load_faa_acd(engine, faa),
+              "classes": specs.load_body_class(engine, ref / "aircraft_body_class_faa.csv"),
+              "freighters": specs.load_freighter_reference(engine, ref / "freighter_programs.csv",
+                                                           ref / "freighter_published_specs.csv")}
+    ids.update(report=report, raw=raw, faa_snapshot=faa)
+    return engine, ids

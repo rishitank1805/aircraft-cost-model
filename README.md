@@ -24,7 +24,8 @@ never silently filled.
 | 2 | **Flight performance**: route distance, flight profile, block time, fuel burn via OpenAP | ✅ Implemented |
 | 3 | **Variable operating costs**: fuel (EIA benchmark + ECB FX), EUROCONTROL en-route and terminal navigation charges, airport tariffs, ground handling, with explicit coverage | ✅ Implemented (8001a93) |
 | 4 | **Full operating costs**: maintenance, crew, insurance, leasing, depreciation, financing and indirect costs from cited benchmarks or explicit scenario assumptions; COC / TOC / Total with three separate quality dimensions | ✅ Implemented (a920004) |
-| 5 | **Analytics and validation**: unit metrics (block hour, NM, cycle, RTNM), scenario and sensitivity analysis, route/aircraft/ownership comparisons, BTS Form 41 benchmarks, optional index adjustment, validation, CSV/JSON/PNG reports | ✅ Implemented (uncommitted, awaiting review) |
+| 5 | **Analytics and validation**: unit metrics (block hour, NM, cycle, RTNM), scenario and sensitivity analysis, route/aircraft/ownership comparisons, BTS Form 41 benchmarks, optional index adjustment, validation, CSV/JSON/PNG reports | ✅ Implemented (e794b21) |
+| 6 | **Aircraft Explorer & Learning Dashboard**: React/TypeScript web app over a read-only FastAPI layer - aircraft library and detail pages with sourced specifications, comparison, Cargo & P2F explorer, Flight Lab, Knowledge Hub, operating economics | ✅ Implemented (uncommitted, awaiting review) |
 
 ## Installation
 
@@ -147,6 +148,27 @@ because a fresh installation has different IDs.
 
 See [docs/analytics.md](docs/analytics.md).
 
+### Aircraft Explorer (Part 6)
+
+```bash
+python scripts/ingest_aircraft_specifications.py     # specification values with provenance (insert-only)
+cd frontend && npm install && npm run build && cd ..
+python scripts/run_explorer.py                       # http://127.0.0.1:8000 (read-only database)
+```
+
+The explorer lets you browse all aircraft in the database and open a detail page per
+aircraft, with dimensions, weights, engines, performance, cargo, and sources and
+limitations. It also offers aircraft comparison, freighters and P2F conversion, the
+OpenAP-based Flight Lab, a glossary, the cost analytics.
+
+- Every value shows its source, unit, source type and verification status.
+- Missing values are shown as unavailable.
+- Passenger specifications are never shown as freighter specifications.
+
+See [docs/explorer_app.md](docs/explorer_app.md),
+[docs/aircraft_specifications.md](docs/aircraft_specifications.md) and
+[docs/design_system.md](docs/design_system.md).
+
 ### Database migrations
 
 The schema is managed with Alembic, and every script brings the database up to
@@ -193,6 +215,7 @@ databases. They need no internet access and never touch `database/aircraft_costs
 - [docs/full_cost_model.md](docs/full_cost_model.md): Part 4 taxonomy, completeness, the three dimensions, worked example
 - [docs/maintenance_costs.md](docs/maintenance_costs.md), [docs/crew_costs.md](docs/crew_costs.md), [docs/ownership_and_financing.md](docs/ownership_and_financing.md): Part 4 component methods
 - [docs/cost_assumptions.md](docs/cost_assumptions.md): scenario file schema, shipped scenarios, public financial sources
+- [docs/explorer_app.md](docs/explorer_app.md), [docs/aircraft_specifications.md](docs/aircraft_specifications.md), [docs/design_system.md](docs/design_system.md): Part 6 explorer, specification sources and missing-data inventory, design system
 - [docs/analytics.md](docs/analytics.md): Part 5 overview, dimensions, scripts, reproducibility
 - [docs/unit_cost_metrics.md](docs/unit_cost_metrics.md), [docs/scenario_analysis.md](docs/scenario_analysis.md), [docs/benchmark_validation.md](docs/benchmark_validation.md), [docs/bts_form41_methodology.md](docs/bts_form41_methodology.md), [docs/inflation_adjustment.md](docs/inflation_adjustment.md), [docs/reporting.md](docs/reporting.md): Part 5 methods
 - [docs/tariff_methodology.md](docs/tariff_methodology.md): EUROCONTROL, FRA/CDG and handling tariff rules
@@ -247,3 +270,8 @@ databases. They need no internet access and never touch `database/aircraft_costs
     with European flights are at best `comparable_with_caveats`.
   - Index adjustment uses proxy indices pending owner approval; maintenance
     has no verified index.
+- **Explorer specifications are partial.**
+  - MZFW and maximum structural payload are missing for most aircraft.
+  - Freighter dimensions and engine data are missing where no permitted source exists
+    (proposals in [docs/aircraft_specifications.md](docs/aircraft_specifications.md)).
+  - No licensed aircraft photographs are bundled.

@@ -34,7 +34,7 @@ def snapshot(engine, tables=HISTORICAL):
 def test_0007_is_additive_and_reversible(analytics_db):
     engine, ids = analytics_db
     url = str(engine.url)
-    assert current_revision(engine) == head_revision() == "0007_part5_analytics"
+    assert current_revision(engine) == head_revision()
     assert PART5_TABLES <= set(inspect(engine).get_table_names())
     before = snapshot(engine)
     engine.dispose()

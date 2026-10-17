@@ -1,4 +1,4 @@
-# Architecture (Parts 1–5: data foundation, flight performance, variable costs, full operating costs, analytics)
+# Architecture (Parts 1–6: data foundation, flight performance, variable costs, full operating costs, analytics, explorer)
 
 ## Components
 
@@ -13,12 +13,14 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs`, `0007_part5_analytics` |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs`, `0007_part5_analytics`, `0008_aircraft_specifications` |
 | `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
 | `costs/*` | Part 3: pricing-date policy, ECB currency conversion, fuel cost, EUROCONTROL route charges, airport movement-charge engine, ground handling, coverage and aggregation, persistence (see [variable_cost_model.md](variable_cost_model.md)) |
 | `fullcost/*` | Part 4: scenario schema and validation (`scenario.py`), shared input reader and allocation (`common.py`), maintenance, crew, insurance, ownership/financing and indirect components, taxonomy aggregation with the three dimensions (`aggregate.py`), orchestration (`calculator.py`) and persistence (see [full_cost_model.md](full_cost_model.md)) |
 | `analytics/*` | Part 5: cost cases, unit metrics, scenario variations (recalculated through Part 3/4 engines), sensitivity, comparisons, BTS/FAA benchmarks and comparability, index adjustment, validation, reporting, immutable run persistence (see [analytics.md](analytics.md)) |
 | `ingestion/bts_form41.py`, `processing/bts_form41.py`, `ingestion/price_indices.py` | BTS TranStats P-5.2 + T2 snapshots and benchmark records; BLS API index observations |
+| `api/*` + `frontend/` | Part 6: read-only FastAPI layer (SQLite `mode=ro`) and the React/TypeScript Aircraft Explorer (see [explorer_app.md](explorer_app.md)) |
+| `ingestion/aircraft_specs.py` | Part 6: specification values with provenance (OpenAP, ICAO EEDB via OpenAP, FAA ACD, FAA Tables 4-16/4-17, curated freighter facts) |
 | `data/scenarios/*.json` | Version-controlled cost scenarios: illustrative examples and a cited FAA benchmark scenario |
 | `ingestion/snapshots.py` | Generic immutable snapshot downloader (temporary file, SHA-256, atomic rename, sidecar), used for OurAirports, EIA and ECB |
 | `ingestion/fuel_prices.py`, `exchange_rates.py`, `airport_tariffs.py` | EIA XLS/API parsing, ECB CSV parsing, reviewed EUROCONTROL CSV and local airport tariff loading |
@@ -187,6 +189,8 @@ erDiagram
     data_source ||--o{ benchmark_observation : "BTS/FAA snapshot"
     benchmark_observation ||--o{ benchmark_adjustment : "index-adjusted copies"
     data_source ||--o{ price_index_observation : "BLS snapshot"
+    aircraft_type ||--o{ aircraft_specification : "values with provenance"
+    data_source ||--o{ aircraft_specification : "source of each value"
 ```
 
 - `route` stores only stable airport-pair facts: the great-circle distance and

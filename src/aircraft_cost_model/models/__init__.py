@@ -12,6 +12,7 @@ from aircraft_cost_model.models.airport_tariff import AirportTariff
 from aircraft_cost_model.models.variable_cost import VariableCostEstimate
 from aircraft_cost_model.models.cost_component import CostComponent
 from aircraft_cost_model.models.full_cost import CostAssumption, CostScenario, FullCostComponent, FullCostEstimate
+from aircraft_cost_model.models.specification import AircraftSpecification
 from aircraft_cost_model.models.analytics import (
     AnalyticsRun,
     BenchmarkAdjustment,
@@ -23,6 +24,7 @@ from aircraft_cost_model.models.analytics import (
 )
 
 __all__ = [
+    "AircraftSpecification",
     "AircraftType",
     "AnalyticsRun",
     "BenchmarkAdjustment",

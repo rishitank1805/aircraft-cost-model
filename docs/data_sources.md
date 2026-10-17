@@ -151,3 +151,21 @@ tariffs and Part 4 financial benchmarks) are documented in
 Part 5 benchmark sources (BTS Form 41 P-5.2 and T2, FAA Table 4-7, BLS
 indices) are documented in [cost_data_sources.md](cost_data_sources.md) §7
 and [bts_form41_methodology.md](bts_form41_methodology.md).
+
+## Part 6 specification sources
+
+The Aircraft Explorer adds the following (details, coverage and gaps in
+[aircraft_specifications.md](aircraft_specifications.md)):
+- **FAA Aircraft Characteristics Database** (public domain; raw XLSX snapshot in
+  git-ignored `data/raw/faa_acd/`).
+- **OpenAP aircraft data and `engines.csv`** (GPL-3.0; from the Part 1 snapshot and the
+  installed package).
+- **FAA Economic Values Tables 4-16/4-17** (public domain;
+  `data/reference/aircraft_body_class_faa.csv`).
+- **Curated freighter facts** transcribed from Airbus, Boeing and EFW public pages with URL
+  and retrieval date (`data/reference/freighter_programs.csv`,
+  `data/reference/freighter_published_specs.csv`). Only facts and short attributed quotes
+  are used; no text or images are redistributed.
+
+Manufacturer airport-planning documents remain unused, because they require written
+permission. The explorer does not expose tariff or navigation-rate tables (owner decision 2).

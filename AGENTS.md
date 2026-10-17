@@ -13,9 +13,12 @@ total costs, RTNM and cost per RTNM from freely accessible public data.
    indirect costs from cited benchmarks or explicit scenario assumptions; COC/TOC/Total.
    **COMPLETED** (commit `a920004` on `feature/part-4-full-operating-costs`)
 5. **Analytics and validation**: unit metrics, scenario/sensitivity analysis, comparisons, BTS Form
-   41 benchmarks, optional index adjustment, validation, reports. **IMPLEMENTED, uncommitted on
-   `feature/part-5-analytics-validation`, awaiting owner review.** This is the final planned phase
-   of the initial model; do not start further phases without new owner instructions.
+   41 benchmarks, optional index adjustment, validation, reports. **COMMITTED** (`e794b21` on
+   `feature/part-5-analytics-validation`, committed at the owner's request before Part 6).
+6. **Aircraft Explorer & Learning Dashboard**: read-only FastAPI layer + React/TypeScript frontend,
+   aircraft specification values with provenance (migration 0008). **IMPLEMENTED, uncommitted on
+   `feature/part-6-aircraft-explorer`, awaiting owner review.** Do not start further phases without
+   new owner instructions.
 
 ## Owner decisions in force (recorded after Part 3 approval)
 1. **Germany 2025 terminal navigation:** rules and rate stay `pending_review` and are not
@@ -33,7 +36,7 @@ total costs, RTNM and cost per RTNM from freely accessible public data.
    `origin/main`).
 6. **Part 4 requirement:** report cost-component coverage, the validity of the underlying
    flight-performance estimate, and source/assumption quality as **separate** dimensions.
-7. **Preservation:** keep all Part 1–3 data, migrations (`0001`–`0007`), historical estimates
+7. **Preservation:** keep all Part 1–3 data, migrations (`0001`–`0008`), historical estimates
    (including `v1` flight estimates and the 4-component cost estimate #1) and source
    provenance. Back up the database before any migration.
 
@@ -171,6 +174,22 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
 - BTS and BLS data are public domain (citation required). Do not bypass access controls: BLS
   bulk files returned 403 and are not used.
 
+### Part 6 (explorer)
+- The API opens SQLite read-only (`mode=ro`) and never writes; Flight Lab results are not saved.
+- No performance or cost formulas in the frontend; the API reuses the Part 2-5 engines.
+- Every displayed specification needs source, unit, source type, verification status and variant.
+  Keep sources side by side; never merge or average them. Missing values stay missing.
+- Never map a passenger-aircraft row (e.g. FAA ACD B744/B763/A332) to a freighter. Use a shared row
+  only when it names the freighter (B77L "777-200LRF/LR"), flagged `shared_designator_row`.
+- Values that contradict their own source are stored as `source_inconsistent` and never shown as
+  verified.
+- Do not scrape restricted manufacturer documents. Images only with a per-image licence and
+  attribution.
+- The explorer does not expose EUROCONTROL / DFS / Fraport tables or rate breakdowns (owner decision 2).
+- Educational text must cite references and label general explanations as such.
+- The design is inspired by EFW (colours and font from its public CSS) but uses no EFW assets and
+  must not imply affiliation.
+
 ## Testing
 - `pytest` must pass before claiming completion. Never claim results for tests
   that were not run.
@@ -180,3 +199,4 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
 - Where a test compares timestamps, use a deliberately old value: timestamps
   have 1-second resolution, so a fast test can miss a spurious update.
 - Add tests for new cleaning rules, validators and loaders.
+- Frontend: `cd frontend && npm test` (Vitest) and `npm run typecheck`.

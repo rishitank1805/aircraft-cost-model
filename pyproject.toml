@@ -23,16 +23,20 @@ dependencies = [
     "openap>=2.6,<2.7",
     # Static PNG charts for Part 5 analytical reports (Agg backend, no GUI).
     "matplotlib>=3.8",
+    # Part 6: FAA Aircraft Characteristics Database (XLSX) and the explorer API.
+    "openpyxl>=3.1",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "httpx>=0.27"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-aircraft_cost_model = ["migrations/script.py.mako"]
+aircraft_cost_model = ["migrations/script.py.mako", "api/content/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

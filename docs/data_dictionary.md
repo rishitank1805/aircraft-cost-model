@@ -1,7 +1,7 @@
 # Data dictionary
 
 SQLite database: `database/aircraft_costs.db`. The schema is managed by
-Alembic; the current revision is `0007_part5_analytics`. All
+Alembic; the current revision is `0008_aircraft_specifications`. All
 timestamps are stored in UTC as timezone-naive `DATETIME`, because SQLite has
 no timezone type. "Required" means `NOT NULL`.
 
@@ -546,3 +546,29 @@ Unique on (source_id, series_id, period).
 | checks_json, reasons_json | TEXT | yes | Every check with its result; failure reasons |
 | absolute_difference, percentage_difference | DecimalText | no | NULL when not comparable (percent also NULL when the benchmark is 0) |
 | fx_basis | TEXT | no | |
+
+## Part 6 table (migration 0008)
+
+### `aircraft_specification`
+
+One value of one specification for one aircraft type from one source. Unique on
+(aircraft_type_id, spec_key, source_id). Insert-only: a new source version adds rows.
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| specification_id | INTEGER PK | yes | |
+| aircraft_type_id | INTEGER FK | yes | → `aircraft_type` |
+| spec_key | VARCHAR(60) | yes | e.g. `length_m`, `mtow_kg`, `rated_thrust_kn`, `body_class`, `main_deck_cargo_door` |
+| section | VARCHAR(30) | yes | dimensions, weights, engines, performance, capacity, classification, cargo |
+| value_decimal | DecimalText | no | Value in SI units (exact; e.g. lb × 0.45359237) |
+| value_text | TEXT | no | Text values (classifications, cargo descriptions) |
+| unit | VARCHAR(30) | no | m, m2, m3, kg, L, kN, kt, km, NM, Mach, deg, ratio, count, seats |
+| original_value, original_unit | VARCHAR | no | As published (e.g. `171961` `lb`) |
+| source_id | INTEGER FK | yes | → `data_source` |
+| source_type | VARCHAR(40) | yes | `published_specification`, `open_model_data`, `engine_databank`, `documented_classification` |
+| source_reference | TEXT | no | Row / table / URL and retrieval date |
+| verification_status | VARCHAR(40) | yes | `as_published`, `shared_designator_row`, `source_inconsistent`, `unverified_model_value` |
+| variant | VARCHAR(200) | no | Model / weight variant / engine the value applies to |
+| condition | TEXT | no | e.g. "with a 107-tonne payload", "payload condition not stated" |
+| notes | TEXT | no | Definitions and caveats (e.g. fuselage height is not overall height) |
+| created_at | DATETIME | yes | |

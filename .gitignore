@@ -32,3 +32,7 @@ database/*.db-journal
 .DS_Store
 .idea/
 .vscode/
+
+# Part 6 frontend (installed dependencies and build output)
+frontend/node_modules/
+frontend/dist/
