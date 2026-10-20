@@ -88,7 +88,7 @@ def test_glossary_and_cargo_content(client):
     cargo = client.get("/api/cargo").json()
     types = {t["code"]: t["freighter_type"] for t in cargo["targets"]}
     assert types.pop("A321P2F") == "converted_freighter" and set(types.values()) == {"production_freighter"}
-    assert "Not affiliated" in cargo["disclaimer"] and len(cargo["conversion_steps"]) == 7
+    assert "not affiliated" in cargo["disclaimer"] and "Airbus" not in cargo["disclaimer"] and len(cargo["conversion_steps"]) == 7
 
 
 def test_flight_lab_matches_part2_and_saves_nothing(client):

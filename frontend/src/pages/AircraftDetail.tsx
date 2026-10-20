@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink, Wind } from "lucide-react";
+import { ArrowLeft, Wind } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api";
 import { GlossaryTerm } from "../components/GlossaryTerm";
@@ -8,6 +8,7 @@ import { ErrorBox, Loading, Notice, RoleBadge, SupportBadge } from "../component
 import { useApi } from "../components/useApi";
 import { DimensionsDiagram, TurbofanDiagram, WeightStack } from "../diagrams/Diagrams";
 import { formatSpec, label, num } from "../format";
+import { stripCompanyUrls } from "../links";
 import type { AircraftDetail, SpecValue } from "../types";
 
 const SECTIONS = [
@@ -78,8 +79,7 @@ export function AircraftDetailPage() {
         <h2 className="section-title">F. Cargo capabilities</h2>
         {isFreighter ? <>
           {d.freighter_programme && <Notice><strong>{label(d.freighter_programme.freighter_type)}.</strong> {d.freighter_programme.statement}
-            {" "}<a className="inline-flex items-center gap-1 text-cyan" href={d.freighter_programme.source_url} target="_blank" rel="noreferrer">
-              {d.freighter_programme.source_publisher}<ExternalLink className="h-3 w-3" /></a> (retrieved {d.freighter_programme.retrieved}).
+            {" "}Source: {d.freighter_programme.source_publisher} public web page (retrieved {d.freighter_programme.retrieved}).
             {d.freighter_programme.notes && <span className="mt-1 block">{d.freighter_programme.notes}</span>}</Notice>}
           <SpecTable values={d.sections.cargo ?? []} missing={d.missing.cargo} missingLabels={d.missing_labels} />
           <p className="text-sm">Learn how freighters and conversions work in the <Link to="/cargo" className="text-cyan hover:underline">Cargo & P2F Explorer</Link>.</p>
@@ -99,7 +99,7 @@ function Overview({ d }: { d: AircraftDetail }) {
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="card space-y-3 p-5 lg:col-span-2">
         {d.description.length ? <ul className="space-y-2">{d.description.map((x) => <li key={x.text}>{x.text}
-          <span className="block text-xs text-slate-500">Source: {x.source}</span></li>)}</ul>
+          <span className="block text-xs text-slate-500">Source: {stripCompanyUrls(x.source)}</span></li>)}</ul>
           : <p className="missing">No sourced description is available for this type.</p>}
         <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm md:grid-cols-3">
           <div><dt className="text-xs uppercase text-slate-500">Manufacturer</dt><dd className="font-semibold">{s.manufacturer ?? "unavailable"}</dd></div>

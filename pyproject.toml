@@ -41,3 +41,11 @@ aircraft_cost_model = ["migrations/script.py.mako", "api/content/*.json"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+# Hosted explorer (Vercel). vercel_app.py serves the read-only API and the built frontend from the
+# public database; the build step restores it and builds frontend/dist.
+[tool.vercel]
+entrypoint = "vercel_app:app"
+
+[tool.vercel.scripts]
+build = "python scripts/vercel_build.py"

@@ -86,3 +86,17 @@ The frontend contains **no** performance or cost formulas. It only formats and p
 See [design_system.md](design_system.md) for the visual design and
 [aircraft_specifications.md](aircraft_specifications.md) for source coverage and the
 missing-data inventory.
+
+## Hosted deployment (Vercel)
+
+The hosted explorer uses a **public copy** of the database: `database/explorer_public.db.gz`,
+built from the live database by `python scripts/build_public_db.py`. The rows of the restricted
+EUROCONTROL / DFS / Fraport tables (`navigation_rate`, `navigation_zone_aerodrome`,
+`airport_tariff`) are removed (owner decision 2); their `data_source` metadata rows stay. The build
+refuses to run if a saved cost component was priced from those rates. The live database and its
+backups are never committed or uploaded (`.gitignore`, `.vercelignore`).
+
+- Entrypoint: `vercel_app.py` (`[tool.vercel] entrypoint` in `pyproject.toml`).
+- Build step: `scripts/vercel_build.py` restores the database and builds `frontend/dist`.
+- After changing the live database, rebuild the public copy and commit the new `.gz`.
+- Flight Lab results are computed per request and never saved; the database is opened read-only.

@@ -2,6 +2,7 @@ import { AlertTriangle, CheckCircle2, ChevronDown, CircleSlash, ExternalLink, In
 import { useState, type ReactNode } from "react";
 import type { Reference } from "../types";
 import { SOURCE_TYPE_LABEL, STATUS_LABEL, label } from "../format";
+import { isAgencyUrl } from "../links";
 
 export function Loading({ what = "Loading" }: { what?: string }) {
   return <div className="flex items-center gap-2 py-10 text-slate-500"><Loader2 className="h-5 w-5 animate-spin" />{what}…</div>;
@@ -61,10 +62,10 @@ export function References({ refs }: { refs: Reference[] }) {
   if (!refs.length) return null;
   return <ul className="mt-2 space-y-1 text-xs text-slate-600">
     {refs.map((r) => <li key={r.url}>
-      {r.url.startsWith("http")
+      {isAgencyUrl(r.url)
         ? <a className="inline-flex items-center gap-1 text-cyan hover:underline" href={r.url} target="_blank" rel="noreferrer">
             {r.publisher}: {r.title}<ExternalLink className="h-3 w-3" /></a>
-        : <span>{r.publisher}: {r.title} ({r.url})</span>}
+        : <span>{r.publisher}: {r.title}{r.url.startsWith("http") ? "" : ` (${r.url})`}</span>}
     </li>)}
   </ul>;
 }

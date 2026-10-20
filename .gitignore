@@ -36,3 +36,7 @@ database/*.db-journal
 # Part 6 frontend (installed dependencies and build output)
 frontend/node_modules/
 frontend/dist/
+
+# Public explorer database for hosted deployments: only the compressed copy is committed
+# (scripts/build_public_db.py; restricted rate tables removed).
+database/*.db.part

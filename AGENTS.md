@@ -187,8 +187,8 @@ Package: `src/aircraft_cost_model` (src layout). Install with `pip install -e ".
   attribution.
 - The explorer does not expose EUROCONTROL / DFS / Fraport tables or rate breakdowns (owner decision 2).
 - Educational text must cite references and label general explanations as such.
-- The design is inspired by EFW (colours and font from its public CSS) but uses no EFW assets and
-  must not imply affiliation.
+- The explorer must not imply affiliation with any company: no company logos or brand assets, no links to
+  company websites (only official public agencies are linked); company sources appear as plain-text names.
 
 ## Testing
 - `pytest` must pass before claiming completion. Never claim results for tests

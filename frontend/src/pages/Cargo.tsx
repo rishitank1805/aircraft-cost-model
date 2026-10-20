@@ -43,7 +43,7 @@ export function CargoPage() {
         </div>
       </section>
       <section className="space-y-4"><h2 className="section-title">The five target freighters</h2>
-        <Notice>Four are production (factory-built) freighters; only the A321P2F is a passenger-to-freighter conversion (by EFW). None has a
+        <Notice>Four are production (factory-built) freighters; only the A321P2F is a passenger-to-freighter conversion. None has a
           supported flight-performance model in this project, so no route-specific performance or cost is calculated, and no passenger
           model is substituted.</Notice>
         <div className="grid gap-4 lg:grid-cols-2">{data.targets.map((t) => <article key={t.code} className="card space-y-3 p-5">

@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
-/* Design tokens. Colours and font inspired by the public stylesheet of elbeflugzeugwerke.com
-   (efw-website.css: navy #001450, cyan #00A0D1, tint #F1F1F5, text #2D2D2C, font "Titillium Web").
-   Independent project: no EFW logos or brand assets are used. Titillium Web is licensed under the SIL OFL. */
+/* Design tokens: project palette (navy, cyan, tint, ink, status colours) and the Titillium Web typeface
+   (SIL Open Font Licence). No third-party logos or brand assets are used. */
 @theme {
   --font-sans: "Titillium Web", ui-sans-serif, system-ui, sans-serif;
   --color-navy: #001450;

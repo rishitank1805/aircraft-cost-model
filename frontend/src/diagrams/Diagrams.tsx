@@ -135,7 +135,7 @@ export function P2FDiagram({ active = 0 }: { active?: number }) {
     { x: 360, label: "Windows plugged" }, { x: 480, label: "Rear doors deactivated" }, { x: 70, label: "9g barrier" },
   ];
   return <Frame title="Where a P2F conversion changes the aircraft" viewBox="0 0 640 220"
-    caption="Based on the conversion work EFW lists for its P2F programmes (floor, frames, door, windows, doors, barrier). Schematic.">
+    caption="Typical P2F modifications (floor, frames, door, windows, doors, barrier) as described in published conversion programmes. Schematic.">
     <path d="M30 120 Q20 95 60 90 L540 90 Q580 90 600 60 L620 60 L615 120 L600 140 L60 140 Q35 140 30 120 Z" fill="#e2e8f0" stroke={NAVY} strokeWidth={1.5} />
     <rect x="200" y="94" width="60" height="38" fill={active === 1 ? CYAN : "#cbd5e1"} stroke={NAVY} />
     <line x1="70" y1="130" x2="560" y2="130" stroke={active === 0 ? CYAN : GREY} strokeWidth={4} />

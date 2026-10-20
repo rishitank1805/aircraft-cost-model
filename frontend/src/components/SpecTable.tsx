@@ -2,6 +2,7 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { SpecValue } from "../types";
 import { formatSpec } from "../format";
+import { isAgencyUrl, stripCompanyUrls } from "../links";
 import { GlossaryTerm } from "./GlossaryTerm";
 import { SourceTypeBadge, StatusBadge } from "./ui";
 
@@ -38,13 +39,13 @@ export function SpecTable({ values, missing = [], missingLabels = {} }: {
           </tr>
           {open === id && <tr className="bg-tint"><td colSpan={5} className="px-6 py-3 text-xs">
             <dl className="grid gap-x-6 gap-y-1 md:grid-cols-2">
-              <dt className="font-semibold">Source</dt><dd>{v.source_name ?? "unavailable"} {v.source_url &&
-                <a href={v.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center text-cyan">link<ExternalLink className="h-3 w-3" /></a>}</dd>
-              <dt className="font-semibold">Reference</dt><dd>{v.source_reference ?? "unavailable"}</dd>
+              <dt className="font-semibold">Source</dt><dd>{v.source_name ?? "unavailable"} {isAgencyUrl(v.source_url) &&
+                <a href={v.source_url!} target="_blank" rel="noreferrer" className="inline-flex items-center text-cyan">link<ExternalLink className="h-3 w-3" /></a>}</dd>
+              <dt className="font-semibold">Reference</dt><dd>{stripCompanyUrls(v.source_reference) || "unavailable"}</dd>
               <dt className="font-semibold">Licence</dt><dd>{v.source_license ?? "unavailable"}</dd>
               <dt className="font-semibold">Exact stored value</dt><dd>{v.value_exact ?? v.value_text ?? "unavailable"} {v.unit ?? ""}</dd>
               <dt className="font-semibold">As published</dt><dd>{v.original_value ? `${v.original_value} ${v.original_unit ?? ""}` : "same as stored"}</dd>
-              <dt className="font-semibold">Notes</dt><dd>{v.notes ?? "none"}</dd>
+              <dt className="font-semibold">Notes</dt><dd>{stripCompanyUrls(v.notes) || "none"}</dd>
             </dl></td></tr>}
         </Fragment>;
       }))}

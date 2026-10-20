@@ -30,9 +30,8 @@ export function Layout() {
     <main className="flex-1"><Outlet /></main>
     <footer className="bg-navy text-sm text-white/70">
       <div className="mx-auto max-w-7xl space-y-1 px-6 py-6">
-        <p>Open Aircraft Operating Cost Model - an independent educational project. Not affiliated with, sponsored or endorsed
-          by Elbe Flugzeugwerke, Airbus, Boeing or any other company named; the colour palette and typeface are inspired by public
-          aerospace design and used without any brand assets.</p>
+        <p>Open Aircraft Operating Cost Model - an independent educational project, not affiliated with, sponsored or endorsed
+          by any company. Names of manufacturers or other organisations appear only as plain-text data sources.</p>
         <p>Every value shows its source and verification status. Missing values stay missing. Open model data (OpenAP) are model
           parameters, not certified specifications.</p>
       </div>

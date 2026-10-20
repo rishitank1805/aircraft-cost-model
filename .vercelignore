@@ -1,0 +1,14 @@
+# Never upload the live database, its backups, restricted local data or generated outputs.
+database/aircraft_costs*.db
+database/*.db-journal
+data/local/
+data/raw/
+data/processed/
+data/output/
+frontend/node_modules/
+frontend/dist/
+.venv/
+venv/
+.env
+tests/
+docs/screenshots/

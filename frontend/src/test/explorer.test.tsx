@@ -70,3 +70,19 @@ describe("Aircraft detail", () => {
     await waitFor(() => expect(screen.getAllByText("Overall length").length).toBeGreaterThan(0));
   });
 });
+
+describe("external links", () => {
+  it("links only official public agencies and shows company sources as plain text", async () => {
+    const { isAgencyUrl, stripCompanyUrls } = await import("../links");
+    expect(isAgencyUrl("https://www.faa.gov/x")).toBe(true);
+    expect(isAgencyUrl("https://www.grc.nasa.gov/www")).toBe(true);
+    expect(isAgencyUrl("https://www.elbeflugzeugwerke.com/en/")).toBe(false);
+    expect(isAgencyUrl("https://www.boeing.com/commercial/freighters")).toBe(false);
+    expect(stripCompanyUrls("Boeing: https://www.boeing.com/commercial/freighters (retrieved 2026-10-16)")).toBe("Boeing (retrieved 2026-10-16)");
+    const { References } = await import("../components/ui");
+    render(<References refs={[{ title: "A330-200F", publisher: "Airbus", url: "https://www.aircraft.airbus.com/x" },
+      { title: "Handbook", publisher: "FAA", url: "https://www.faa.gov/h.pdf" }]} />);
+    expect(screen.getByText("Airbus: A330-200F").closest("a")).toBeNull();
+    expect(screen.getByRole("link")).toHaveAttribute("href", "https://www.faa.gov/h.pdf");
+  });
+});
