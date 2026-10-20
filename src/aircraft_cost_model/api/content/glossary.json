@@ -1,0 +1,612 @@
+{
+ "version": 1,
+ "topics": [
+  {
+   "slug": "mtow",
+   "term": "Maximum Takeoff Weight (MTOW)",
+   "category": "Weights",
+   "definition": "The maximum weight approved for the start of the takeoff run (FAA Weight & Balance Handbook, GAMA definition). Everything on board counts: the empty aircraft, crew, payload and fuel.",
+   "why_it_matters": "MTOW caps how much payload and fuel can be carried together. On long flights, fuel takes a large share of MTOW, so payload must be reduced; MTOW also drives airport charges and runway requirements.",
+   "example": "The FAA Aircraft Characteristics Database lists the Airbus A320 (row 'Airbus A320', BADA model A320-231) at 171,961 lb, about 78,000 kg.",
+   "diagram": "weights-stack",
+   "related_specs": [
+    "mtow_kg",
+    "max_ramp_weight_kg"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    },
+    {
+     "title": "Aircraft Characteristics Database (data dictionary)",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/airports/engineering/aircraft_char_database"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "mlw",
+   "term": "Maximum Landing Weight (MLW)",
+   "category": "Weights",
+   "definition": "The maximum weight approved for the landing touchdown (FAA Weight & Balance Handbook). The FAA database calls it the Maximum Allowable Landing Weight (MALW).",
+   "why_it_matters": "Landing gear and structure are designed for a limited touchdown weight. On a short flight little fuel is burned, so the takeoff weight may be limited by MLW rather than MTOW.",
+   "example": "FAA Aircraft Characteristics Database: Airbus A320 MALW 145,505 lb, about 66,000 kg - 12,000 kg below its MTOW.",
+   "diagram": "weights-stack",
+   "related_specs": [
+    "mlw_kg"
+   ],
+   "aliases": [
+    "MALW"
+   ],
+   "references": [
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    },
+    {
+     "title": "Aircraft Characteristics Database (data dictionary)",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/airports/engineering/aircraft_char_database"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "oew",
+   "term": "Operating Empty Weight (OEW)",
+   "category": "Weights",
+   "definition": "The weight of the aircraft ready for operation but without payload or usable fuel: the FAA Aircraft Characteristics Database describes OEW as including the crew and all fluids necessary for operation, such as engine oil, but excluding fuel and payload.",
+   "why_it_matters": "OEW is the starting point of every weight calculation. A heavier OEW (for example after a freighter conversion adds a cargo door, stronger floor and cargo loading system) leaves less room for payload under the same MZFW.",
+   "example": "OpenAP lists an OEW of 42,600 kg for the A320 (open model data, not an operator-specific certified weight).",
+   "diagram": "weights-stack",
+   "related_specs": [
+    "oew_kg"
+   ],
+   "aliases": [
+    "Basic operating weight"
+   ],
+   "references": [
+    {
+     "title": "Aircraft Characteristics Database (data dictionary)",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/airports/engineering/aircraft_char_database"
+    },
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "mzfw",
+   "term": "Maximum Zero-Fuel Weight (MZFW)",
+   "category": "Weights",
+   "definition": "The maximum authorized weight of an aircraft without fuel (FAA Weight & Balance Handbook). It is the aircraft (OEW) plus payload, before any usable fuel is added.",
+   "why_it_matters": "Fuel stored in the wings relieves bending at the wing root; payload in the fuselage does not. MZFW therefore limits how much payload can be loaded, regardless of how much fuel is carried.",
+   "example": "EFW publishes an MZFW of 73.8 t for the A321P2F (weight variant 011); Airbus publishes 178 t for the A330-200F.",
+   "diagram": "weights-stack",
+   "related_specs": [
+    "mzfw_kg"
+   ],
+   "aliases": [
+    "Zero fuel weight"
+   ],
+   "references": [
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "payload",
+   "term": "Payload",
+   "category": "Weights",
+   "definition": "The weight of occupants, cargo and baggage (FAA Weight & Balance Handbook, GAMA definition). Manufacturers often publish a maximum structural payload - the most payload the structure allows - which is not the same as the revenue cargo actually carried on a flight.",
+   "why_it_matters": "Payload is what generates revenue. The structural maximum is a limit; the revenue payload on a real flight depends on demand, cargo density (volume may fill before weight) and the fuel needed for the distance.",
+   "example": "Boeing lists the 777 Freighter with a gross structural payload of 107 tonnes. A particular 777F flight may carry far less revenue cargo; this project never treats a structural maximum (or its own modelled payload) as revenue cargo.",
+   "diagram": "weights-stack",
+   "related_specs": [
+    "max_structural_payload_kg",
+    "cargo_capacity_statement"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    },
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "range",
+   "term": "Range",
+   "category": "Performance",
+   "definition": "The distance an aircraft can fly from takeoff to landing with a given payload, fuel load and reserve policy. A single 'range' figure is only meaningful together with its payload and reserve conditions.",
+   "why_it_matters": "Range decides which routes an aircraft can serve without a stop. More payload means less fuel can be loaded under MTOW, so range falls.",
+   "example": "Boeing: 'The 777F has 5,000 nmi of range with a 107-tonne payload'. OpenAP's 'nominal cruise range' in this database has no stated payload condition, so it is labelled as model data, not a payload-range point.",
+   "diagram": "payload-range",
+   "related_specs": [
+    "published_range_nm",
+    "published_range_km",
+    "nominal_cruise_range_km"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    }
+   ],
+   "basis": "general explanation; examples sourced as cited"
+  },
+  {
+   "slug": "payload-range",
+   "term": "Payload-range relationship",
+   "category": "Performance",
+   "definition": "The trade-off between how much payload an aircraft carries and how far it can fly. With maximum payload the aircraft can take off with fuel only up to MTOW; flying further requires swapping payload for fuel until the fuel tanks are full; beyond that only less payload (lower weight) extends range.",
+   "why_it_matters": "It explains why the same freighter can carry its full payload on medium routes but must leave cargo behind on very long routes - central to choosing an aircraft for a cargo network.",
+   "example": "Published single points: 777F 5,000 nmi with 107 t; 767-300F 3,300 nmi with 57 t (Boeing). A complete payload-range diagram needs manufacturer performance data that this project does not hold.",
+   "diagram": "payload-range",
+   "related_specs": [
+    "published_range_nm",
+    "max_structural_payload_kg",
+    "mzfw_kg",
+    "mtow_kg",
+    "fuel_capacity_l"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    },
+    {
+     "title": "FAA Aircraft Weight and Balance Handbook (FAA-H-8083-1B), Glossary",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
+    }
+   ],
+   "basis": "general explanation; examples sourced as cited"
+  },
+  {
+   "slug": "fuel-burn",
+   "term": "Fuel burn",
+   "category": "Performance",
+   "definition": "The mass of fuel consumed. This project splits a flight's block fuel into taxi-out, trip fuel (brake release to touchdown), landing roll and taxi-in.",
+   "why_it_matters": "Fuel is typically the largest variable cost of a flight and determines emissions. Fuel burned also lowers the aircraft's weight during the flight.",
+   "example": "Part 2 model estimate (OpenAP, no wind, ISA): A320 Frankfurt-Paris CDG with 10 t payload burns about 2,271 kg block fuel, of which about 1,925 kg is trip fuel and 334 kg taxi fuel.",
+   "diagram": "flight-phases",
+   "related_specs": [
+    "fuel_capacity_l"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Project documentation: flight performance model",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/flight_performance.md"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "sfc",
+   "term": "Specific fuel consumption (SFC)",
+   "category": "Engines",
+   "definition": "Thrust specific fuel consumption (TSFC) is the fuel flow rate divided by the thrust produced - how much fuel an engine needs per unit of thrust per unit of time (NASA Glenn).",
+   "why_it_matters": "Lower SFC means the same thrust for less fuel. Higher bypass ratios generally reduce SFC, which is why modern turbofans have large fans.",
+   "example": "If two engines produce the same cruise thrust and one has a 10 % lower TSFC, it burns about 10 % less fuel per hour at that condition.",
+   "diagram": "turbofan",
+   "related_specs": [
+    "bypass_ratio",
+    "rated_thrust_kn"
+   ],
+   "aliases": [
+    "TSFC"
+   ],
+   "references": [
+    {
+     "title": "Specific Fuel Consumption",
+     "publisher": "NASA Glenn Research Center",
+     "url": "https://www.grc.nasa.gov/www/k-12/airplane/sfc.html"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "thrust",
+   "term": "Thrust and the turbofan",
+   "category": "Engines",
+   "definition": "Thrust is the force that moves the aircraft forward; a jet engine produces it by accelerating air rearwards (NASA Glenn). A turbofan uses a core (compressor, combustor, turbine) to drive a large fan; most of the air bypasses the core and produces most of the thrust efficiently.",
+   "why_it_matters": "Rated thrust limits takeoff performance (runway length, climb) and is certified per engine; the bypass ratio indicates how much air goes around the core.",
+   "example": "The A320's default OpenAP engine, CFM56-5B4, has a rated thrust of 117.9 kN per engine and a bypass ratio of 5.9 (ICAO Engine Emissions Databank values as distributed by OpenAP).",
+   "diagram": "turbofan",
+   "related_specs": [
+    "rated_thrust_kn",
+    "bypass_ratio",
+    "engine_model",
+    "engine_count",
+    "engine_type"
+   ],
+   "aliases": [
+    "Turbofan",
+    "Rated thrust"
+   ],
+   "references": [
+    {
+     "title": "General Thrust Equation",
+     "publisher": "NASA Glenn Research Center",
+     "url": "https://www.grc.nasa.gov/www/k-12/airplane/thrust1.html"
+    },
+    {
+     "title": "Turbofan Engine (Beginner's Guide to Propulsion)",
+     "publisher": "NASA Glenn Research Center",
+     "url": "https://www.grc.nasa.gov/www/k-12/airplane/aturbf.html"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "block-hours",
+   "term": "Block hours",
+   "category": "Operations",
+   "definition": "Block time runs from off-block (doors closed, aircraft starts moving at the gate) to on-block (aircraft stops at the destination gate). It includes taxi, takeoff, flight and landing. BTS reports it as ramp-to-ramp hours.",
+   "why_it_matters": "Many costs are measured per block hour (crew pay, maintenance rates, utilization), so block hours link flights to annual cost assumptions.",
+   "example": "Part 2 model: A320 Frankfurt-Paris CDG = 71.9 block minutes (1.20 block hours), of which 44.2 minutes airborne.",
+   "diagram": "flight-phases",
+   "related_specs": [],
+   "aliases": [
+    "Ramp-to-ramp"
+   ],
+   "references": [
+    {
+     "title": "Economic Values for FAA Investment and Regulatory Decisions, Section 4 (Tables 4-16, 4-17)",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf"
+    },
+    {
+     "title": "Project documentation: flight performance model",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/flight_performance.md"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "flight-cycles",
+   "term": "Flight cycles",
+   "category": "Operations",
+   "definition": "One flight cycle is one takeoff and landing (one pressurisation cycle of the fuselage).",
+   "why_it_matters": "Fatigue of the airframe and life-limited engine parts is counted in cycles, so short-haul aircraft that fly many sectors per day age differently from long-haul aircraft with the same hours.",
+   "example": "A single saved flight estimate in this project is one completed leg = one flight cycle; per-cycle maintenance reserves are charged once per leg.",
+   "diagram": null,
+   "related_specs": [],
+   "aliases": [
+    "Cycles"
+   ],
+   "references": [
+    {
+     "title": "Project documentation: full operating cost model (taxonomy)",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/full_cost_model.md"
+    }
+   ],
+   "basis": "general explanation; examples sourced as cited"
+  },
+  {
+   "slug": "narrowbody-widebody",
+   "term": "Narrowbody vs widebody",
+   "category": "Classification",
+   "definition": "A narrowbody (single-aisle) aircraft has one passenger aisle; a widebody (twin-aisle) aircraft has a fuselage wide enough for two aisles. The FAA classifies aircraft types this way in its Economic Values Table 4-16.",
+   "why_it_matters": "Body width determines cabin layout, the size of containers and pallets that fit side by side on the main deck, and typical routes (short/medium vs long haul).",
+   "example": "FAA Table 4-16: A320 and 737-800 are narrowbody; A330-200, 767-300, 777-F and 747-4F are widebody.",
+   "diagram": "body-cross-section",
+   "related_specs": [
+    "body_class",
+    "fuselage_width_m"
+   ],
+   "aliases": [
+    "Single-aisle",
+    "Twin-aisle"
+   ],
+   "references": [
+    {
+     "title": "Economic Values for FAA Investment and Regulatory Decisions, Section 4 (Tables 4-16, 4-17)",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "passenger-vs-freighter",
+   "term": "Passenger aircraft vs freighter",
+   "category": "Cargo",
+   "definition": "A freighter carries cargo on the main deck instead of passengers. Production (purpose-built) freighters are built as freighters at the factory; converted freighters (P2F) are former passenger aircraft modified later.",
+   "why_it_matters": "Production freighters are designed around cargo from the start; converted freighters reuse airframes with remaining life at lower acquisition cost. Their weights and performance differ and passenger specifications must not be used as freighter specifications.",
+   "example": "Production: 777 Freighter, 767-300 Freighter (Boeing), A330-200F (Airbus). Converted: A321P2F (EFW), 767-300 Boeing Converted Freighter.",
+   "diagram": null,
+   "related_specs": [
+    "freighter_type",
+    "base_aircraft",
+    "conversion_provider"
+   ],
+   "aliases": [
+    "Production freighter",
+    "Converted freighter"
+   ],
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "general explanation; examples sourced as cited"
+  },
+  {
+   "slug": "uld",
+   "term": "Unit load device (ULD)",
+   "category": "Cargo",
+   "definition": "A ULD is a container or a pallet with a net used to load cargo or baggage on an aircraft so that many pieces can be handled as one unit; IATA publishes the ULD regulations and identification codes (for example AAY, AKH, LD3).",
+   "why_it_matters": "ULDs make loading fast and safe, protect the aircraft structure and define how many positions fit on each deck. Container shapes are designed for specific deck contours.",
+   "example": "EFW: the A321P2F has 14 AAY container positions on the main deck and 10 AKH positions in the lower deck. Airbus: the A330-200F lower deck takes 26 LD3 containers (or 8 pallets + 2 LD3).",
+   "diagram": "uld",
+   "related_specs": [
+    "main_deck_capacity",
+    "lower_deck_capacity"
+   ],
+   "aliases": [
+    "ULD",
+    "Container"
+   ],
+   "references": [
+    {
+     "title": "Unit Load Devices (ULD)",
+     "publisher": "IATA",
+     "url": "https://www.iata.org/en/programs/cargo/unit-load-devices/"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "cargo-pallet",
+   "term": "Cargo pallet",
+   "category": "Cargo",
+   "definition": "A flat aluminium platform onto which cargo is built up and secured with a net; pallets are ULDs. Common base sizes are given in inches, e.g. 96 x 125 in, and long pallets such as 16 ft and 20 ft exist for oversized cargo.",
+   "why_it_matters": "Pallets allow irregular and oversized cargo that does not fit containers; door size and floor strength decide which pallets an aircraft can take.",
+   "example": "Airbus advertises 96 x 125 in pallets side by side on the A330-200F main deck; EFW states the A330P2F can take 16 ft and 20 ft pallets.",
+   "diagram": "uld",
+   "related_specs": [
+    "main_deck_capacity",
+    "main_deck_cargo_door"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Unit Load Devices (ULD)",
+     "publisher": "IATA",
+     "url": "https://www.iata.org/en/programs/cargo/unit-load-devices/"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "main-deck-cargo-door",
+   "term": "Main-deck cargo door",
+   "category": "Cargo",
+   "definition": "A large door cut into the side of the fuselage so that ULDs can be loaded onto the main (upper) deck. Production freighters are built with one; a passenger-to-freighter conversion adds it.",
+   "why_it_matters": "The door size limits the largest ULD or pallet that can be loaded. Installing it requires major structural reinforcement around the cut-out.",
+   "example": "EFW: the A321P2F's hydraulically operated main-deck cargo door is 142 in wide and 85 in high; the A330P2F door is 141 in by 101 in.",
+   "diagram": "p2f-steps",
+   "related_specs": [
+    "main_deck_cargo_door"
+   ],
+   "aliases": [],
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "cargo-loading-system",
+   "term": "Cargo loading system (CLS)",
+   "category": "Cargo",
+   "definition": "The floor equipment that moves and locks ULDs on the deck: roller tracks, ball mats near the door, guides and locks; powered systems drive containers into position.",
+   "why_it_matters": "A good CLS shortens turnaround time and allows flexible container/pallet layouts; it is part of a freighter conversion.",
+   "example": "EFW describes a powered cargo loading system for the A330P2F in which containers are 'power-driven into position', and a cargo loading system for containers or pallets on both decks of the A321P2F.",
+   "diagram": "p2f-steps",
+   "related_specs": [
+    "cargo_loading_system"
+   ],
+   "aliases": [
+    "CLS",
+    "PCLS"
+   ],
+   "references": [
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "general explanation; examples sourced as cited"
+  },
+  {
+   "slug": "p2f-conversion",
+   "term": "Passenger-to-freighter (P2F) conversion",
+   "category": "Cargo",
+   "definition": "Modifying a used passenger aircraft into a freighter. EFW summarises the work as: the floor is rebuilt, stringers and frames are replaced or reinforced, the main cargo door is installed, the fuselage is reinforced, and windows and rear passenger doors are locked (plugged). A rigid cargo barrier protects the crew and the main deck becomes a certified cargo compartment.",
+   "why_it_matters": "Conversion gives aircraft a second life and supplies freighters at lower cost than new production freighters. The design change is approved as a Supplemental Type Certificate (STC).",
+   "example": "EFW's A321P2F STC covers all weight variants of the A321-200; its rigid cargo barrier is designed for loads up to 9 g, and the main deck is a Class E cargo hold.",
+   "diagram": "p2f-steps",
+   "related_specs": [
+    "base_aircraft",
+    "conversion_provider",
+    "cargo_barrier",
+    "main_deck_compartment_class"
+   ],
+   "aliases": [
+    "P2F",
+    "Freighter conversion",
+    "STC"
+   ],
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    },
+    {
+     "title": "Supplemental Type Certificates",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/stc"
+    }
+   ],
+   "basis": "definition quoted or paraphrased from the first reference; examples from the cited sources or this project's data"
+  },
+  {
+   "slug": "doc",
+   "term": "Direct operating cost (DOC)",
+   "category": "Economics",
+   "definition": "Costs directly caused by operating the aircraft. In this project's taxonomy: direct variable costs (fuel, maintenance, LLP, navigation, landing, handling, crew allowances) plus direct fixed costs (crew salaries, insurance, operating lease).",
+   "why_it_matters": "DOC is the basis for comparing aircraft on the same route; definitions differ between organisations, so always check what is included.",
+   "example": "Saved example (illustrative scenario): A320 FRA-CDG direct variable subtotal 2,768.21 EUR and direct fixed subtotal 678.66 EUR - both PARTIAL because navigation, landing and handling are unavailable.",
+   "diagram": "cost-taxonomy",
+   "related_specs": [],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Project documentation: full operating cost model (taxonomy)",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/full_cost_model.md"
+    }
+   ],
+   "basis": "project definition (this project's cost taxonomy); examples from the saved illustrative scenario"
+  },
+  {
+   "slug": "coc",
+   "term": "Cash operating cost (COC)",
+   "category": "Economics",
+   "definition": "In this project: COC = direct variable + direct fixed + indirect costs (administration, cargo sales, G&A). It excludes noncash depreciation and financing interest.",
+   "why_it_matters": "COC shows the cash needed to fly; Total operating cost (TOC) adds depreciation and Total costs add financing.",
+   "example": "Saved example: partial COC subtotal 3,946.08 EUR; complete COC unavailable because four components are missing.",
+   "diagram": "cost-taxonomy",
+   "related_specs": [],
+   "aliases": [
+    "COC",
+    "TOC"
+   ],
+   "references": [
+    {
+     "title": "Project documentation: full operating cost model (taxonomy)",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/full_cost_model.md"
+    }
+   ],
+   "basis": "project definition (this project's cost taxonomy); examples from the saved illustrative scenario"
+  },
+  {
+   "slug": "depreciation",
+   "term": "Depreciation",
+   "category": "Economics",
+   "definition": "The spreading of an asset's cost over its useful life. This project uses straight-line depreciation: (depreciable value - residual value) / useful life, allocated per flight; it is a noncash cost added in TOC.",
+   "why_it_matters": "Ownership cost is often the largest fixed cost of an aircraft; owned and leased aircraft show it in different cost lines.",
+   "example": "Illustrative owned scenario: (50 M - 5 M EUR) / 20 years = 2.25 M EUR per year, about 898 EUR on the 1.2-block-hour A320 example.",
+   "diagram": "cost-taxonomy",
+   "related_specs": [],
+   "aliases": [],
+   "references": [
+    {
+     "title": "Project documentation: ownership and financing",
+     "publisher": "Open Aircraft Operating Cost Model",
+     "url": "docs/ownership_and_financing.md"
+    }
+   ],
+   "basis": "project definition (this project's cost taxonomy); examples from the saved illustrative scenario"
+  }
+ ]
+}

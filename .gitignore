@@ -18,6 +18,12 @@ data/processed/**/*
 !data/processed/**/
 !**/.gitkeep
 
+# Locally extracted tariff parameters (source documents' reuse terms unclear; not redistributed)
+data/local/
+
+# Generated analytics outputs (reports, charts, CSV/JSON exports; reproducible via scripts/)
+data/output/
+
 # Database files
 database/*.db
 database/*.db-journal
@@ -26,3 +32,7 @@ database/*.db-journal
 .DS_Store
 .idea/
 .vscode/
+
+# Part 6 frontend (installed dependencies and build output)
+frontend/node_modules/
+frontend/dist/

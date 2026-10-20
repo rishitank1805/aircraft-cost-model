@@ -1,0 +1,15 @@
+project_aircraft_code,bts_aircraft_type,bts_aircraft_config,bts_description,mapping_status,notes
+A320,694,1,Airbus Industrie A320-100/200,family_match,"BTS 694 covers A320-100/-200 (ceo) in passenger configuration; the A320neo is reported separately (722). OpenAP A320 models the A320-200 (ceo)."
+A20N,722,1,Airbus Industrie A320-200n,family_match,A320neo.
+A319,698,1,Airbus Industrie A319,family_match,
+A21N,721,1,Airbus Industrie A321-200n,family_match,A321neo.
+B738,614,1,Boeing 737-800,family_match,
+B752,622,1,Boeing 757-200,family_match,
+B763,626,1,Boeing 767-300/300ER,family_match,Passenger configuration only.
+A332,696,1,Airbus Industrie A330-200,family_match,Passenger configuration only.
+B744,819,1,Boeing 747-400,family_match,Passenger configuration only.
+B777F,683,2,Boeing B777-F,exact_type_match,"Production 777F. No supported performance model in this project, so benchmark-only (no model estimate)."
+B767-300F,626,2,Boeing 767-300/300ER (freight configuration),configuration_match,"BTS reports 767-300 freighters under 626 with configuration 2; this includes converted (BCF/BDSF) aircraft, not only production 767-300F. Benchmark-only."
+B747-400F,819,2,Boeing 747-400 (freight configuration),configuration_match,"Most carriers report 747-400 freighters as 819 with configuration 2 (code 820 '747-400F' also exists); includes converted aircraft. Benchmark-only."
+A330-200F,696,2,Airbus Industrie A330-200 (freight configuration),configuration_match,"Would include P2F conversions; no 2024 rows observed. Benchmark-only."
+A321P2F,,,,unmapped,"No verified BTS aircraft-type code for the A321ceo / A321P2F was identified (699 is labelled A321neo XLR). Not mapped."

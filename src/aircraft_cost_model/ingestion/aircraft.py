@@ -18,6 +18,7 @@ Synonyms (``openap/data/aircraft/_synonym.csv``) map unsupported types to
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import logging
@@ -43,7 +44,7 @@ class OpenAPSnapshot:
 
 @dataclass(frozen=True)
 class CargoAircraftTarget:
-    """A freighter type the cost model must eventually support.
+    """A freighter type the cost model must eventually support (one row of the curated CSV).
 
     ``icao_type_designator`` values are individual facts referenced from ICAO
     Doc 8643 (Aircraft Type Designators); ICAO does not distinguish freighters
@@ -58,59 +59,9 @@ class CargoAircraftTarget:
     variant: str
     icao_type_designator: str
     openap_related_code: str | None
+    designator_reference: str
     notes: str
 
-
-CARGO_AIRCRAFT_TARGETS: tuple[CargoAircraftTarget, ...] = (
-    CargoAircraftTarget(
-        aircraft_code="A330-200F",
-        manufacturer="Airbus",
-        model="A330-200F",
-        variant="production freighter",
-        icao_type_designator="A332",
-        openap_related_code="A332",
-        notes="OpenAP A332 models the A330-200 passenger aircraft; its weights and "
-        "performance are not applicable to the freighter without validation.",
-    ),
-    CargoAircraftTarget(
-        aircraft_code="B777F",
-        manufacturer="Boeing",
-        model="777F",
-        variant="production freighter",
-        icao_type_designator="B77L",
-        openap_related_code=None,
-        notes="No OpenAP model for designator B77L. OpenAP's synonym table maps B77L "
-        "to B77W (777-300ER), a different airframe; this project does not use it.",
-    ),
-    CargoAircraftTarget(
-        aircraft_code="B767-300F",
-        manufacturer="Boeing",
-        model="767-300F",
-        variant="production freighter",
-        icao_type_designator="B763",
-        openap_related_code="B763",
-        notes="OpenAP B763 models the 767-300 passenger aircraft; not substituted.",
-    ),
-    CargoAircraftTarget(
-        aircraft_code="B747-400F",
-        manufacturer="Boeing",
-        model="747-400F",
-        variant="production freighter",
-        icao_type_designator="B744",
-        openap_related_code="B744",
-        notes="OpenAP B744 models the 747-400 passenger aircraft; not substituted.",
-    ),
-    CargoAircraftTarget(
-        aircraft_code="A321P2F",
-        manufacturer="Airbus",
-        model="A321P2F",
-        variant="passenger-to-freighter conversion",
-        icao_type_designator="A321",
-        openap_related_code="A321",
-        notes="Conversion of the A321 passenger aircraft. OpenAP A321 models the "
-        "passenger aircraft; conversion changes OEW and payload limits; not substituted.",
-    ),
-)
 
 CARGO_TARGETS_SOURCE_NAME = "Project-curated cargo aircraft coverage list"
 CARGO_TARGETS_REFERENCE_URL = "https://www.icao.int/publications/doc-8643-aircraft-type-designators"
@@ -203,7 +154,54 @@ def save_openap_snapshot(snapshot: OpenAPSnapshot, raw_dir: Path) -> OpenAPSnaps
     return OpenAPSnapshot(**{**asdict(snapshot), "raw_path": path})
 
 
-def cargo_targets_checksum(targets: tuple[CargoAircraftTarget, ...] = CARGO_AIRCRAFT_TARGETS) -> str:
-    """Checksum of the curated cargo target list (changes when the list is edited)."""
-    payload = json.dumps([asdict(t) for t in targets], sort_keys=True).encode()
-    return hashlib.sha256(payload).hexdigest()
+CARGO_TARGET_COLUMNS = (
+    "aircraft_code",
+    "manufacturer",
+    "model",
+    "variant",
+    "icao_type_designator",
+    "openap_related_code",
+    "designator_reference",
+    "notes",
+)
+
+
+def load_cargo_targets(path: Path) -> tuple[CargoAircraftTarget, ...]:
+    """Read the version-controlled freighter target list (``data/reference/cargo_aircraft_targets.csv``).
+
+    Raises:
+        ValueError: If columns are missing, a required value is empty or a code is duplicated.
+    """
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        missing = [c for c in CARGO_TARGET_COLUMNS if c not in (reader.fieldnames or [])]
+        if missing:
+            raise ValueError(f"{path.name} is missing columns: {missing}")
+        rows = [{k: (v or "").strip() for k, v in row.items()} for row in reader]
+    targets: list[CargoAircraftTarget] = []
+    for number, row in enumerate(rows, start=2):
+        for required in ("aircraft_code", "manufacturer", "model", "icao_type_designator"):
+            if not row[required]:
+                raise ValueError(f"{path.name} line {number}: empty {required}")
+        targets.append(
+            CargoAircraftTarget(
+                aircraft_code=row["aircraft_code"],
+                manufacturer=row["manufacturer"],
+                model=row["model"],
+                variant=row["variant"],
+                icao_type_designator=row["icao_type_designator"],
+                openap_related_code=row["openap_related_code"] or None,
+                designator_reference=row["designator_reference"],
+                notes=row["notes"],
+            )
+        )
+    codes = [t.aircraft_code.upper() for t in targets]
+    duplicates = sorted({c for c in codes if codes.count(c) > 1})
+    if duplicates:
+        raise ValueError(f"{path.name}: duplicate aircraft_code values {duplicates}")
+    return tuple(targets)
+
+
+def cargo_targets_checksum(path: Path) -> str:
+    """SHA-256 of the curated CSV file (changes whenever the list is edited)."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()

@@ -1,0 +1,371 @@
+{
+ "version": 1,
+ "explainers": [
+  {
+   "id": "what-is-freighter",
+   "title": "What is a freighter aircraft?",
+   "glossary": [
+    "passenger-vs-freighter"
+   ],
+   "body": "A freighter carries cargo on its main deck - the deck where a passenger aircraft has its cabin - as well as in the lower-deck holds. It has a large main-deck cargo door, a strengthened floor, a cargo loading system and a barrier separating the cargo from the flight crew. Freighters are either built as freighters at the factory (production or purpose-built freighters) or converted from passenger aircraft (passenger-to-freighter, P2F).",
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    }
+   ],
+   "basis": "general explanation; freighter examples sourced"
+  },
+  {
+   "id": "what-is-p2f",
+   "title": "What is passenger-to-freighter (P2F) conversion?",
+   "glossary": [
+    "p2f-conversion"
+   ],
+   "body": "A P2F conversion turns a used passenger aircraft into a freighter. The cabin interior is removed, the fuselage around a new main-deck cargo door is reinforced, the floor is rebuilt for cargo loads, windows and unused passenger doors are plugged or locked, and a rigid barrier, cargo loading system and fire protection for a certified cargo compartment are installed. The modified design is approved through a Supplemental Type Certificate (STC).",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    },
+    {
+     "title": "Supplemental Type Certificates",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/stc"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "id": "why-convert",
+   "title": "Why do operators convert passenger aircraft?",
+   "glossary": [
+    "p2f-conversion"
+   ],
+   "body": "A passenger aircraft that leaves passenger service often still has structural life left. Converting it provides freighter capacity at a lower acquisition cost than a new production freighter, and supplies aircraft sizes that are not built as new freighters - for example narrowbody freighters such as the A321P2F. EFW states that its conversions serve e-commerce, express and general cargo markets. (This project does not hold conversion cost data; no cost comparison is shown.)",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "general explanation (the EFW market statement is sourced; the cost rationale is a general explanation, not project data)"
+  },
+  {
+   "id": "main-deck-door",
+   "title": "What is a main-deck cargo door?",
+   "glossary": [
+    "main-deck-cargo-door"
+   ],
+   "body": "The main-deck cargo door is a large opening in the side of the fuselage through which containers and pallets are loaded onto the main deck. Its width and height decide the largest unit load device that fits. EFW's A321P2F door is 142 in wide and 85 in high; its A330P2F door is 141 in by 101 in.",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "id": "ulds",
+   "title": "What are ULDs and cargo pallets?",
+   "glossary": [
+    "uld",
+    "cargo-pallet"
+   ],
+   "body": "Unit load devices (ULDs) are containers and pallets that consolidate many shipments into one unit that can be loaded quickly and locked to the aircraft floor. Containers have contoured shapes that match the fuselage (e.g. AAY on the A321P2F main deck, AKH and LD3 in lower decks); pallets are flat platforms with nets, in sizes such as 96 x 125 in. IATA publishes the ULD regulations.",
+   "references": [
+    {
+     "title": "Unit Load Devices (ULD)",
+     "publisher": "IATA",
+     "url": "https://www.iata.org/en/programs/cargo/unit-load-devices/"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "id": "cls",
+   "title": "What is a cargo loading system?",
+   "glossary": [
+    "cargo-loading-system"
+   ],
+   "body": "The cargo loading system (CLS) is the equipment in the floor that lets ground staff move ULDs from the door to their positions and lock them: roller tracks, ball mats at the door area, side guides and locks. In a powered system (PCLS) drive units move the containers. EFW describes a powered cargo loading system for the A330P2F in which containers are power-driven into position.",
+   "references": [
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "general explanation of CLS components; EFW statement sourced"
+  },
+  {
+   "id": "payload-range",
+   "title": "How do payload and range interact?",
+   "glossary": [
+    "payload-range",
+    "mzfw",
+    "mtow"
+   ],
+   "body": "With maximum payload, the zero-fuel weight is at its maximum (MZFW), so only the fuel that fits under MTOW can be added - this sets the maximum-payload range. To fly further, payload has to be removed so that more fuel can be loaded within MTOW, until the tanks are full. Published points show this trade-off: Boeing quotes 5,000 nmi with a 107-tonne payload for the 777F and 3,300 nmi with 57 tonnes for the 767-300F.",
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    }
+   ],
+   "basis": "general explanation of the trade-off; the published payload-range points are sourced"
+  },
+  {
+   "id": "converted-vs-production",
+   "title": "How are converted freighters different from purpose-built freighters?",
+   "glossary": [
+    "passenger-vs-freighter"
+   ],
+   "body": "Production freighters are designed and certified as freighters from the start (for example with structure, doors and weights optimised for cargo) and are built new. Converted freighters keep the passenger aircraft's original structure with added reinforcements, so their empty weight, payload and limits differ from both the passenger version and any production freighter of the same family. Boeing, for example, offers both the 767-300 Freighter (production) and the 767-300 Boeing Converted Freighter. Data for one must never be used for the other.",
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "general explanation; the Boeing product example is sourced"
+  }
+ ],
+ "conversion_steps": [
+  {
+   "step": 1,
+   "title": "Aircraft selection and induction",
+   "body": "A suitable passenger aircraft is selected (type, weight variant, structural condition) and inducted into the conversion facility. EFW's A321P2F STC covers all weight variants of the A321-200.",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "step": 2,
+   "title": "Strip the cabin",
+   "body": "Seats, galleys, lavatories, overhead bins and cabin linings are removed to expose the structure.",
+   "references": [],
+   "basis": "general description (not stated on the cited pages)"
+  },
+  {
+   "step": 3,
+   "title": "Floor rebuild",
+   "body": "The floor is rebuilt for cargo loads; EFW states that the floor is rebuilt and stringers and frames are replaced or reinforced.",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "step": 4,
+   "title": "Cut-out and main-deck cargo door",
+   "body": "A large opening is cut into the fuselage side and the main-deck cargo door is installed; the surrounding fuselage is reinforced.",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "step": 5,
+   "title": "Plug windows, deactivate passenger doors",
+   "body": "Windows are replaced by plugs and rear passenger doors are locked (EFW).",
+   "references": [
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "step": 6,
+   "title": "Cargo barrier, cargo loading system and fire protection",
+   "body": "A rigid cargo barrier separates the crew from the cargo (EFW's A321P2F barrier is designed for loads up to 9 g); a cargo loading system and fire-protection equipment for a Class E cargo compartment are installed.",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ],
+   "basis": "sourced"
+  },
+  {
+   "step": 7,
+   "title": "Certification and redelivery",
+   "body": "The modification is approved as a Supplemental Type Certificate (STC); after tests the aircraft is redelivered as a freighter.",
+   "references": [
+    {
+     "title": "Supplemental Type Certificates",
+     "publisher": "U.S. Federal Aviation Administration",
+     "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/stc"
+    },
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ],
+   "basis": "sourced"
+  }
+ ],
+ "targets": [
+  {
+   "code": "A330-200F",
+   "freighter_type": "production_freighter",
+   "summary": "Airbus's factory-built freighter of the A330 family. Airbus lists it separately from the A330-200P2F/-300P2F conversion programmes (performed by EFW).",
+   "not_to_confuse_with": "A330-200P2F (converted A330-200 passenger aircraft)",
+   "references": [
+    {
+     "title": "A330-200F",
+     "publisher": "Airbus",
+     "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
+    },
+    {
+     "title": "A330P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+    }
+   ]
+  },
+  {
+   "code": "B777F",
+   "freighter_type": "production_freighter",
+   "summary": "Boeing's production large widebody freighter. Boeing: 107 tonnes gross structural payload and 5,000 nmi range with a 107-tonne payload. Its ICAO designator (B77L) is shared with the 777-200LR passenger aircraft.",
+   "not_to_confuse_with": "777-200LR passenger aircraft",
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    }
+   ]
+  },
+  {
+   "code": "B767-300F",
+   "freighter_type": "production_freighter",
+   "summary": "Boeing's production medium widebody freighter (57 tonnes gross structural payload; 3,300 nmi with 57 tonnes). Boeing also offers the 767-300 Boeing Converted Freighter, a different (converted) aircraft.",
+   "not_to_confuse_with": "767-300BCF / other converted 767-300 freighters",
+   "references": [
+    {
+     "title": "Boeing Freighters",
+     "publisher": "Boeing",
+     "url": "https://www.boeing.com/commercial/freighters"
+    }
+   ]
+  },
+  {
+   "code": "B747-400F",
+   "freighter_type": "production_freighter",
+   "summary": "Boeing's production 747-400 freighter (out of production; the final 747 delivered in 2023 was a 747-8F). Converted 747-400 freighters (e.g. the 747-400 Boeing Converted Freighter) are different aircraft.",
+   "not_to_confuse_with": "747-400BCF / 747-400BDSF converted freighters",
+   "references": [
+    {
+     "title": "Boeing Delivers Japan Airlines' First 747-400 Freighter (12 Oct 2004)",
+     "publisher": "Boeing",
+     "url": "https://boeing.mediaroom.com/2004-10-12-Boeing-Delivers-Japan-Airlines-First-747-400-Freighter"
+    },
+    {
+     "title": "First 747-400 Boeing Converted Freighter Redelivered to Cathay Pacific (19 Dec 2005)",
+     "publisher": "Boeing",
+     "url": "https://boeing.mediaroom.com/2005-12-19-First-747-400-Boeing-Converted-Freighter-Redelivered-to-Cathay-Pacific"
+    },
+    {
+     "title": "Boeing, Atlas Air Celebrate Delivery of Final 747 (31 Jan 2023)",
+     "publisher": "Boeing",
+     "url": "https://boeing.mediaroom.com/2023-01-31-Boeing,-Atlas-Air-Celebrate-Delivery-of-Final-747,-an-Airplane-that-Transformed-Aviation-and-Global-Air-Travel"
+    }
+   ]
+  },
+  {
+   "code": "A321P2F",
+   "freighter_type": "converted_freighter",
+   "summary": "Passenger-to-freighter conversion of the A321-200 by Elbe Flugzeugwerke (EFW) with Airbus OEM data support - the only one of the five targets that is an EFW conversion product.",
+   "not_to_confuse_with": "A321 passenger aircraft; other A321 conversion programmes",
+   "references": [
+    {
+     "title": "A320/A321P2F freighter conversion",
+     "publisher": "Elbe Flugzeugwerke (EFW)",
+     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+    }
+   ]
+  }
+ ],
+ "disclaimer": "Independent educational project. Not affiliated with, sponsored or endorsed by Elbe Flugzeugwerke, Airbus, Boeing or any other company named. Figures are quoted from the cited public pages; follow the links for the authoritative, current information."
+}

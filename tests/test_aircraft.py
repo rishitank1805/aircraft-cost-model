@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from aircraft_cost_model.config import JET_FUEL_DENSITY_KG_PER_L
-from aircraft_cost_model.ingestion.aircraft import CARGO_AIRCRAFT_TARGETS, read_openap_aircraft
+from aircraft_cost_model.ingestion.aircraft import load_cargo_targets, read_openap_aircraft
 from aircraft_cost_model.processing.aircraft_cleaner import (
     COVERAGE_NONE,
     COVERAGE_RELATED_PASSENGER_ONLY,
@@ -97,8 +97,8 @@ def test_validator_rejects_unlabelled_conversion(openap_like_records):
     assert any("fuel_capacity_kg populated without" in e for e in report.errors)
 
 
-def test_cargo_targets_never_inherit_passenger_values():
-    rows, warnings = build_cargo_target_rows(CARGO_AIRCRAFT_TARGETS, {"A332", "B763", "B744", "A321"})
+def test_cargo_targets_never_inherit_passenger_values(cargo_targets):
+    rows, warnings = build_cargo_target_rows(cargo_targets, {"A332", "B763", "B744", "A321"})
     assert warnings == []
     rows = rows.set_index("aircraft_code")
     for field in ("mtow_kg", "oew_kg", "fuel_capacity_kg", "cruise_speed_kt", "engine_count"):
@@ -110,8 +110,8 @@ def test_cargo_targets_never_inherit_passenger_values():
     assert pd.isna(rows.loc["B777F", "openap_related_code"])
 
 
-def test_cargo_target_related_code_cleared_if_not_in_openap():
-    rows, warnings = build_cargo_target_rows(CARGO_AIRCRAFT_TARGETS, set())
+def test_cargo_target_related_code_cleared_if_not_in_openap(cargo_targets):
+    rows, warnings = build_cargo_target_rows(cargo_targets, set())
     assert (rows["openap_coverage"] == COVERAGE_NONE).all()
     assert len(warnings) == 4
 
@@ -125,3 +125,24 @@ def test_installed_openap_data_is_readable_and_valid():
     report = _validate(master)
     assert report.passed, report.errors
     assert master["mzfw_kg"].isna().all()
+
+
+def test_cargo_targets_csv_loads_and_validates(cargo_targets, tmp_path):
+    assert [t.aircraft_code for t in cargo_targets] == ["A330-200F", "B777F", "B767-300F", "B747-400F", "A321P2F"]
+    b777f = next(t for t in cargo_targets if t.aircraft_code == "B777F")
+    assert b777f.icao_type_designator == "B77L" and b777f.openap_related_code is None
+    bad = tmp_path / "targets.csv"
+    bad.write_text("aircraft_code,manufacturer\nX,Y\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="missing columns"):
+        load_cargo_targets(bad)
+    header = "aircraft_code,manufacturer,model,variant,icao_type_designator,openap_related_code,designator_reference,notes\n"
+    dup = tmp_path / "dup.csv"
+    dup.write_text(header + "A,B,C,D,E,,r,n\na,B,C,D,E,,r,n\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="duplicate"):
+        load_cargo_targets(dup)
+
+
+def test_fuel_capacity_density_recorded(openap_like_records):
+    a332 = normalize_openap_aircraft(openap_like_records).set_index("aircraft_code").loc["A332"]
+    assert a332["fuel_capacity_density_kg_per_l"] == JET_FUEL_DENSITY_KG_PER_L
+    assert a332["fuel_capacity_l"] == 139000  # source value preserved

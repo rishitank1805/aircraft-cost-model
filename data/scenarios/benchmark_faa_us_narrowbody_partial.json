@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "scenario_version": "1",
+  "name": "FAA US narrowbody benchmark (partial)",
+  "ownership_mode": "owned",
+  "flight_type": "passenger",
+  "description": "PUBLIC BENCHMARK scenario: FAA per-block-hour averages for maintenance, crew and insurance only. Depreciation and rentals are fleet averages mixing owned and leased aircraft and are deliberately not used; ownership, utilization and indirect inputs are absent, so the result is incomplete by design.",
+  "reporting_currency": "EUR",
+  "pricing_date": "2025-01-15",
+  "effective_from": "2025-01-01",
+  "effective_to": "2025-12-31",
+  "maintenance": {
+    "airframe": {
+      "covers": [
+        "airframe",
+        "engine",
+        "engine_llp"
+      ],
+      "hourly_rate_includes_cycle_costs": true,
+      "rate_per_block_hour": {
+        "value": "954",
+        "unit": "USD/block_hour",
+        "source_type": "public_financial_benchmark",
+        "source_reference": "FAA, Economic Values for FAA Investment and Regulatory Decisions, Section 4 Aircraft Operating Costs (2024 update), Table 4-7: US Part 121 passenger carriers, Narrowbody 165k lbs or more MTOW (A320 per Table 4-16), YE June 2023, USD per block hour. https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf",
+        "reference_period": "YE June 2023",
+        "notes": "Total maintenance (airframe and engine, Table 4-3 maintenance category). US industry average; applied unadjusted to 2025 (no inflation or currency-region adjustment); not a European or airline-specific cost."
+      }
+    }
+  },
+  "crew": {
+    "salaries": {
+      "basis": "rate_per_block_hour",
+      "includes_allowances": true,
+      "rate_per_block_hour": {
+        "value": "1378",
+        "unit": "USD/block_hour",
+        "source_type": "public_financial_benchmark",
+        "source_reference": "FAA, Economic Values for FAA Investment and Regulatory Decisions, Section 4 Aircraft Operating Costs (2024 update), Table 4-7: US Part 121 passenger carriers, Narrowbody 165k lbs or more MTOW (A320 per Table 4-16), YE June 2023, USD per block hour. https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf",
+        "reference_period": "YE June 2023",
+        "notes": "Crew cost as defined in FAA Table 4-3 (treated as including crew personnel expenses, so allowances are not added). US industry average; applied unadjusted to 2025 (no inflation or currency-region adjustment); not a European or airline-specific cost."
+      }
+    }
+  },
+  "insurance": {
+    "basis": "rate_per_block_hour",
+    "rate_per_block_hour": {
+      "value": "6",
+      "unit": "USD/block_hour",
+      "source_type": "public_financial_benchmark",
+      "source_reference": "FAA, Economic Values for FAA Investment and Regulatory Decisions, Section 4 Aircraft Operating Costs (2024 update), Table 4-7: US Part 121 passenger carriers, Narrowbody 165k lbs or more MTOW (A320 per Table 4-16), YE June 2023, USD per block hour. https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf",
+      "reference_period": "YE June 2023",
+      "notes": "Insurance per block hour. US industry average; applied unadjusted to 2025 (no inflation or currency-region adjustment); not a European or airline-specific cost."
+    }
+  }
+}

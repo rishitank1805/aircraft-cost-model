@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Design tokens. Colours and font inspired by the public stylesheet of elbeflugzeugwerke.com
+   (efw-website.css: navy #001450, cyan #00A0D1, tint #F1F1F5, text #2D2D2C, font "Titillium Web").
+   Independent project: no EFW logos or brand assets are used. Titillium Web is licensed under the SIL OFL. */
+@theme {
+  --font-sans: "Titillium Web", ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #001450;
+  --color-navy-700: #0f2a6b;
+  --color-cyan: #00a0d1;
+  --color-cyan-50: #e6f6fb;
+  --color-tint: #f1f1f5;
+  --color-ink: #2d2d2c;
+  --color-warn: #ff9800;
+  --color-danger: #a80a00;
+  --color-ok: #029f80;
+}
+
+body {
+  @apply bg-white font-sans text-ink antialiased;
+}
+
+.skew-band {
+  background: linear-gradient(118deg, var(--color-navy) 0 62%, var(--color-cyan) 62% 63.5%, var(--color-navy-700) 63.5%);
+}
+
+.card {
+  @apply rounded-lg border border-slate-200 bg-white shadow-sm;
+}
+
+.badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold;
+}
+
+.section-title {
+  @apply text-2xl font-bold text-navy;
+}
+
+.section-title::after {
+  content: "";
+  @apply mt-2 block h-1 w-12 bg-cyan;
+}
+
+.missing {
+  @apply text-slate-400 italic;
+}

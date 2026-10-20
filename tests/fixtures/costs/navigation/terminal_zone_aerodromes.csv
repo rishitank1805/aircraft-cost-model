@@ -1,0 +1,4 @@
+charging_zone,aerodrome_icao,valid_from,valid_to,source_url
+GERMANY_TCZ,EDDF,2025-01-01,2025-12-31,about:blank
+GERMANY_TCZ,EDDF,2026-01-01,2026-12-31,about:blank
+FRANCE_TCZ1,LFPG,2025-01-01,2025-12-31,about:blank

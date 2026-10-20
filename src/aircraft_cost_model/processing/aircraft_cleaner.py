@@ -47,6 +47,7 @@ PROCESSED_COLUMNS = (
     "max_payload_kg",
     "fuel_capacity_l",
     "fuel_capacity_kg",
+    "fuel_capacity_density_kg_per_l",
     "cruise_mach",
     "cruise_altitude_m",
     "cruise_speed_kt",
@@ -149,6 +150,7 @@ def normalize_openap_record(code: str, record: dict[str, Any]) -> dict[str, Any]
 
     if row["fuel_capacity_l"] is not None:
         row["fuel_capacity_kg"] = round(row["fuel_capacity_l"] * JET_FUEL_DENSITY_KG_PER_L, 1)
+        row["fuel_capacity_density_kg_per_l"] = JET_FUEL_DENSITY_KG_PER_L
         provenance["fuel_capacity_kg"] = (
             f"derived: fuel_capacity_l x {JET_FUEL_DENSITY_KG_PER_L} kg/L "
             "(jet fuel density used by OpenAP mass.py)"

@@ -1,4 +1,4 @@
-# Architecture (Part 1: data foundation)
+# Architecture (Parts 1–6: data foundation, flight performance, variable costs, full operating costs, analytics, explorer)
 
 ## Components
 
@@ -13,7 +13,22 @@
 | `validation/*` | Checks cleaned data and produces `ValidationReport` (blocking errors and non-blocking warnings) |
 | `models/*` | SQLAlchemy ORM tables `data_source`, `airport` and `aircraft_type` (`models/base.py` holds the shared declarative base) |
 | `database.py` | Engine (foreign keys on), schema creation, transactional upserts |
-| `scripts/*` | Command-line orchestration and summaries |
+| `migrations/` (Alembic) | Versioned schema: `0001_part1_baseline`, `0002_part2_flight_performance`, `0003_touchdown_fuel_boundaries`, `0004_part3_variable_costs`, `0005_terminal_navigation`, `0006_part4_full_costs`, `0007_part5_analytics`, `0008_aircraft_specifications` |
+| `performance/*` | Part 2: airport lookup, route distance, OpenAP adapter, kinematic profile, mass checks, fuel integration, iterative planning, persistence (see [flight_performance.md](flight_performance.md)) |
+| `costs/*` | Part 3: pricing-date policy, ECB currency conversion, fuel cost, EUROCONTROL route charges, airport movement-charge engine, ground handling, coverage and aggregation, persistence (see [variable_cost_model.md](variable_cost_model.md)) |
+| `fullcost/*` | Part 4: scenario schema and validation (`scenario.py`), shared input reader and allocation (`common.py`), maintenance, crew, insurance, ownership/financing and indirect components, taxonomy aggregation with the three dimensions (`aggregate.py`), orchestration (`calculator.py`) and persistence (see [full_cost_model.md](full_cost_model.md)) |
+| `analytics/*` | Part 5: cost cases, unit metrics, scenario variations (recalculated through Part 3/4 engines), sensitivity, comparisons, BTS/FAA benchmarks and comparability, index adjustment, validation, reporting, immutable run persistence (see [analytics.md](analytics.md)) |
+| `ingestion/bts_form41.py`, `processing/bts_form41.py`, `ingestion/price_indices.py` | BTS TranStats P-5.2 + T2 snapshots and benchmark records; BLS API index observations |
+| `api/*` + `frontend/` | Part 6: read-only FastAPI layer (SQLite `mode=ro`) and the React/TypeScript Aircraft Explorer (see [explorer_app.md](explorer_app.md)) |
+| `ingestion/aircraft_specs.py` | Part 6: specification values with provenance (OpenAP, ICAO EEDB via OpenAP, FAA ACD, FAA Tables 4-16/4-17, curated freighter facts) |
+| `data/scenarios/*.json` | Version-controlled cost scenarios: illustrative examples and a cited FAA benchmark scenario |
+| `ingestion/snapshots.py` | Generic immutable snapshot downloader (temporary file, SHA-256, atomic rename, sidecar), used for OurAirports, EIA and ECB |
+| `ingestion/fuel_prices.py`, `exchange_rates.py`, `airport_tariffs.py` | EIA XLS/API parsing, ECB CSV parsing, reviewed EUROCONTROL CSV and local airport tariff loading |
+| `validation/cost_validator.py` | Observation and unit-rate validation (positivity, units, duplicates, overlapping validity) |
+| `models/types.py` | `DecimalText`: exact decimal storage for money in SQLite |
+| `data/reference/*.csv` | Version-controlled curated inputs and values-free source registers: freighter targets, manufacturer document references, navigation-rate sources, airport tariff sources, cost benchmark sources (`cost_benchmark_sources.csv`), FAA Table 4-7 values, BTS aircraft-type mapping, benchmark index mapping |
+| `data/local/` (git-ignored) | Locally transcribed rates and tariff values whose source terms do not permit (commercial) redistribution: EUROCONTROL/DFS navigation rates, Fraport tariff |
+| `scripts/*` | Command-line orchestration and summaries (`ingest_*`, `verify_database`, `calculate_flight`, `calculate_variable_costs`, `calculate_full_costs`, `calculate_unit_metrics`, `run_sensitivity_analysis`, `compare_cost_scenarios`, `generate_cost_report`, `validate_cost_estimates`) |
 
 ## Data flow
 
@@ -99,6 +114,32 @@ may be loaded. Keeping them separate:
 
 Missing optional fields are warnings, never grounds to reject a dataset.
 
+## Schema migrations
+
+The schema is managed with Alembic. Migrations live in the package
+(`src/aircraft_cost_model/migrations`), so they work after installation and
+from any working directory.
+
+- `database.migrate_database(url)` runs at the start of every script.
+  - An empty database gets all migrations.
+  - A versioned database gets any pending migrations.
+  - An **unversioned** Part 1 database is first compared with the schema the
+    baseline migration would create: columns, types, nullability, indexes and
+    unique and foreign keys. Only an exact match is *stamped* at
+    `0001_part1_baseline` and then upgraded. A mismatch raises
+    `SchemaVerificationError` and leaves the database untouched.
+- Migrations are additive. `0002` adds columns with `ALTER TABLE … ADD COLUMN`
+  and back-fills them from existing data; Part 1 tables are never recreated.
+- The CLI equivalent is `alembic upgrade head`, run from the repository root.
+- Tests check that the ORM models and the migrated schema match exactly
+  (`alembic.autogenerate.compare_metadata`), and that the
+  downgrade/upgrade round trip preserves Part 1 data.
+
+On 2026-10-15 the live database was backed up to
+`database/aircraft_costs.pre-part2-<UTC>.db` (git-ignored), verified, stamped
+and upgraded. Its 86,251 airports, 42 aircraft types and data sources were
+preserved.
+
 ## Why SQLite
 
 - It needs no server: one file, part of the Python standard library, and works
@@ -110,29 +151,110 @@ Missing optional fields are warnings, never grounds to reject a dataset.
   replacing the SQLite-specific upsert (`sqlalchemy.dialects.sqlite.insert`)
   with the PostgreSQL equivalent.
 
-Schema creation currently uses `Base.metadata.create_all`, which only creates
-missing tables. **Future schema changes must use migrations (e.g. Alembic).**
+All schema changes go through Alembic migrations (see above).
 
-## How future tables will connect (Parts 2–5, not implemented)
+## How the tables connect
 
 ```mermaid
 erDiagram
-    data_source ||--o{ airport : "provenance"
-    data_source ||--o{ aircraft_type : "provenance"
-    airport ||--o{ flight : "origin / destination (Part 2)"
-    aircraft_type ||--o{ flight : "operated by (Part 2)"
-    flight ||--o{ flight_cost_item : "cost lines (Parts 3-4)"
-    data_source ||--o{ flight_cost_item : "benchmark / tariff source"
+    data_source ||--o{ airport : "source_id / last_seen_source_id"
+    data_source ||--o{ aircraft_type : "source_id"
+    airport ||--o{ route : "origin / destination"
+    route ||--o{ flight_estimate : "route_id"
+    airport ||--o{ flight_estimate : "origin / destination"
+    aircraft_type ||--o{ flight_estimate : "aircraft_type_id"
+    flight_estimate ||--|{ flight_phase : "8 phases (7 for v1 rows)"
+    flight_estimate ||--o{ flight_assumption : "assumptions"
+    flight_estimate ||--o{ variable_cost_estimate : "priced for a pricing date"
+    variable_cost_estimate ||--|{ cost_component : "fuel, navigation, terminal, landing, handling"
+    data_source ||--o{ fuel_price : "EIA snapshot"
+    data_source ||--o{ exchange_rate : "ECB snapshot"
+    data_source ||--o{ navigation_rate : "en-route and terminal rates"
+    data_source ||--o{ navigation_zone_aerodrome : "terminal zone lists"
+    data_source ||--o{ airport_tariff : "airport document"
+    airport ||--o{ airport_tariff : "tariff versions"
+    data_source ||--o{ cost_component : "price/tariff used"
+    cost_scenario ||--o{ cost_assumption : "typed inputs"
+    cost_scenario ||--o{ full_cost_estimate : "scenario used"
+    flight_estimate ||--o{ full_cost_estimate : "time bases"
+    variable_cost_estimate ||--o{ full_cost_estimate : "exact Part 3 result"
+    full_cost_estimate ||--|{ full_cost_component : "17 components"
+    cost_component ||--o{ full_cost_component : "part3_cost_component_id"
+    full_cost_estimate ||--o{ analytics_run : "base estimate"
+    cost_scenario ||--o{ analytics_run : "base scenario"
+    analytics_run ||--o{ unit_cost_metric : "metrics"
+    analytics_run ||--o{ scenario_result : "variations"
+    cost_scenario ||--o{ scenario_result : "variant scenario (immutable)"
+    analytics_run ||--o{ benchmark_comparison : "comparisons"
+    data_source ||--o{ benchmark_observation : "BTS/FAA snapshot"
+    benchmark_observation ||--o{ benchmark_adjustment : "index-adjusted copies"
+    data_source ||--o{ price_index_observation : "BLS snapshot"
+    aircraft_type ||--o{ aircraft_specification : "values with provenance"
+    data_source ||--o{ aircraft_specification : "source of each value"
 ```
 
-- A future `flight` (or `route`) table will reference `airport.airport_id` for
-  origin and destination and `aircraft_type.aircraft_type_id` for the aircraft.
-  It will also store distance, block time and fuel burn, computed with OpenAP
-  using `aircraft_type.icao_type_designator` / `aircraft_code` and
-  `openap_supported`.
-- Cost tables (fuel price series, navigation unit rates, airport tariffs,
-  maintenance benchmarks) will each reference `data_source`, so every cost line
-  can be traced to its source or labelled assumption.
-- Freighter rows (`openap_supported = false`) show which aircraft need a
-  documented performance source or an explicitly labelled proxy decision before
-  Part 2 can model them.
+- `route` stores only stable airport-pair facts: the great-circle distance and
+  its method. Scenario-specific route factors and distances belong to
+  `flight_estimate`.
+- `flight_estimate` stores inputs, results, the model name and version, the
+  exact OpenAP model code and engine, the loading checks (JSON), warnings, a
+  hash of the inputs and the path of the trajectory CSV. Per-time-step states
+  are written to `data/processed/flights/flight_estimate_<id>_<hash>.csv`
+  rather than the database.
+- Part 3 `variable_cost_estimate` references `flight_estimate` (v2 only) and
+  stores one `cost_component` per component. Every price, rate and tariff
+  references its `data_source`. Reference tables keep all historical versions
+  (by observation date or validity interval).
+- Part 4 `full_cost_estimate` references the flight estimate, the exact
+  variable-cost estimate and the `cost_scenario` (stored once per content
+  hash). Its Part 3 components link to the original `cost_component` rows,
+  so historical Part 3 results are reused rather than recomputed.
+
+## Part 3 data flow
+
+```mermaid
+flowchart LR
+    EIA[EIA XLS / API] --> SF[raw snapshot] --> PF[parse + validate] --> FP[(fuel_price)]
+    ECB[ECB Data Portal CSV] --> SE[raw snapshot] --> PE[parse + validate] --> ER[(exchange_rate)]
+    CIRC[EUROCONTROL / DFS PDFs] -->|manual transcription, local only| NCSV[local CSV] --> NR[(navigation_rate + zone aerodromes)]
+    TAR[Airport tariff PDF] -->|manual transcription, local only| TJ[local JSON] --> AT[(airport_tariff)]
+    FE[(flight_estimate v2)] --> CALC[calculate_variable_costs]
+    FP --> CALC
+    ER --> CALC
+    NR --> CALC
+    AT --> CALC
+    CALC --> AGG[coverage + subtotal] --> VCE[(variable_cost_estimate + cost_component)]
+```
+
+## Part 4 data flow
+
+```mermaid
+flowchart LR
+    SC[scenario JSON] --> PS[parse + validate: decimal strings, units, source types, periods] --> CALC4[calculate_full_costs]
+    FE[(flight_estimate v2)] -->|block, airborne, engines, validity| CALC4
+    VCE[(variable_cost_estimate + cost_component)] -->|saved Part 3 rows| CALC4
+    ER[(exchange_rate)] --> CALC4
+    CALC4 --> COMP[maintenance, crew, insurance, ownership, financing, indirect] --> AGG4[taxonomy: DV, DF, indirect, COC, TOC, total + 3 dimensions]
+    AGG4 --> FCE[(cost_scenario, cost_assumption, full_cost_estimate, full_cost_component)]
+```
+
+## Part 5 data flow
+
+```mermaid
+flowchart LR
+    FCE[(full_cost_estimate + components)] --> CASE[CostCase: saved rows as stored]
+    CASE --> UM[unit metrics] --> RUN[(analytics_run + unit_cost_metric)]
+    CASE --> VAR[scenario variation] --> P3[Part 3 fuel engine] & P4[Part 4 calculator] --> SENS[sensitivity / grid] --> SR[(scenario_result + variant cost_scenario)]
+    CASE --> CMP[comparisons / owned vs leased / common components]
+    BTS[TranStats P-5.2 + T2 ZIP] --> SNAP[raw snapshot] --> JOIN[join service class Z, convert units, flag quality] --> BO[(benchmark_observation)]
+    FAA[FAA Table 4-7 CSV] --> BO
+    BLS[BLS API JSON] --> PIO[(price_index_observation)] --> ADJ[(benchmark_adjustment)]
+    BO --> COMP[comparability checks] --> BC[(benchmark_comparison)]
+    CASE --> VAL[validation A-D] --> COMP
+    RUN & SR & BC --> REP[console / CSV / JSON / PNG + manifest]
+```
+
+## Part 2 data flow
+
+See [flight_performance.md](flight_performance.md) for the full pipeline
+diagram, equations and limitations.
