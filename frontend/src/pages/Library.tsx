@@ -27,13 +27,13 @@ export function LibraryPage() {
   const sorted = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items]);
 
   return <>
-    <PageHeader title="Aircraft Library" subtitle="Browse every aircraft type in the database. Unknown values are shown as unavailable - nothing is filled in." />
+    <PageHeader title="Aircraft Library" subtitle="Browse every aircraft type in the database. If a figure isn't known, it says so. Nothing is guessed." />
     <div className="mx-auto max-w-7xl px-6 py-8">
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-4" aria-label="Filters">
           <label className="block"><span className="text-xs font-semibold uppercase text-slate-500">Search</span>
             <div className="relative mt-1"><Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-400" />
-              <input value={query.search ?? ""} onChange={(e) => set("search", e.target.value)} placeholder="Code, name, ICAO"
+              <input value={query.search ?? ""} onChange={(e) => set("search", e.target.value)} placeholder="Name, code or ICAO designator"
                 className="w-full rounded-md border border-slate-300 py-2 pl-8 pr-2 focus:border-cyan focus:outline-none" /></div></label>
           {FILTERS.map(({ key, title }) => <label key={key} className="block">
             <span className="text-xs font-semibold uppercase text-slate-500">{title}</span>
@@ -42,10 +42,10 @@ export function LibraryPage() {
               <option value="">All</option>
               {(data?.facets[key] ?? []).map((v) => <option key={v} value={v}>{label(v)}</option>)}
             </select></label>)}
-          <label className="block"><span className="text-xs font-semibold uppercase text-slate-500">Flight performance model</span>
+          <label className="block"><span className="text-xs font-semibold uppercase text-slate-500">Flight model</span>
             <select value={query.flight_model ?? ""} onChange={(e) => set("flight_model", e.target.value)}
               className="mt-1 w-full rounded-md border border-slate-300 bg-white p-2">
-              <option value="">All</option><option value="true">Supported</option><option value="false">Not supported</option></select></label>
+              <option value="">All</option><option value="true">Available</option><option value="false">Not available</option></select></label>
           {data && <ul className="space-y-1 text-xs text-slate-500">{data.notes.map((n) => <li key={n}>• {n}</li>)}</ul>}
         </aside>
         <section>
@@ -83,7 +83,7 @@ function AircraftCard({ a }: { a: AircraftSummary }) {
         {" · "}{a.engine_count ? `${a.engine_count} engines` : <span className="missing">engines unavailable</span>}</p>
       <div aria-label="Key specification coverage" className="h-1.5 rounded bg-tint">
         <div className="h-1.5 rounded bg-cyan" style={{ width: `${(a.key_spec_coverage.present / a.key_spec_coverage.expected) * 100}%` }} /></div>
-      <p className="text-[11px] text-slate-500">{a.key_spec_coverage.present}/{a.key_spec_coverage.expected} key specifications with a source</p>
+      <p className="text-[11px] text-slate-500">{a.key_spec_coverage.present} of {a.key_spec_coverage.expected} key figures have a source</p>
     </div>
   </Link>;
 }
@@ -91,7 +91,7 @@ function AircraftCard({ a }: { a: AircraftSummary }) {
 function AircraftTable({ items }: { items: AircraftSummary[] }) {
   return <div className="card overflow-x-auto"><table className="w-full text-sm">
     <thead className="bg-tint text-left text-xs uppercase text-slate-500"><tr>
-      {["Aircraft", "Code", "Manufacturer", "Series", "Role", "Body", "Engines", "MTOW", "Flight model", "Coverage"].map((h) => <th key={h} className="p-2">{h}</th>)}</tr></thead>
+      {["Aircraft", "Code", "Manufacturer", "Series", "Role", "Body", "Engines", "MTOW", "Flight model", "Key figures"].map((h) => <th key={h} className="p-2">{h}</th>)}</tr></thead>
     <tbody>{items.map((a) => <tr key={a.code} className="border-t border-slate-100 hover:bg-cyan-50">
       <td className="p-2 font-semibold"><Link className="text-navy hover:text-cyan" to={`/aircraft/${encodeURIComponent(a.code)}`}>{a.name}</Link></td>
       <td className="p-2">{a.code}</td><td className="p-2">{a.manufacturer ?? <span className="missing">unavailable</span>}</td>
@@ -101,6 +101,6 @@ function AircraftTable({ items }: { items: AircraftSummary[] }) {
       <td className="p-2">{a.engine_count ?? <span className="missing">unavailable</span>}</td>
       <td className="p-2">{a.mtow_kg ? `${num(a.mtow_kg)} kg` : <span className="missing">unavailable</span>}</td>
       <td className="p-2"><SupportBadge supported={a.flight_model_supported} /></td>
-      <td className="p-2">{a.key_spec_coverage.present}/{a.key_spec_coverage.expected}</td></tr>)}</tbody>
+      <td className="p-2">{a.key_spec_coverage.present} of {a.key_spec_coverage.expected}</td></tr>)}</tbody>
   </table></div>;
 }

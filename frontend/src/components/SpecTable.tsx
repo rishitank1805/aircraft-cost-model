@@ -2,7 +2,8 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { SpecValue } from "../types";
 import { formatSpec } from "../format";
-import { isAgencyUrl, stripCompanyUrls } from "../links";
+import { isAgencyUrl } from "../links";
+import { plainText, unitText } from "../plain";
 import { GlossaryTerm } from "./GlossaryTerm";
 import { SourceTypeBadge, StatusBadge } from "./ui";
 
@@ -41,16 +42,16 @@ export function SpecTable({ values, missing = [], missingLabels = {} }: {
             <dl className="grid gap-x-6 gap-y-1 md:grid-cols-2">
               <dt className="font-semibold">Source</dt><dd>{v.source_name ?? "unavailable"} {isAgencyUrl(v.source_url) &&
                 <a href={v.source_url!} target="_blank" rel="noreferrer" className="inline-flex items-center text-cyan">link<ExternalLink className="h-3 w-3" /></a>}</dd>
-              <dt className="font-semibold">Reference</dt><dd>{stripCompanyUrls(v.source_reference) || "unavailable"}</dd>
-              <dt className="font-semibold">Licence</dt><dd>{v.source_license ?? "unavailable"}</dd>
-              <dt className="font-semibold">Exact stored value</dt><dd>{v.value_exact ?? v.value_text ?? "unavailable"} {v.unit ?? ""}</dd>
-              <dt className="font-semibold">As published</dt><dd>{v.original_value ? `${v.original_value} ${v.original_unit ?? ""}` : "same as stored"}</dd>
-              <dt className="font-semibold">Notes</dt><dd>{stripCompanyUrls(v.notes) || "none"}</dd>
+              <dt className="font-semibold">Where in the source</dt><dd>{plainText(v.source_reference) || "not recorded"}</dd>
+              <dt className="font-semibold">Licence</dt><dd>{plainText(v.source_license) || "not recorded"}</dd>
+              <dt className="font-semibold">Exact value</dt><dd>{v.value_exact ?? (plainText(v.value_text) || "unavailable")} {unitText(v.unit)}</dd>
+              <dt className="font-semibold">As published</dt><dd>{v.original_value ? `${v.original_value} ${unitText(v.original_unit)}` : "same as above"}</dd>
+              <dt className="font-semibold">Notes</dt><dd>{plainText(v.notes) || "none"}</dd>
             </dl></td></tr>}
         </Fragment>;
       }))}
       {missing.map((key) => <tr key={`missing-${key}`} className="border-b border-slate-100">
         <td className="py-2 pr-4 font-medium text-slate-500">{missingLabels[key] ?? key}</td>
-        <td className="py-2 pr-4 missing" colSpan={4}>unavailable - no verified source in the database</td></tr>)}
+        <td className="py-2 pr-4 missing" colSpan={4}>Not available. No verified source has been found yet.</td></tr>)}
     </tbody></table></div>;
 }

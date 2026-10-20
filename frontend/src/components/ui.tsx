@@ -65,7 +65,7 @@ export function References({ refs }: { refs: Reference[] }) {
       {isAgencyUrl(r.url)
         ? <a className="inline-flex items-center gap-1 text-cyan hover:underline" href={r.url} target="_blank" rel="noreferrer">
             {r.publisher}: {r.title}<ExternalLink className="h-3 w-3" /></a>
-        : <span>{r.publisher}: {r.title}{r.url.startsWith("http") ? "" : ` (${r.url})`}</span>}
+        : <span>{r.url.startsWith("http") ? `${r.publisher}: ${r.title}` : r.title.replace(/^Project documentation: /, "This site's notes: ")}</span>}
     </li>)}
   </ul>;
 }

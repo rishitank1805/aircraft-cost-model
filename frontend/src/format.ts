@@ -1,10 +1,11 @@
+import { term } from "./plain";
 import type { SpecValue } from "./types";
 
 const nf = (digits: number) => new Intl.NumberFormat("en-GB", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
 
 /** Human-readable value. Display rounding only; the exact stored value is shown in the source panel. */
 export function formatSpec(v: Pick<SpecValue, "value" | "value_text" | "unit">): string {
-  if (v.value === null || v.value === undefined) return v.value_text ?? "unavailable";
+  if (v.value === null || v.value === undefined) return v.value_text ? term(v.value_text) : "unavailable";
   const x = v.value;
   switch (v.unit) {
     case "kg": return `${nf(0).format(x)} kg (${nf(1).format(x / 1000)} t)`;
@@ -27,7 +28,8 @@ export function formatSpec(v: Pick<SpecValue, "value" | "value_text" | "unit">):
 
 export const num = (x: number | null | undefined, digits = 0) => (x === null || x === undefined ? "unavailable" : nf(digits).format(x));
 
-export const label = (text: string | null | undefined) => (text ? text.replace(/_/g, " ") : "unavailable");
+/** Plain-language label for an identifier from the API (see plain.ts). */
+export const label = (text: string | null | undefined) => term(text);
 
 export const SOURCE_TYPE_LABEL: Record<string, string> = {
   published_specification: "Published specification",
@@ -39,6 +41,6 @@ export const SOURCE_TYPE_LABEL: Record<string, string> = {
 export const STATUS_LABEL: Record<string, string> = {
   as_published: "As published",
   shared_designator_row: "Shared row (several models)",
-  source_inconsistent: "Inconsistent in source - not verified",
-  unverified_model_value: "Model value - not certified",
+  source_inconsistent: "Inconsistent in source, not verified",
+  unverified_model_value: "Model value, not certified",
 };

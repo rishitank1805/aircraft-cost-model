@@ -27,8 +27,8 @@ from aircraft_cost_model.models import (
 )
 
 router = APIRouter(tags=["economics"])
-NOTICE = ("Advanced module. Costs are economic estimates under the stated scenario (illustrative values are not airline "
-          "costs). Partial subtotals are never complete totals; missing costs are never zero.")
+NOTICE = ("These are estimates for one illustrative scenario, and the illustrative values are not real airline costs. "
+          "When some costs are missing, the totals are marked as partial. A missing cost is never counted as zero.")
 
 
 def _money(value: Decimal | None) -> str | None:
@@ -119,5 +119,5 @@ def benchmarks(request: Request, session: Session = Depends(get_session),
                                      "index": a.index_series_id, "target_period": a.target_period,
                                      "methodology": a.methodology, "reason": a.reason} for a in adj]})
     return {"faa_table_4_7": faa, "bts": _benchmarks(request, session, aircraft) if aircraft else None,
-            "notice": "Public benchmarks are U.S. carrier accounting expense or published averages; they are not "
-                      "route-specific estimates. Freighters with BTS data have benchmark-only figures."}
+            "notice": "Public benchmarks are what U.S. carriers reported spending, or published averages. They aren't "
+                      "estimates for a particular route. For freighters, these benchmark figures are all there is."}

@@ -48,13 +48,19 @@ export interface CompareRow {
 }
 export interface Compare { aircraft: AircraftSummary[]; rows: CompareRow[]; rule: string }
 
+export interface FormulaSpec {
+  result: string; relation?: string; expression?: string; numerator?: string; denominator?: string; note?: string;
+}
+
 export interface GlossaryTopic {
+  formulas?: FormulaSpec[];
   slug: string; term: string; category: string; definition: string; why_it_matters: string; example: string;
   diagram: string | null; related_specs: string[]; aliases: string[]; references: Reference[]; basis: string;
 }
 
 export interface CargoContent {
-  explainers: { id: string; title: string; body: string; glossary: string[]; references: Reference[]; basis: string }[];
+  explainers: { id: string; title: string; body: string; glossary: string[]; references: Reference[]; basis: string;
+    formulas?: FormulaSpec[] }[];
   conversion_steps: { step: number; title: string; body: string; references: Reference[]; basis: string }[];
   targets: { code: string; name: string; freighter_type: string; summary: string; not_to_confuse_with: string;
     references: Reference[]; published_facts: SpecValue[]; missing: Record<string, string[]>; missing_labels: string[]; flight_model_supported: boolean }[];

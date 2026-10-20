@@ -8,7 +8,7 @@ import { ErrorBox, Loading, Notice, RoleBadge, SupportBadge } from "../component
 import { useApi } from "../components/useApi";
 import { DimensionsDiagram, TurbofanDiagram, WeightStack } from "../diagrams/Diagrams";
 import { formatSpec, label, num } from "../format";
-import { stripCompanyUrls } from "../links";
+import { plainText, sentence, termInText } from "../plain";
 import type { AircraftDetail, SpecValue } from "../types";
 
 const SECTIONS = [
@@ -34,13 +34,13 @@ export function AircraftDetailPage() {
           <Link to="/aircraft" className="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white"><ArrowLeft className="h-4 w-4" />Aircraft Library</Link>
           <h1 className="mt-2 text-4xl font-bold">{s.name}</h1>
           <p className="mt-1 text-white/80">{s.code}{s.icao_type_designator ? ` · ICAO type designator ${s.icao_type_designator}` : ""}
-            {s.series ? ` · ${s.series} series (derived from the designation)` : ""}</p>
+            {s.series ? ` · ${s.series} series` : ""}</p>
           <div className="mt-3 flex flex-wrap gap-2"><RoleBadge role={s.role} freighterType={s.freighter_type} /><SupportBadge supported={s.flight_model_supported} />
             {s.body_class && <span className="badge bg-white/15 text-white">{label(s.body_class)}</span>}</div>
         </div>
         <div className="overflow-hidden rounded-lg bg-white/95">
           <Silhouette bodyClass={s.body_class} engines={s.engine_count} freighter={isFreighter} />
-          <p className="px-3 pb-2 text-[11px] text-slate-500">Schematic silhouette - no licensed photograph is available in this project.</p>
+          <p className="px-3 pb-2 text-[11px] text-slate-500">A schematic drawing. There's no licensed photograph of this aircraft.</p>
         </div>
       </div>
     </header>
@@ -57,9 +57,9 @@ export function AircraftDetailPage() {
           <DimensionsDiagram length={primary(d, "dimensions", "length_m") && formatSpec(primary(d, "dimensions", "length_m")!)}
             span={primary(d, "dimensions", "wingspan_m") && formatSpec(primary(d, "dimensions", "wingspan_m")!)}
             height={primary(d, "dimensions", "height_m") && formatSpec(primary(d, "dimensions", "height_m")!)} />
-          <Notice>Two sources may describe the same dimension differently: the FAA Aircraft Characteristics Database publishes the
-            overall length, wingspan (with and without winglets) and tail height; OpenAP gives model geometry, including a
-            <em> fuselage</em> height that is not the overall height. Both are shown with their source.</Notice>
+          <Notice>Two sources can describe the same dimension differently. The FAA Aircraft Characteristics Database gives the
+            overall length, the wingspan (with and without winglets) and the tail height. OpenAP gives the model's geometry,
+            which includes a <em>fuselage</em> height. That isn't the overall height. Both are shown, each with its source.</Notice>
         </div>
         <SpecTable values={d.sections.dimensions ?? []} missing={d.missing.dimensions} missingLabels={d.missing_labels} />
       </section>
@@ -70,7 +70,8 @@ export function AircraftDetailPage() {
           <SpecTable values={d.sections.engines ?? []} missing={d.missing.engines} missingLabels={d.missing_labels} />
           <div className="space-y-3"><TurbofanDiagram />
             <p className="text-sm text-slate-700">A <GlossaryTerm slug="thrust">turbofan</GlossaryTerm> burns fuel in its core to drive a large
-              fan; most of the air bypasses the core and produces most of the thrust efficiently. A higher bypass ratio usually lowers
+              fan. Most of the air goes around the core rather than through it, and that air produces most of the thrust. The more air
+              that goes around, the higher the bypass ratio, and usually the lower
               the <GlossaryTerm slug="sfc">specific fuel consumption</GlossaryTerm>.</p></div>
         </div>
       </section>
@@ -79,13 +80,13 @@ export function AircraftDetailPage() {
         <h2 className="section-title">F. Cargo capabilities</h2>
         {isFreighter ? <>
           {d.freighter_programme && <Notice><strong>{label(d.freighter_programme.freighter_type)}.</strong> {d.freighter_programme.statement}
-            {" "}Source: {d.freighter_programme.source_publisher} public web page (retrieved {d.freighter_programme.retrieved}).
+            {" "}Source: {d.freighter_programme.source_publisher}'s public website (retrieved {d.freighter_programme.retrieved}).
             {d.freighter_programme.notes && <span className="mt-1 block">{d.freighter_programme.notes}</span>}</Notice>}
           <SpecTable values={d.sections.cargo ?? []} missing={d.missing.cargo} missingLabels={d.missing_labels} />
           <p className="text-sm">Learn how freighters and conversions work in the <Link to="/cargo" className="text-cyan hover:underline">Cargo & P2F Explorer</Link>.</p>
-        </> : <Notice>This is a passenger aircraft type. Cargo-specific specifications (main-deck door, ULD positions, cargo volume) are
-          not held for passenger types; lower-deck cargo data are unavailable. {d.related.filter((r) => r.relation.startsWith("freighter"))
-            .map((r) => <span key={r.code}>Freighter in the database: <Link className="text-cyan" to={`/aircraft/${r.code}`}>{r.code}</Link>. </span>)}</Notice>}
+        </> : <Notice>This is a passenger aircraft, so there are no main-deck cargo figures (cargo door, ULD positions, cargo volume).
+          Lower-deck cargo figures aren't available either. {d.related.filter((r) => r.relation.startsWith("freighter"))
+            .map((r) => <span key={r.code}>There is a freighter version: <Link className="text-cyan" to={`/aircraft/${r.code}`}>{r.code}</Link>. </span>)}</Notice>}
       </section>
       <Sources d={d} />
     </div>
@@ -99,37 +100,37 @@ function Overview({ d }: { d: AircraftDetail }) {
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="card space-y-3 p-5 lg:col-span-2">
         {d.description.length ? <ul className="space-y-2">{d.description.map((x) => <li key={x.text}>{x.text}
-          <span className="block text-xs text-slate-500">Source: {stripCompanyUrls(x.source)}</span></li>)}</ul>
-          : <p className="missing">No sourced description is available for this type.</p>}
+          <span className="block text-xs text-slate-500">Source: {plainText(x.source)}</span></li>)}</ul>
+          : <p className="missing">There's no sourced description for this type yet.</p>}
         <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm md:grid-cols-3">
-          <div><dt className="text-xs uppercase text-slate-500">Manufacturer</dt><dd className="font-semibold">{s.manufacturer ?? "unavailable"}</dd></div>
-          <div><dt className="text-xs uppercase text-slate-500">Model</dt><dd className="font-semibold">{s.model ?? "unavailable"}</dd></div>
-          <div><dt className="text-xs uppercase text-slate-500">Role</dt><dd className="font-semibold">{s.role ?? <span className="missing">not documented</span>}</dd>
+          <div><dt className="text-xs uppercase text-slate-500">Manufacturer</dt><dd className="font-semibold">{s.manufacturer ?? "not available"}</dd></div>
+          <div><dt className="text-xs uppercase text-slate-500">Model</dt><dd className="font-semibold">{s.model ?? "not available"}</dd></div>
+          <div><dt className="text-xs uppercase text-slate-500">Role</dt><dd className="font-semibold">{s.role ? label(s.role) : <span className="missing">not documented</span>}</dd>
             <dd className="text-[11px] text-slate-500">{d.role.evidence}</dd></div>
           <div><dt className="text-xs uppercase text-slate-500"><GlossaryTerm slug="narrowbody-widebody">Body type</GlossaryTerm></dt>
             <dd className="font-semibold">{s.body_class ? label(s.body_class) : <span className="missing">not documented</span>}</dd></div>
           <div><dt className="text-xs uppercase text-slate-500"><GlossaryTerm slug="passenger-vs-freighter">Freighter type</GlossaryTerm></dt>
             <dd className="font-semibold">{s.freighter_type ? label(s.freighter_type) : "not a freighter"}</dd></div>
-          <div><dt className="text-xs uppercase text-slate-500">Model series</dt><dd className="font-semibold">{s.series ?? "unavailable"}</dd>
+          <div><dt className="text-xs uppercase text-slate-500">Model series</dt><dd className="font-semibold">{s.series ?? "not available"}</dd>
             <dd className="text-[11px] text-slate-500">{s.series_basis}</dd></div>
         </dl>
-        {d.notes && <p className="text-xs text-slate-500">Database note: {d.notes}</p>}
+        {d.notes && <p className="text-xs text-slate-500">Note: {plainText(d.notes)}</p>}
       </div>
       <div className="space-y-3">
-        <div className="card p-4 text-sm"><h3 className="font-semibold text-navy">Flight performance model</h3>
-          {d.flight_model.supported ? <><p className="text-ok">Supported by the project's OpenAP-based model.</p>
+        <div className="card p-4 text-sm"><h3 className="font-semibold text-navy">Flight model</h3>
+          {d.flight_model.supported ? <><p className="text-ok">You can fly this aircraft in the Flight Lab, which uses the OpenAP model.</p>
             <Link to={`/flight-lab?aircraft=${s.code}`} className="mt-2 inline-flex items-center gap-1 text-cyan"><Wind className="h-4 w-4" />Open in Flight Lab</Link></>
-            : <><p>Not supported.</p><ul className="mt-1 list-disc pl-4 text-xs text-slate-600">{d.flight_model.reasons.map((r) => <li key={r}>{r}</li>)}</ul></>}
+            : <><p>There's no flight model for this aircraft:</p><ul className="mt-1 list-disc pl-4 text-xs text-slate-600">{d.flight_model.reasons.map((r) => <li key={r}>{sentence(plainText(r)).replace(/\.?$/, ".")}</li>)}</ul></>}
         </div>
         {d.related.length > 0 && <div className="card p-4 text-sm"><h3 className="font-semibold text-navy">Related types</h3>
           <ul className="mt-1 space-y-1">{d.related.map((r) => <li key={r.code}>{r.available
-            ? <Link className="font-semibold text-cyan" to={`/aircraft/${r.code}`}>{r.code}</Link> : <span className="font-semibold">{r.code}</span>} - {r.relation}
+            ? <Link className="font-semibold text-cyan" to={`/aircraft/${r.code}`}>{r.code}</Link> : <span className="font-semibold">{r.code}</span>}: {r.relation}
             {r.warning && <span className="block text-xs text-amber-700">{r.warning}</span>}</li>)}</ul></div>}
         {d.benchmarks && <div className="card p-4 text-sm"><h3 className="font-semibold text-navy">Public cost benchmark</h3>
-          <p className="text-xs text-slate-600">{d.benchmarks.label}. BTS type {d.benchmarks.bts_type}/{d.benchmarks.bts_config} ({d.benchmarks.bts_description}; {label(d.benchmarks.mapping_status)}).</p>
+          <p className="text-xs text-slate-600">{d.benchmarks.label}. Matched to the BTS category "{d.benchmarks.bts_description}" ({termInText(d.benchmarks.mapping_status)}).</p>
           <ul className="mt-2 space-y-1">{Object.entries(d.benchmarks.metrics).map(([k, m]) => <li key={k} className="flex justify-between gap-2">
-            <span>{label(k)}</span><span className="font-semibold">{m ? `${num(m.usd_per_block_hour)} USD/BH` : <span className="missing">unavailable</span>}</span></li>)}</ul>
-          <Link to="/economics" className="mt-2 inline-block text-xs text-cyan">Operating Economics (advanced) →</Link></div>}
+            <span>{label(k)}</span><span className="font-semibold">{m ? `${num(m.usd_per_block_hour)} USD per block hour` : <span className="missing">not available</span>}</span></li>)}</ul>
+          <Link to="/economics" className="mt-2 inline-block text-xs text-cyan">More in Operating Economics →</Link></div>}
       </div>
     </div>
   </section>;
@@ -160,15 +161,15 @@ function Weights({ d }: { d: AircraftDetail }) {
         {v && v.value !== null ? <div className="flex items-center gap-2"><div className={`h-4 rounded ${v.verification_status === "source_inconsistent" ? "bg-red-200" : "bg-navy"}`}
           style={{ width: `${(v.value / max) * 75}%` }} /><span className="whitespace-nowrap text-xs">{formatSpec(v)}{v.verification_status === "source_inconsistent" && " (inconsistent in source)"}</span></div>
           : <span className="missing text-xs">unavailable</span>}</div>)}</div>
-      <p className="mt-3 text-xs text-slate-500">Each bar uses the preferred source for that weight (see the table for all sources); values from different sources are
-        not combined into one loading case.</p>
+      <p className="mt-3 text-xs text-slate-500">Each bar uses the preferred source for that weight, and the table below lists every source. Figures from
+        different sources aren't mixed into one loading example.</p>
     </div>
     {oew && mzfw && mtow ? <WeightStack oew={oew} payload={mzfw - oew} fuel={Math.max(mtow - mzfw, 0)} mtow={mtow} />
-      : <Notice>A combined empty-weight / payload / fuel diagram needs OEW, MZFW and MTOW for this aircraft; missing:{" "}
-        {[!oew && "OEW", !mzfw && "MZFW", !mtow && "MTOW"].filter(Boolean).join(", ")}. It is not drawn from assumptions.</Notice>}
-    <Notice tone="warn"><GlossaryTerm slug="payload">Maximum structural payload</GlossaryTerm> is a limit set by the structure and weights
-      {payload ? ` (here: ${formatSpec(payload)}${payload.condition ? `, ${payload.condition}` : ""})` : ""}. It is not the revenue cargo carried on a flight,
-      which depends on demand, cargo density and the fuel needed for the distance.</Notice>
+      : <Notice>The combined weight diagram needs the OEW, MZFW and MTOW. This aircraft is missing:{" "}
+        {[!oew && "OEW", !mzfw && "MZFW", !mtow && "MTOW"].filter(Boolean).join(", ")}, so the diagram isn't drawn from guesses.</Notice>}
+    <Notice tone="warn"><GlossaryTerm slug="payload">Maximum structural payload</GlossaryTerm> is a limit set by the structure and the weight limits
+      {payload ? ` (here: ${formatSpec(payload)}${payload.condition ? `, ${payload.condition}` : ""})` : ""}. It isn't the paid cargo on an actual flight,
+      which depends on demand, how dense the cargo is and how much fuel the distance needs.</Notice>
     <SpecTable values={d.sections.weights ?? []} missing={d.missing.weights} missingLabels={d.missing_labels} />
   </section>;
 }
@@ -180,15 +181,15 @@ function Performance({ d }: { d: AircraftDetail }) {
   return <section id="performance" className="scroll-mt-28 space-y-4">
     <h2 className="section-title">E. Flight performance</h2>
     <div className="grid gap-6 lg:grid-cols-2">
-      <div><h3 className="mb-2 font-semibold text-navy">Published specifications</h3>
-        {published.length ? <SpecTable values={published} /> : <p className="missing">No published performance specification in the database.</p>}</div>
-      <div><h3 className="mb-2 font-semibold text-navy">Model values (OpenAP, not certified)</h3>
-        {model.length ? <SpecTable values={model} /> : <p className="missing">No model values.</p>}</div>
+      <div><h3 className="mb-2 font-semibold text-navy">Published figures</h3>
+        {published.length ? <SpecTable values={published} /> : <p className="missing">No published performance figures yet.</p>}</div>
+      <div><h3 className="mb-2 font-semibold text-navy">Model values from OpenAP (not certified)</h3>
+        {model.length ? <SpecTable values={model} /> : <p className="missing">No model values for this aircraft.</p>}</div>
     </div>
-    {d.missing.performance && <p className="text-sm text-slate-600">Unavailable: {d.missing.performance.map((k) => d.missing_labels[k] ?? k).join(", ")}.</p>}
-    <Notice>Fuel consumption, climb and descent are not fixed specifications: they depend on route, payload and weather.
-      {d.flight_model.supported ? <> Use the <Link to={`/flight-lab?aircraft=${d.summary.code}`} className="text-cyan">Flight Lab</Link> to calculate them with the project's OpenAP-based model
-        (labelled model estimates).</> : " No flight performance model is available for this type, so no fuel or climb values are calculated."}</Notice>
+    {d.missing.performance && <p className="text-sm text-slate-600">Not available: {d.missing.performance.map((k) => d.missing_labels[k] ?? k).join(", ")}.</p>}
+    <Notice>Fuel burn, climb and descent aren't fixed figures. They depend on the route, the payload and the weather.
+      {d.flight_model.supported ? <> Try the <Link to={`/flight-lab?aircraft=${d.summary.code}`} className="text-cyan">Flight Lab</Link> to work them out with the OpenAP model
+        (the results are model estimates).</> : " There's no flight model for this aircraft, so fuel and climb figures aren't worked out."}</Notice>
   </section>;
 }
 
@@ -200,14 +201,14 @@ function Sources({ d }: { d: AircraftDetail }) {
     <h2 className="section-title">G. Data sources and limitations</h2>
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="card p-5"><h3 className="font-semibold text-navy">Sources used on this page</h3>
-        <ul className="mt-2 space-y-1 text-sm">{[...bySource.entries()].map(([name, n]) => <li key={name} className="flex justify-between gap-3"><span>{name}</span><span className="text-slate-500">{n} values</span></li>)}</ul></div>
-      <div className="card p-5"><h3 className="font-semibold text-navy">Missing data inventory</h3>
+        <ul className="mt-2 space-y-1 text-sm">{[...bySource.entries()].map(([name, n]) => <li key={name} className="flex justify-between gap-3"><span>{name}</span><span className="text-slate-500">{n} {n === 1 ? "value" : "values"}</span></li>)}</ul></div>
+      <div className="card p-5"><h3 className="font-semibold text-navy">What's missing</h3>
         {Object.keys(d.missing).length ? <ul className="mt-2 space-y-1 text-sm">{Object.entries(d.missing).map(([section, keys]) =>
           <li key={section}><span className="font-semibold">{label(section)}:</span> {keys.map((k) => d.missing_labels[k] ?? k).join(", ")}</li>)}</ul>
-          : <p className="text-sm">No expected specification is missing.</p>}</div>
+          : <p className="text-sm">Nothing we'd expect is missing.</p>}</div>
     </div>
     <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">{d.data_policy.map((p) => <li key={p}>{p}</li>)}</ul>
-    <details className="card p-4"><summary className="cursor-pointer font-semibold text-navy">All {all.length} values with provenance</summary>
+    <details className="card p-4"><summary className="cursor-pointer font-semibold text-navy">All {all.length} values and where they come from</summary>
       <div className="mt-3"><SpecTable values={all} /></div></details>
   </section>;
 }

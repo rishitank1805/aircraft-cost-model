@@ -1,10 +1,12 @@
+import { termInText } from "../plain";
+
 /** Schematic top-view silhouette by body type and engine count (not a photograph, not to scale). */
 export function Silhouette({ bodyClass, engines, freighter }: { bodyClass: string | null; engines: number | null; freighter: boolean }) {
   const w = bodyClass === "widebody" ? 14 : bodyClass === "regional_jet" ? 8 : 10;
   const span = bodyClass === "widebody" ? 110 : bodyClass === "regional_jet" ? 70 : 90;
   const pods = engines === 4 ? [-0.65, -0.35, 0.35, 0.65] : engines === 2 ? [-0.4, 0.4] : [];
   return <svg viewBox="-70 -10 140 120" className="h-28 w-full" role="img"
-    aria-label={`Schematic ${bodyClass ?? "aircraft"} silhouette${freighter ? " (freighter)" : ""}; no licensed photograph available`}>
+    aria-label={`Schematic drawing of ${bodyClass ? `a ${termInText(bodyClass)}` : "an"} aircraft${freighter ? " (freighter)" : ""}. There's no licensed photograph.`}>
     <rect x="-70" y="-10" width="140" height="120" fill={freighter ? "#e6f6fb" : "#f1f1f5"} />
     <g fill="#001450" opacity={0.85}>
       <rect x={-w / 2} y={2} width={w} height={96} rx={w / 2} />

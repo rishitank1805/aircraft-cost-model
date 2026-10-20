@@ -256,8 +256,8 @@ def role_of(specs: AircraftSpecs) -> dict[str, Any]:
     freighter = specs.text("freighter_type")
     if freighter:
         return {"role": "cargo", "freighter_type": freighter,
-                "evidence": "freighter_type from curated manufacturer / conversion-provider source"}
+                "evidence": "Taken from the manufacturer's or conversion provider's published information."}
     if specs.primary("max_seats") is not None:
         return {"role": "passenger", "freighter_type": None,
-                "evidence": "OpenAP passenger seating data for this type (OpenAP models passenger aircraft)"}
-    return {"role": None, "freighter_type": None, "evidence": "role not documented"}
+                "evidence": "OpenAP has passenger seating data for this type (OpenAP only models passenger aircraft)."}
+    return {"role": None, "freighter_type": None, "evidence": "The role isn't documented."}

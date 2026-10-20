@@ -30,10 +30,10 @@ export function Layout() {
     <main className="flex-1"><Outlet /></main>
     <footer className="bg-navy text-sm text-white/70">
       <div className="mx-auto max-w-7xl space-y-1 px-6 py-6">
-        <p>Open Aircraft Operating Cost Model - an independent educational project, not affiliated with, sponsored or endorsed
-          by any company. Names of manufacturers or other organisations appear only as plain-text data sources.</p>
-        <p>Every value shows its source and verification status. Missing values stay missing. Open model data (OpenAP) are model
-          parameters, not certified specifications.</p>
+        <p>Open Aircraft Explorer is an independent educational project. It isn't affiliated with, sponsored or endorsed by any
+          company. Manufacturers and other organisations are named only as sources.</p>
+        <p>Every figure shows where it came from and how it was checked. Missing figures are left empty, and OpenAP figures are
+          model values, not certified specifications.</p>
       </div>
     </footer>
   </div>;

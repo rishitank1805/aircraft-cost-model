@@ -23,7 +23,7 @@ describe("SpecTable", () => {
   it("lists missing specifications and reveals provenance", async () => {
     render(<MemoryRouter><SpecTable values={[spec({})]} missing={["oew_kg"]} missingLabels={{ oew_kg: "Operating empty weight (OEW)" }} /></MemoryRouter>);
     expect(screen.getByText("Operating empty weight (OEW)")).toBeInTheDocument();
-    expect(screen.getByText(/no verified source in the database/)).toBeInTheDocument();
+    expect(screen.getByText(/No verified source has been found yet/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /93,500 kg/ }));
     expect(screen.getByText("EFW page")).toBeInTheDocument();
     expect(screen.getByText("93,5 t")).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("Aircraft detail", () => {
     vi.stubGlobal("fetch", mockFetch({ "/aircraft/A321P2F": detail() }));
     render(<MemoryRouter initialEntries={["/aircraft/A321P2F"]}><Routes><Route path="/aircraft/:code" element={<AircraftDetailPage />} /></Routes></MemoryRouter>);
     expect(await screen.findByRole("heading", { level: 1, name: "Airbus A321P2F" })).toBeInTheDocument();
-    expect(screen.getByText(/It is not drawn from assumptions/)).toHaveTextContent("missing: OEW");
+    expect(screen.getByText(/isn't drawn from guesses/)).toHaveTextContent("missing: OEW");
     expect(screen.getByText(/no licensed photograph/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getAllByText("Overall length").length).toBeGreaterThan(0));
   });
@@ -84,5 +84,39 @@ describe("external links", () => {
       { title: "Handbook", publisher: "FAA", url: "https://www.faa.gov/h.pdf" }]} />);
     expect(screen.getByText("Airbus: A330-200F").closest("a")).toBeNull();
     expect(screen.getByRole("link")).toHaveAttribute("href", "https://www.faa.gov/h.pdf");
+  });
+});
+
+describe("plain language", () => {
+  it("shows identifiers and technical references as plain words", async () => {
+    const { plainText, plainPeriod, term } = await import("../plain");
+    expect(term("calculated_limits_unverified")).toBe("calculated, but some weight limits could not be checked");
+    expect(term("taxi_out")).toBe("Taxi-out");
+    expect(term("some_new_status")).toBe("Some new status");
+    expect(plainText("aircraft_type.mtow_kg (source)")).toBe("OpenAP aircraft data");
+    expect(plainText("OpenAP engines.csv bpr")).toBe("OpenAP engine data (ICAO Engine Emissions Databank)");
+    expect(plainText("Flight not fully validated; checks not performed: max_payload, mzfw, max_ramp_weight"))
+      .toBe("Not every limit could be checked. There is no published value for: maximum payload, MZFW and maximum ramp weight.");
+    expect(plainText("complete COC unavailable: missing navigation, terminal_navigation, landing, ground_handling"))
+      .toBe("There is no complete COC figure, because these costs are missing: en-route navigation charges, terminal navigation charges, landing charges and ground handling.");
+    expect(plainText("mixed: explicit_user_assumption, public_market_benchmark")).toBe("mixed (illustrative assumption and public market price)");
+    expect(plainText("values come from different sources: faa_aircraft_characteristics_database, openap_aircraft_properties"))
+      .toBe("values come from different sources: FAA Aircraft Characteristics Database, OpenAP aircraft data");
+    expect(plainText("capacity 24,210 L x 0.8025 kg/L")).toBe("capacity 24,210 L × 0.8025 kg/L");
+    expect(plainPeriod("2023-Q04..2024-Q03")).toBe("Q4 2023 to Q3 2024");
+    expect(plainPeriod("YE2023Q2")).toBe("year to June 2023");
+    // nothing that looks like code is left
+    for (const text of ["aircraft_type.cruise_speed_kt (derived: true airspeed from cruise_mach at cruise_altitude_m, ISA standard atmosphere (openap.aero.mach2tas))",
+      "No OpenAP WRAP kinematic model for A19N (synonyms not used)", "OpenAP mass.py litre-to-kg factor"]) {
+      expect(plainText(text)).not.toMatch(/[a-z]+_[a-z]+|\.py|\.csv|\(source\)|synonyms/);
+    }
+  });
+
+  it("sets formulas as maths, with a fraction bar for division", async () => {
+    const { Formula } = await import("../components/Formula");
+    const { container } = render(<Formula f={{ result: "TSFC", numerator: "fuel flow", denominator: "thrust" }} />);
+    expect(container.querySelector(".frac")).toHaveTextContent("fuel flowthrust");
+    expect(screen.getByRole("math")).toHaveTextContent("TSFC=fuel flowthrust");
+    expect(container.textContent).not.toMatch(/[*/]/);
   });
 });

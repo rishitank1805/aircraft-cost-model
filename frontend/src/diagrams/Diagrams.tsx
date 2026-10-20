@@ -50,8 +50,8 @@ export function WeightStack({ oew, payload, fuel, mtow, conceptual = false }: {
   const total = Math.max(mtow, oew + payload + fuel);
   const w = (x: number) => (x / total) * 560;
   return <Frame title="Empty weight, payload and fuel within MTOW" viewBox="0 0 640 150"
-    caption={conceptual ? "Conceptual proportions only - not data for any aircraft. Takeoff weight = operating empty weight + payload + fuel, and must not exceed MTOW."
-      : "Computed from the values on this page: payload up to MZFW - OEW, remaining fuel up to MTOW. One possible loading, not a published loading case."}>
+    caption={conceptual ? "The proportions are only an illustration, not data for any aircraft. Operating empty weight + payload + fuel ≤ MTOW."
+      : "Drawn from the figures on this page: payload fills up to MZFW − OEW, and fuel fills the rest up to MTOW. It's one possible loading, not a published one."}>
     <rect x={40} y={40} width={w(oew)} height={40} fill={NAVY} />
     <rect x={40 + w(oew)} y={40} width={w(payload)} height={40} fill={CYAN} />
     <rect x={40 + w(oew + payload)} y={40} width={w(fuel)} height={40} fill="#f59e0b" />
@@ -86,7 +86,7 @@ export function TurbofanDiagram() {
 
 export function PayloadRangeDiagram() {
   return <Frame title="Payload-range trade-off" viewBox="0 0 640 260"
-    caption="Conceptual shape only (no aircraft data): A max payload limited by MZFW; B MTOW reached - trade payload for fuel; C fuel tanks full; D ferry range.">
+    caption="The general shape only, not data for any aircraft. A: maximum payload, limited by MZFW. B: MTOW reached, so payload is traded for fuel. C: the fuel tanks are full. D: ferry range, with no payload.">
     <Defs />
     <g stroke={NAVY} strokeWidth={1.5}><line x1="60" y1="220" x2="600" y2="220" markerEnd="url(#arr)" /><line x1="60" y1="220" x2="60" y2="20" markerEnd="url(#arr)" /></g>
     <polyline points="60,60 300,60 470,120 560,220" fill="none" stroke={CYAN} strokeWidth={3} />
@@ -99,18 +99,18 @@ export function PayloadRangeDiagram() {
 export function FlightPhasesDiagram() {
   const phases = ["Taxi-out", "Takeoff", "Climb", "Cruise", "Descent", "Landing", "Taxi-in"];
   return <Frame title="Flight phases and block time" viewBox="0 0 640 220"
-    caption="Block time runs from off-block (taxi-out starts) to on-block (taxi-in ends); airborne time runs from lift-off to touchdown.">
+    caption="Block time runs from leaving the gate to arriving at the gate. Time in the air runs from lift-off to touchdown.">
     <polyline points="20,180 90,180 120,180 230,50 430,50 540,170 570,180 620,180" fill="none" stroke={CYAN} strokeWidth={3} />
     <g fontSize={11} fill={NAVY} fontWeight={600} textAnchor="middle">
       {phases.map((p, i) => <text key={p} x={[55, 110, 175, 330, 485, 555, 600][i]} y={200}>{p}</text>)}</g>
     <line x1="20" y1="20" x2="620" y2="20" stroke={NAVY} /><text x="320" y="14" fontSize={12} textAnchor="middle" fill={NAVY}>Block time</text>
-    <line x1="120" y1="35" x2="560" y2="35" stroke={GREY} /><text x="340" y="31" fontSize={11} textAnchor="middle" fill={GREY}>Airborne time</text>
+    <line x1="120" y1="35" x2="560" y2="35" stroke={GREY} /><text x="340" y="31" fontSize={11} textAnchor="middle" fill={GREY}>Time in the air</text>
   </Frame>;
 }
 
 export function UldDiagram() {
   return <Frame title="Containers and pallets (ULDs)" viewBox="0 0 640 200"
-    caption="Contoured containers match the fuselage shape; pallets are flat bases with nets. Codes (e.g. AAY, AKH, LD3) identify standard types (IATA ULD regulations).">
+    caption="Containers are shaped to fit the fuselage. Pallets are flat bases with a net over the cargo. Codes such as AAY, AKH and LD3 name the standard types (IATA ULD regulations).">
     <g stroke={NAVY} strokeWidth={1.5}>
       <path d="M40 160 L40 70 L80 40 L200 40 L240 70 L240 160 Z" fill="#e2e8f0" />
       <path d="M300 160 L300 80 L330 60 L430 60 L430 160 Z" fill="#e2e8f0" />
@@ -135,7 +135,7 @@ export function P2FDiagram({ active = 0 }: { active?: number }) {
     { x: 360, label: "Windows plugged" }, { x: 480, label: "Rear doors deactivated" }, { x: 70, label: "9g barrier" },
   ];
   return <Frame title="Where a P2F conversion changes the aircraft" viewBox="0 0 640 220"
-    caption="Typical P2F modifications (floor, frames, door, windows, doors, barrier) as described in published conversion programmes. Schematic.">
+    caption="The usual changes in a P2F conversion (floor, frames, cargo door, windows, doors and barrier), as described by published conversion programmes. Schematic.">
     <path d="M30 120 Q20 95 60 90 L540 90 Q580 90 600 60 L620 60 L615 120 L600 140 L60 140 Q35 140 30 120 Z" fill="#e2e8f0" stroke={NAVY} strokeWidth={1.5} />
     <rect x="200" y="94" width="60" height="38" fill={active === 1 ? CYAN : "#cbd5e1"} stroke={NAVY} />
     <line x1="70" y1="130" x2="560" y2="130" stroke={active === 0 ? CYAN : GREY} strokeWidth={4} />
@@ -151,12 +151,12 @@ export function CostTaxonomyDiagram() {
   const box = (x: number, y: number, w: number, t: string, sub: string, fill: string) => <g>
     <rect x={x} y={y} width={w} height={46} rx={6} fill={fill} /><text x={x + w / 2} y={y + 20} textAnchor="middle" fontSize={13} fontWeight={700} fill="#fff">{t}</text>
     <text x={x + w / 2} y={y + 36} textAnchor="middle" fontSize={10} fill="#fff">{sub}</text></g>;
-  return <Frame title="Project cost taxonomy" viewBox="0 0 640 200" caption="COC = direct variable + direct fixed + indirect; TOC = COC + depreciation; Total = TOC + financing (this project's convention).">
+  return <Frame title="How the costs add up" viewBox="0 0 640 200" caption="COC = direct variable + direct fixed + indirect costs.  TOC = COC + depreciation.  Total costs = TOC + financing. This is how costs are grouped on this site.">
     {box(20, 20, 190, "Direct variable", "fuel, maintenance, charges", NAVY)}
     {box(225, 20, 190, "Direct fixed", "crew salaries, insurance, lease", NAVY)}
-    {box(430, 20, 190, "Indirect", "admin, sales, G&A", NAVY)}
+    {box(430, 20, 190, "Indirect", "admin, sales, overheads", NAVY)}
     {box(20, 80, 600, "Cash operating cost (COC)", "", CYAN)}
-    {box(20, 140, 420, "+ Depreciation = TOC", "noncash", "#0f2a6b")}
+    {box(20, 140, 420, "+ Depreciation = TOC", "not paid in cash", "#0f2a6b")}
     {box(450, 140, 170, "+ Financing = Total", "interest", "#0f2a6b")}
   </Frame>;
 }

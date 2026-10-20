@@ -39,8 +39,8 @@ def supported_aircraft(session: Session = Depends(get_session)) -> dict[str, Any
         meta = provider.get_model_metadata(a.aircraft_code)
         if meta.supported:
             out.append({"code": a.aircraft_code, "name": f"{a.manufacturer} {a.model}", "model": meta.describe()})
-    return {"items": out, "note": "Only aircraft with a complete OpenAP model (kinematics, drag polar, engine) are "
-                                  "listed; freighters are not supported and no passenger model is substituted."}
+    return {"items": out, "note": "Only aircraft with a complete OpenAP model (climb profile, drag data and engine) are "
+                                  "listed. Freighters aren't covered, and a passenger model is never used in their place."}
 
 
 @router.get("/airports/search")
@@ -66,11 +66,11 @@ def estimate(body: FlightIn, session: Session = Depends(get_session)) -> dict[st
     try:
         r = estimate_flight(session, request, _provider())
     except UnsupportedAircraftError as exc:
-        raise HTTPException(422, f"unsupported aircraft: {exc}") from exc
+        raise HTTPException(422, f"This aircraft can't be modelled: {exc}") from exc
     except (AirportLookupError, InputValidationError) as exc:
         raise HTTPException(422, str(exc)) from exc
     except Exception as exc:  # model errors (route too short, convergence) are reported, not hidden
-        raise HTTPException(422, f"{type(exc).__name__}: {exc}") from exc
+        raise HTTPException(422, f"The flight couldn't be calculated: {exc}") from exc
     trajectory = r.trajectory()
     step = max(1, len(trajectory) // MAX_TRAJECTORY_POINTS)
     return {
@@ -96,7 +96,7 @@ def estimate(body: FlightIn, session: Session = Depends(get_session)) -> dict[st
         "assumptions": [a.__dict__ for a in r.assumptions],
         "warnings": r.warnings,
         "trajectory": trajectory[::step],
-        "labels": ["Model estimate (OpenAP, ISA atmosphere, no actual weather or wind).",
-                   "Not a dispatch fuel plan; reserves are user inputs (default 0).",
-                   "Certified limits not available in the database are reported as not performed."],
+        "labels": ["This is a model estimate (OpenAP, standard atmosphere, no real weather or wind).",
+                   "It isn't a fuel plan an airline could fly with, because no fuel reserves are included.",
+                   "Where a certified limit isn't available, the check is shown as not checked, never as passed."],
     }

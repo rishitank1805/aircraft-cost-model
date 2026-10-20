@@ -43,3 +43,25 @@ body {
 .missing {
   @apply text-slate-400 italic;
 }
+
+/* Formulas are set as written maths (serif, spaced operators, real fraction bars), not as code. */
+.formula {
+  @apply flex flex-wrap items-center text-[15px] text-navy;
+  font-family: "Cambria Math", "STIX Two Math", Cambria, Georgia, "Times New Roman", serif;
+}
+
+.formula .frac {
+  @apply inline-flex flex-col items-center text-center align-middle;
+}
+
+.formula .frac > span:first-child {
+  @apply border-b border-navy px-1 pb-0.5;
+}
+
+.formula .frac > span:last-child {
+  @apply px-1 pt-0.5;
+}
+
+.formula-note {
+  @apply w-full font-sans text-xs text-slate-500;
+}

@@ -6,6 +6,7 @@ import { GlossaryTerm } from "../components/GlossaryTerm";
 import { ErrorBox, Loading, Notice, PageHeader, RoleBadge } from "../components/ui";
 import { useApi } from "../components/useApi";
 import { formatSpec, label } from "../format";
+import { plainText, sentence } from "../plain";
 import type { CompareRow } from "../types";
 
 const COLORS = ["#001450", "#00a0d1", "#f59e0b"];
@@ -25,16 +26,16 @@ export function ComparePage() {
   const charts = rows.filter((r) => r.like_for_like && r.cells.every((c) => c?.value !== null && c?.value !== undefined)
     && ["m", "kg", "kN", "L"].includes(r.cells[0]?.unit ?? ""));
   return <>
-    <PageHeader title="Compare Aircraft" subtitle="Select two or three aircraft. Only values with the same source, unit and condition are treated as like-for-like." />
+    <PageHeader title="Compare Aircraft" subtitle="Pick two or three aircraft. Figures are only lined up as like-for-like when they share a source, unit and condition." />
     <div className="mx-auto max-w-7xl space-y-6 px-6 py-8">
       <div className="grid gap-3 md:grid-cols-3">
         {[0, 1, 2].map((i) => <label key={i} className="block"><span className="text-xs font-semibold uppercase text-slate-500">Aircraft {i + 1}{i === 2 && " (optional)"}</span>
           <select value={selected[i] ?? ""} onChange={(e) => setSlot(i, e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 bg-white p-2">
-            <option value="">{i === 2 ? "None" : "Select…"}</option>
+            <option value="">{i === 2 ? "None" : "Choose…"}</option>
             {list.data?.items.map((a) => <option key={a.code} value={a.code}>{a.name} ({a.code})</option>)}
           </select></label>)}
       </div>
-      {!ready && <Notice>Select at least two different aircraft.</Notice>}
+      {!ready && <Notice>Pick at least two different aircraft.</Notice>}
       {cmp.loading && ready && <Loading what="Comparing" />}{cmp.error && <ErrorBox message={cmp.error} />}
       {cmp.data && <>
         <Notice>{cmp.data.rule}</Notice>
@@ -42,7 +43,7 @@ export function ComparePage() {
           <thead className="bg-tint"><tr><th className="p-3 text-left">Specification</th>
             {cmp.data.aircraft.map((a, i) => <th key={a.code} className="p-3 text-left" style={{ color: COLORS[i] }}>{a.name}
               <span className="block"><RoleBadge role={a.role} freighterType={a.freighter_type} /></span></th>)}
-            <th className="p-3 text-left">Comparable?</th></tr></thead>
+            <th className="p-3 text-left">Fair comparison?</th></tr></thead>
           <tbody>{rows.map((r) => <Row key={r.key} r={r} />)}</tbody>
         </table></div>
         {charts.length > 0 && <div className="grid gap-4 md:grid-cols-2">{charts.map((r) => <div key={r.key} className="card p-4">
@@ -63,10 +64,10 @@ function Row({ r }: { r: CompareRow }) {
       <span className="block text-xs text-slate-400">{label(r.section)}</span>
       {r.why_it_matters && <span className="block text-xs text-slate-500">{r.why_it_matters}</span>}</td>
     {r.cells.map((c, i) => <td key={i} className="p-3">{c ? <><span className="font-semibold">{formatSpec(c)}</span>
-      <span className="block text-[11px] text-slate-500">{c.source_dataset}{c.condition ? ` · ${c.condition}` : ""}</span></>
-      : <span className="missing">unavailable</span>}</td>)}
+      <span className="block text-[11px] text-slate-500">{label(c.source_dataset)}{c.condition ? ` · ${c.condition}` : ""}</span></>
+      : <span className="missing">not available</span>}</td>)}
     <td className="p-3 text-xs">{r.like_for_like
-      ? <span className="inline-flex items-center gap-1 text-ok"><CheckCircle2 className="h-4 w-4" />like-for-like</span>
-      : <span className="text-amber-700"><AlertTriangle className="mr-1 inline h-4 w-4" />{r.issues.join("; ")}</span>}</td>
+      ? <span className="inline-flex items-center gap-1 text-ok"><CheckCircle2 className="h-4 w-4" />yes, like-for-like</span>
+      : <span className="text-amber-700"><AlertTriangle className="mr-1 inline h-4 w-4" />{r.issues.map((x) => sentence(plainText(x))).join(". ")}.</span>}</td>
   </tr>;
 }

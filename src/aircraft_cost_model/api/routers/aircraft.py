@@ -31,15 +31,15 @@ COMPARE_KEYS = ("length_m", "wingspan_m", "height_m", "wing_area_m2", "mtow_kg",
                 "published_range_nm", "published_range_km", "body_class", "freighter_type", "main_deck_capacity",
                 "lower_deck_capacity", "cargo_volume_m3")
 WHY_IT_MATTERS = {
-    "length_m": "Longer fuselages hold more seats or cargo positions but need more parking and gate space.",
-    "wingspan_m": "Wingspan sets the airport gate and taxiway category (FAA Airplane Design Group).",
-    "height_m": "Tail height matters for hangars and for the FAA Airplane Design Group.",
-    "mtow_kg": "MTOW bounds payload plus fuel and drives landing and navigation charges.",
+    "length_m": "A longer fuselage fits more seats or cargo positions, but needs more room at the gate.",
+    "wingspan_m": "Wingspan decides which gates and taxiways the aircraft can use (FAA Airplane Design Group).",
+    "height_m": "Tail height matters for hangars, and it also counts towards the FAA Airplane Design Group.",
+    "mtow_kg": "MTOW caps payload and fuel together, and landing and navigation charges are based on it.",
     "mzfw_kg": "MZFW limits how much payload can be loaded.",
-    "max_structural_payload_kg": "Structural payload is the upper limit on what can be carried - not the revenue load of a flight.",
-    "rated_thrust_kn": "Thrust governs takeoff and climb performance.",
-    "published_range_nm": "Range is meaningful only with its payload condition.",
-    "fuel_capacity_l": "Fuel capacity limits the maximum range with reduced payload.",
+    "max_structural_payload_kg": "The most the structure can carry. A real flight's paid load is usually less.",
+    "rated_thrust_kn": "Thrust sets how well the aircraft takes off and climbs.",
+    "published_range_nm": "A range only means something together with the payload it assumes.",
+    "fuel_capacity_l": "Fuel capacity limits how far the aircraft can fly once payload is reduced.",
 }
 
 
@@ -60,8 +60,8 @@ def _provider():
 
 def flight_model_status(aircraft: AircraftType) -> dict[str, Any]:
     if not aircraft.openap_supported:
-        return {"supported": False, "reasons": [f"No OpenAP performance model for {aircraft.aircraft_code}; no "
-                                                "passenger model is substituted for freighters"]}
+        return {"supported": False, "reasons": [f"OpenAP has no performance model for the {aircraft.aircraft_code}, and "
+                                                "a passenger version isn't used in its place."]}
     meta = _provider().get_model_metadata(aircraft.aircraft_code)
     return {"supported": meta.supported, "reasons": list(meta.unsupported_reasons),
             "description": meta.describe() if meta.supported else None}
@@ -86,7 +86,7 @@ def summary(specs: AircraftSpecs, flight: dict[str, Any]) -> dict[str, Any]:
         "code": a.aircraft_code, "name": f"{a.manufacturer or ''} {a.model or a.aircraft_code}".strip(),
         "manufacturer": a.manufacturer, "model": a.model, "variant": a.variant,
         "icao_type_designator": a.icao_type_designator,
-        "series": series_of(a.model), "series_basis": "derived from the model designation",
+        "series": series_of(a.model), "series_basis": "read from the model name",
         "role": role["role"], "freighter_type": role["freighter_type"],
         "body_class": specs.text("body_class"),
         "engine_count": int(engine_count.value) if engine_count and engine_count.value is not None else None,
@@ -129,10 +129,10 @@ def list_aircraft(session: Session = Depends(get_session), search: str | None = 
         return flight_model is None or r["flight_model_supported"] == flight_model
     items = [r for r in rows if keep(r)]
     return {"total": len(rows), "count": len(items), "items": items, "facets": facets,
-            "notes": ["Unknown values are shown as unavailable; nothing is filled in.",
-                      "Body type comes from FAA Economic Values Tables 4-16/4-17 where documented.",
-                      "Model series is derived from the model designation, not a manufacturer family classification.",
-                      "No licensed aircraft photographs are bundled; diagrams are schematic."]}
+            "notes": ["Anything we don't know is shown as unavailable. Nothing is filled in or guessed.",
+                      "Body type comes from the FAA Economic Values (Tables 4-16 and 4-17) where it's documented.",
+                      "The model series is read from the model name. It isn't a manufacturer's family grouping.",
+                      "There are no licensed aircraft photos, so the drawings are schematic."]}
 
 
 def _get(session: Session, code: str) -> AircraftType:
@@ -164,21 +164,21 @@ def _benchmarks(request: Request, session: Session, code: str) -> dict[str, Any]
     return {"bts_type": m["bts_aircraft_type"], "bts_config": m["bts_aircraft_config"],
             "bts_description": m["bts_description"], "mapping_status": m["mapping_status"], "mapping_notes": m["notes"],
             "metrics": metrics,
-            "label": "BTS Form 41 benchmark (U.S. carrier accounting expense, 2025) - benchmark only; this is not a "
-                     "route-specific cost estimate"}
+            "label": "BTS Form 41: what U.S. carriers reported spending in 2025. It's a benchmark, not a cost "
+                     "estimate for any particular route"}
 
 
 def related_types(session: Session, aircraft: AircraftType) -> list[dict[str, str]]:
     out = []
     if aircraft.openap_related_code:
         rel = session.scalar(select(AircraftType).where(AircraftType.aircraft_code == aircraft.openap_related_code))
-        out.append({"code": aircraft.openap_related_code, "relation": "related passenger aircraft",
+        out.append({"code": aircraft.openap_related_code, "relation": "the passenger aircraft it's based on",
                     "available": rel is not None,
-                    "warning": "its specifications describe the passenger aircraft, not this freighter"})
+                    "warning": "Its specifications are for the passenger aircraft, not this freighter."})
     for f in session.scalars(select(AircraftType).where(AircraftType.openap_related_code.in_(
             [aircraft.aircraft_code, aircraft.icao_type_designator or ""]))):
         if f.aircraft_code != aircraft.aircraft_code:
-            out.append({"code": f.aircraft_code, "relation": "freighter derived from this type",
+            out.append({"code": f.aircraft_code, "relation": "freighter version of this aircraft",
                         "available": True, "warning": None})
     return out
 
@@ -209,7 +209,7 @@ def describe(specs: AircraftSpecs, role: dict[str, Any]) -> list[dict[str, str]]
     elif role["role"] == "passenger":
         seats = specs.primary("max_seats")
         if seats and seats.value is not None:
-            out.append({"text": f"OpenAP lists up to {int(seats.value)} passenger seats for this type.",
+            out.append({"text": f"OpenAP gives it up to {int(seats.value)} passenger seats.",
                         "source": "OpenAP aircraft data (model data)"})
     return out
 
@@ -231,10 +231,11 @@ def aircraft_detail(code: str, request: Request, session: Session = Depends(get_
         "flight_model": flight, "related": related_types(session, aircraft),
         "freighter_programme": programme, "benchmarks": _benchmarks(request, session, code),
         "notes": aircraft.notes,
-        "data_policy": ["Every value shows its source, unit, source type, verification status and variant.",
-                        "Open model data (OpenAP) are model parameters, not certified specifications.",
-                        "Passenger-aircraft specifications are never shown as freighter specifications.",
-                        "Missing values stay missing."],
+        "data_policy": ["Every value comes with its source, its unit, the type of source, how it was checked and "
+                        "the variant it applies to.",
+                        "OpenAP figures are model values, not certified specifications.",
+                        "A passenger aircraft's figures are never shown as a freighter's.",
+                        "Missing values are left empty, not estimated."],
     }
 
 
@@ -243,7 +244,7 @@ def compare(codes: str = Query(..., description="2 or 3 comma-separated aircraft
             session: Session = Depends(get_session)) -> dict[str, Any]:
     wanted = [c.strip() for c in codes.split(",") if c.strip()]
     if not 2 <= len(wanted) <= 3 or len(set(wanted)) != len(wanted):
-        raise HTTPException(422, "select two or three different aircraft")
+        raise HTTPException(422, "Pick two or three different aircraft.")
     specs = [aircraft_specs(session, _get(session, c)) for c in wanted]
     rows = []
     for key in COMPARE_KEYS:
@@ -257,9 +258,9 @@ def compare(codes: str = Query(..., description="2 or 3 comma-separated aircraft
         if len({c.source_dataset for c in present}) > 1:
             issues.append("values come from different sources: " + ", ".join(sorted({c.source_dataset or "?" for c in present})))
         if len({(c.condition or "") for c in present}) > 1:
-            issues.append("different conditions: " + "; ".join(sorted({c.condition or "not stated" for c in present})))
+            issues.append("measured under different conditions: " + "; ".join(sorted({c.condition or "not stated" for c in present})))
         if any(c.verification_status in ("shared_designator_row", "source_inconsistent") for c in present):
-            issues.append("includes shared-designator or inconsistent values")
+            issues.append("a value is shared with other models or doesn't match its own source")
         if len({c.unit for c in present}) > 1:
             issues.append("different units")
         like_for_like = not issues
@@ -269,5 +270,5 @@ def compare(codes: str = Query(..., description="2 or 3 comma-separated aircraft
                      "like_for_like": like_for_like, "issues": issues,
                      "cells": [None if c is None else c.to_dict() for c in cells]})
     return {"aircraft": [summary(s, flight_model_status(s.aircraft)) for s in specs], "rows": rows,
-            "rule": "Only values with the same source, unit and condition are like-for-like; others are shown with "
-                    "the incompatibility stated."}
+            "rule": "Values count as like-for-like only when they share the same source, unit and condition. "
+                    "Anything else is shown with the reason it can't be compared directly."}
