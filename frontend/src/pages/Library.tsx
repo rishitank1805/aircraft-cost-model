@@ -25,9 +25,18 @@ export function LibraryPage() {
   };
   const items = data?.items ?? [];
   const sorted = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items]);
+  // Totals for the whole library, independent of the filters.
+  const all = useApi(() => api.aircraft(), []);
+  const stats: [string, number | undefined][] = [["Aircraft types", all.data?.total],
+    ["Freighters", all.data?.items.filter((a) => a.role === "cargo").length],
+    ["With a flight model", all.data?.items.filter((a) => a.flight_model_supported).length]];
 
   return <>
-    <PageHeader title="Aircraft Library" subtitle="Browse every aircraft type in the database. If a figure isn't known, it says so. Nothing is guessed." />
+    <PageHeader title="Aircraft Library" subtitle="Browse every aircraft type in the database. If a figure isn't known, it says so. Nothing is guessed.">
+      <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-6">
+        {stats.map(([t, v]) => <div key={t}><dt className="text-sm text-white/70">{t}</dt><dd className="text-3xl font-bold">{v ?? "…"}</dd></div>)}
+      </dl>
+    </PageHeader>
     <div className="mx-auto max-w-7xl px-6 py-8">
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-4" aria-label="Filters">

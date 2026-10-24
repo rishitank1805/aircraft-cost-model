@@ -17,7 +17,7 @@ export function CargoPage() {
   if (error || !data) return <div className="mx-auto max-w-7xl p-6"><ErrorBox message={error ?? "unavailable"} /></div>;
   const current = data.conversion_steps.find((s) => s.step === step)!;
   return <>
-    <PageHeader title="Cargo & P2F Explorer" subtitle="How freighters work, what goes into converting a passenger aircraft, and a closer look at five freighters." />
+    <PageHeader title="Freighter Explorer" subtitle="How freighters work, what goes into converting a passenger aircraft, and a closer look at five freighters." />
     <div className="mx-auto max-w-7xl space-y-12 px-6 py-8">
       <section className="space-y-3"><h2 className="section-title">Freighter fundamentals</h2>
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">

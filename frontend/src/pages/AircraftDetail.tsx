@@ -83,7 +83,7 @@ export function AircraftDetailPage() {
             {" "}Source: {d.freighter_programme.source_publisher}'s public website (retrieved {d.freighter_programme.retrieved}).
             {d.freighter_programme.notes && <span className="mt-1 block">{d.freighter_programme.notes}</span>}</Notice>}
           <SpecTable values={d.sections.cargo ?? []} missing={d.missing.cargo} missingLabels={d.missing_labels} />
-          <p className="text-sm">Learn how freighters and conversions work in the <Link to="/cargo" className="text-cyan hover:underline">Cargo & P2F Explorer</Link>.</p>
+          <p className="text-sm">Learn how freighters and conversions work in the <Link to="/freighter" className="text-cyan hover:underline">Freighter Explorer</Link>.</p>
         </> : <Notice>This is a passenger aircraft, so there are no main-deck cargo figures (cargo door, ULD positions, cargo volume).
           Lower-deck cargo figures aren't available either. {d.related.filter((r) => r.relation.startsWith("freighter"))
             .map((r) => <span key={r.code}>There is a freighter version: <Link className="text-cyan" to={`/aircraft/${r.code}`}>{r.code}</Link>. </span>)}</Notice>}

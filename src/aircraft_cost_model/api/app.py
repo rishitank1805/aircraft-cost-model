@@ -31,7 +31,7 @@ def create_app(database_path: Path | None = None, static_dir: Path | None = None
     if revision != head_revision():
         raise RuntimeError(f"database revision {revision} is not {head_revision()}; run the ingestion scripts "
                            "(which migrate) before starting the explorer")
-    app = FastAPI(title="Open Aircraft Explorer API", version=__version__,
+    app = FastAPI(title="Aircraft Explorer API", version=__version__,
                   description="Read-only API over the Open Aircraft Operating Cost Model database.")
     app.state.engine = engine
     app.state.settings = settings

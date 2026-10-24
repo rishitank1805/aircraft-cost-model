@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { AircraftDetailPage } from "./pages/AircraftDetail";
 import { CargoPage } from "./pages/Cargo";
@@ -20,7 +20,8 @@ export function App() {
       <Route path="aircraft" element={<LibraryPage />} />
       <Route path="aircraft/:code" element={<AircraftDetailPage />} />
       <Route path="compare" element={<ComparePage />} />
-      <Route path="cargo" element={<CargoPage />} />
+      <Route path="freighter" element={<CargoPage />} />
+      <Route path="cargo" element={<Navigate to="/freighter" replace />} />
       <Route path="flight-lab" element={<FlightLabPage />} />
       <Route path="learn" element={<KnowledgeHubPage />} />
       <Route path="economics" element={<EconomicsPage />} />
