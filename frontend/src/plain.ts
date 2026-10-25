@@ -22,7 +22,7 @@ const TERMS: Record<string, string> = {
   user_assumption: "Your assumption",
   curated_freighter_published_specs: "Manufacturer and conversion-provider web pages",
   faa_aircraft_characteristics_database: "FAA Aircraft Characteristics Database",
-  faa_economic_values_tables_4_16_4_17: "FAA Economic Values (Tables 4-16 and 4-17)",
+  faa_economic_values_tables_4_16_4_17: "FAA Economic Values",
   openap_aircraft_properties: "OpenAP aircraft data",
   openap_engines_csv: "OpenAP engine data (ICAO Engine Emissions Databank)",
   // specification names (Knowledge Hub "related specifications")

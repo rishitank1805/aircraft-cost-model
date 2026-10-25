@@ -130,9 +130,8 @@ def list_aircraft(session: Session = Depends(get_session), search: str | None = 
     items = [r for r in rows if keep(r)]
     return {"total": len(rows), "count": len(items), "items": items, "facets": facets,
             "notes": ["Anything we don't know is shown as unavailable. Nothing is filled in or guessed.",
-                      "Body type comes from the FAA Economic Values (Tables 4-16 and 4-17) where it's documented.",
-                      "The model series is read from the model name. It isn't a manufacturer's family grouping.",
-                      "There are no licensed aircraft photos, so the drawings are schematic."]}
+                      "Body type comes from the FAA Economic Values.",
+                      "The model series is read from the model name.",]}
 
 
 def _get(session: Session, code: str) -> AircraftType:
