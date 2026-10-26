@@ -3,7 +3,7 @@ import type { AircraftDetail, AircraftSummary, SpecValue } from "../types";
 export const spec = (over: Partial<SpecValue>): SpecValue => ({
   key: "mtow_kg", label: "Maximum takeoff weight (MTOW)", section: "weights", value: 93500, value_exact: "93500", value_text: null,
   unit: "kg", source_id: 21, source_name: "Curated transcription", source_dataset: "curated_freighter_published_specs",
-  source_url: null, source_license: "facts with citation", source_reference: "EFW page", source_type: "published_specification",
+  source_url: null, source_license: "facts with citation", source_reference: "Conversion provider page", source_type: "published_specification",
   verification_status: "as_published", variant: "A321P2F (weight variant 011)", condition: null, notes: null,
   original_value: "93,5", original_unit: "t", glossary: "mtow", primary: true, ...over,
 });
@@ -17,7 +17,7 @@ export const summary = (over: Partial<AircraftSummary> = {}): AircraftSummary =>
 
 export const detail = (): AircraftDetail => ({
   summary: summary(), role: { role: "cargo", freighter_type: "converted_freighter", evidence: "curated source" },
-  description: [{ text: "It is a passenger-to-freighter conversion of the A321-200.", source: "EFW" }],
+  description: [{ text: "It is a passenger-to-freighter conversion of the A321-200.", source: "Conversion provider" }],
   sections: { weights: [spec({}), spec({ key: "mzfw_kg", label: "Maximum zero-fuel weight (MZFW)", value: 73800, glossary: "mzfw" })],
     cargo: [spec({ key: "freighter_type", label: "Freighter type", section: "cargo", value: null, value_text: "converted_freighter", unit: null })] },
   missing: { weights: ["oew_kg"], dimensions: ["length_m"] }, missing_labels: { oew_kg: "Operating empty weight (OEW)", length_m: "Overall length" },

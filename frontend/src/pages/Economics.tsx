@@ -67,7 +67,7 @@ export function EconomicsPage() {
             {bench.data.bts && <div className="card p-4"><h3 className="font-semibold text-navy">BTS Form 41: Boeing 777F (benchmark only)</h3>
               <p className="text-xs text-slate-600">{bench.data.bts.label}.</p>
               <ul className="mt-2 space-y-1 text-sm">{Object.entries(bench.data.bts.metrics).map(([k, m]: [string, Json]) => <li key={k} className="flex justify-between gap-3">
-                <span>{label(k)}</span><span className="text-right">{m ? `${num(m.usd_per_block_hour)} USD per block hour (carriers ${joinWords(m.carriers)})` : "not available"}</span></li>)}</ul></div>}
+                <span>{label(k)}</span><span className="text-right">{m ? `${num(m.usd_per_block_hour)} USD per block hour (${m.carriers.length} U.S. ${m.carriers.length === 1 ? "carrier" : "carriers"})` : "not available"}</span></li>)}</ul></div>}
           </div></>}
       </section>
     </div>

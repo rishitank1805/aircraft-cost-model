@@ -115,7 +115,7 @@ revision, section and page, SHA-256 and terms evidence.
 | 777F | Boeing D6-58329-2 *777-200LR/-300ER/-Freighter Airplane Characteristics for Airport Planning*, Rev G, Dec 2024 ([PDF](https://www.boeing.com/content/dam/boeing/v2/airports/acaps/777-200LR-300ER-F_Rev_G.pdf)) | 2.1 General Characteristics | "Copyright © 2024 Boeing. All Rights Reserved." No reuse licence stated |
 | 767-300F | Boeing D6-58328 *767 Airplane Characteristics for Airport Planning*, Rev K, Dec 2024 ([PDF](https://www.boeing.com/content/dam/boeing/v2/airports/acaps/767_REV_K.pdf)) | 2.1.5, page 2-6 | Same Boeing notice |
 | 747-400F | Boeing D6-58326-1 *747-400 Airplane Characteristics for Airport Planning*, Rev F, Dec 2024 ([PDF](https://www.boeing.com/content/dam/boeing/v2/airports/acaps/747-400_Rev_F.pdf)) | 2.1.7–2.1.9 (by engine maker) | Same Boeing notice |
-| A321P2F | Airbus *A321 Aircraft Characteristics*, 01-Jul-2026 ([PDF](https://mediaassets.airbus.com/pm_38_916_916230-7u6neg4lfg.pdf)) | **None.** The document has no freighter or P2F content (0 text matches) | Same Airbus notice. The conversion is by EFW; no public specification document was located |
+| A321P2F | Airbus *A321 Aircraft Characteristics*, 01-Jul-2026 ([PDF](https://mediaassets.airbus.com/pm_38_916_916230-7u6neg4lfg.pdf)) | **None.** The document has no freighter or P2F content (0 text matches) | Same Airbus notice. The conversion is by an independent conversion company; no public specification document was located |
 
 **Decision.**
 - Airbus explicitly requires written permission to reproduce any data.
@@ -162,8 +162,9 @@ The Aircraft Explorer adds the following (details, coverage and gaps in
   installed package).
 - **FAA Economic Values Tables 4-16/4-17** (public domain;
   `data/reference/aircraft_body_class_faa.csv`).
-- **Curated freighter facts** transcribed from Airbus, Boeing and EFW public pages with URL
-  and retrieval date (`data/reference/freighter_programs.csv`,
+- **Curated freighter facts** transcribed from manufacturer and conversion-provider public pages with
+  retrieval date (and URL, except for the conversion provider, whose name and URL are kept only in the
+  git-ignored `data/local/conversion_provider_sources.csv`) (`data/reference/freighter_programs.csv`,
   `data/reference/freighter_published_specs.csv`). Only facts and short attributed quotes
   are used; no text or images are redistributed.
 

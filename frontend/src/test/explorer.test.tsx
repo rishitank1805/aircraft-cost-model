@@ -25,7 +25,7 @@ describe("SpecTable", () => {
     expect(screen.getByText("Operating empty weight (OEW)")).toBeInTheDocument();
     expect(screen.getByText(/No verified source has been found yet/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /93,500 kg/ }));
-    expect(screen.getByText("EFW page")).toBeInTheDocument();
+    expect(screen.getByText("Conversion provider page")).toBeInTheDocument();
     expect(screen.getByText("93,5 t")).toBeInTheDocument();
   });
 
@@ -76,7 +76,7 @@ describe("external links", () => {
     const { isAgencyUrl, stripCompanyUrls } = await import("../links");
     expect(isAgencyUrl("https://www.faa.gov/x")).toBe(true);
     expect(isAgencyUrl("https://www.grc.nasa.gov/www")).toBe(true);
-    expect(isAgencyUrl("https://www.elbeflugzeugwerke.com/en/")).toBe(false);
+    expect(isAgencyUrl("https://www.example-conversions.com/en/")).toBe(false);
     expect(isAgencyUrl("https://www.boeing.com/commercial/freighters")).toBe(false);
     expect(stripCompanyUrls("Boeing: https://www.boeing.com/commercial/freighters (retrieved 2026-10-16)")).toBe("Boeing (retrieved 2026-10-16)");
     const { References } = await import("../components/ui");

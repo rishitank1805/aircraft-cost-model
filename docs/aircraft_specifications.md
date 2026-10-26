@@ -19,7 +19,7 @@ provenance) are shown alongside.
 | FAA Aircraft Characteristics Database (XLSX, last modified 2025-01-03) | 489 | published specification | `as_published` (13 `shared_designator_row`) | U.S. Government work (public domain) | Overall length, wingspan with/without winglets, tail height at OEW, wheelbase, main gear, MTOW, max allowable landing weight, approach speed, ADG/AAC/WTC |
 | OpenAP `engines.csv` (ICAO Engine Emissions Databank values) | 128 | engine databank | `as_published` | GPL-3.0 (OpenAP); EEDB values | Rated thrust per engine, bypass ratio, pressure ratio, engine manufacturer (default engine only) |
 | FAA Economic Values Tables 4-16/4-17 | 66 | documented classification | `as_published` | U.S. Government work | Narrowbody / widebody / regional jet (33 types) |
-| Curated freighter facts (Airbus, Boeing, EFW pages, retrieved 2026-10-16) | 43 | published specification | `as_published` (1 `source_inconsistent`) | Facts with citation; page content (c) the publishers; only short attributed quotes | Freighter type, conversion provider, payloads, ranges with conditions, MZFW/MTOW/MLW (A321P2F WV011), A330-200F weights and dimensions, ULD positions, door, volume |
+| Curated freighter facts (manufacturer and conversion-provider pages, retrieved 2026-10-16) | 43 | published specification | `as_published` (1 `source_inconsistent`) | Facts with citation; page content (c) the publishers; only short attributed quotes | Freighter type, conversion provider, payloads, ranges with conditions, MZFW/MTOW/MLW (A321P2F WV011), A330-200F weights and dimensions, ULD positions, door, volume |
 
 ## Matching rules
 
@@ -45,14 +45,14 @@ provenance) are shown alongside.
 
 | Specification | Aircraft missing it | Why |
 |---|---:|---|
-| MZFW | 40 | Not in OpenAP or the FAA ACD; published only for the A330-200F (Airbus) and A321P2F (EFW) |
-| Maximum structural payload | 39 | Published only for the A330-200F, 777F, 767-300F (Boeing/Airbus) and A321P2F (EFW) |
+| MZFW | 40 | Not in OpenAP or the FAA ACD; published only for the A330-200F (Airbus) and A321P2F (conversion provider) |
+| Maximum structural payload | 39 | Published only for the A330-200F, 777F, 767-300F (Boeing/Airbus) and A321P2F (conversion provider) |
 | Rated thrust / engine manufacturer | 10 | The 5 freighters (no engine data source), plus 5 OpenAP types whose default engine is not in `engines.csv` |
 | Body class | 9 | Not in FAA Tables 4-16/4-17 (see above) |
 | OEW | 5 | The 5 freighters (OpenAP OEW is for passenger types only) |
 | Engine model/type/count, cruise Mach/speed, ceiling | 4-5 | Freighters: no permitted source |
 | Overall length/height | 4 | B767-300F, B747-400F, A321P2F (no freighter-specific source); B3XM (not in FAA ACD) |
-| Cargo door, volume, loading system, deck positions | 3-4 freighters | Published only for the A321P2F (EFW) and the A330-200F positions (Airbus) |
+| Cargo door, volume, loading system, deck positions | 3-4 freighters | Published only for the A321P2F (conversion provider) and the A330-200F positions (Airbus) |
 | Aircraft photographs | 42 | No licensed images bundled |
 | Development history / context | 42 | Not sourced; only database-backed sentences are shown |
 

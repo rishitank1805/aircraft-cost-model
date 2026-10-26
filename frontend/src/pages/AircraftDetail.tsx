@@ -80,7 +80,7 @@ export function AircraftDetailPage() {
         <h2 className="section-title">F. Cargo capabilities</h2>
         {isFreighter ? <>
           {d.freighter_programme && <Notice><strong>{label(d.freighter_programme.freighter_type)}.</strong> {d.freighter_programme.statement}
-            {" "}Source: {d.freighter_programme.source_publisher}'s public website (retrieved {d.freighter_programme.retrieved}).
+            {" "}Source: {d.freighter_programme.source_publisher}, retrieved {d.freighter_programme.retrieved}.
             {d.freighter_programme.notes && <span className="mt-1 block">{d.freighter_programme.notes}</span>}</Notice>}
           <SpecTable values={d.sections.cargo ?? []} missing={d.missing.cargo} missingLabels={d.missing_labels} />
           <p className="text-sm">Learn how freighters and conversions work in the <Link to="/freighter" className="text-cyan hover:underline">Freighter Explorer</Link>.</p>

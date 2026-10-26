@@ -61,7 +61,7 @@ export function Accordion({ title, children, defaultOpen = false }: { title: Rea
 export function References({ refs }: { refs: Reference[] }) {
   if (!refs.length) return null;
   return <ul className="mt-2 space-y-1 text-xs text-slate-600">
-    {refs.map((r) => <li key={r.url}>
+    {refs.map((r) => <li key={r.url || r.title}>
       {isAgencyUrl(r.url)
         ? <a className="inline-flex items-center gap-1 text-cyan hover:underline" href={r.url} target="_blank" rel="noreferrer">
             {r.publisher}: {r.title}<ExternalLink className="h-3 w-3" /></a>

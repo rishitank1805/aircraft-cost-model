@@ -347,18 +347,24 @@ def load_body_class(engine: Engine, path: Path) -> tuple[int, int, list[str]]:
     return insert_specs(engine, source_id, rows)
 
 
+def _web_reference(r: dict[str, str]) -> str:
+    """Publisher, URL (when one is recorded) and retrieval date of a curated web fact."""
+    url = f": {r['source_url']}" if r["source_url"] else ""
+    return f"{r['source_publisher']}{url} (retrieved {r['retrieved']})"
+
+
 def load_freighter_reference(engine: Engine, programs: Path, specs: Path) -> tuple[int, int, list[str]]:
     with Session(engine) as session, session.begin():
         source_id = _register_reference(
             session, specs, "curated_freighter_published_specs",
-            "Curated transcription of manufacturer and conversion-provider web pages (Airbus, Boeing, EFW)",
+            "Curated transcription of manufacturer and conversion-provider web pages",
             "Facts transcribed with citation from publicly accessible pages; page content (c) the publishers; "
             "no text or images redistributed beyond short attributed quotes",
             f"also {programs.name} (sha256 {hashlib.sha256(programs.read_bytes()).hexdigest()[:12]})")
     rows: list[SpecRow] = []
     with programs.open(encoding="utf-8") as handle:
         for r in csv.DictReader(handle):
-            ref = f"{r['source_publisher']}: {r['source_url']} (retrieved {r['retrieved']})"
+            ref = _web_reference(r)
             for key, value in (("freighter_type", r["freighter_type"]), ("conversion_provider", r["conversion_provider"]),
                                ("base_aircraft", r["base_aircraft"]), ("original_manufacturer", r["original_manufacturer"])):
                 if value:
@@ -367,7 +373,7 @@ def load_freighter_reference(engine: Engine, programs: Path, specs: Path) -> tup
                                         notes=f"{r['statement']} {r['notes']}".strip()))
     with specs.open(encoding="utf-8") as handle:
         for r in csv.DictReader(handle):
-            ref = f"{r['source_publisher']}: {r['source_url']} (retrieved {r['retrieved']})"
+            ref = _web_reference(r)
             rows.append(SpecRow(r["aircraft_code"], r["spec_key"], r["section"], _dec(r["value"]),
                                 value_text=r["value_text"] or None, unit=r["unit"] or None,
                                 original_value=r["original_value"] or None, original_unit=r["original_unit"] or None,

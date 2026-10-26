@@ -31,14 +31,14 @@
    "body": "A P2F conversion turns a used passenger aircraft into a freighter. The cabin is stripped out. The fuselage is reinforced around a new main-deck cargo door, and the floor is rebuilt to take cargo loads. Windows and unused passenger doors are plugged or locked. Finally a rigid barrier, a cargo loading system and fire protection are fitted, so the main deck can be certified as a cargo compartment. The modified design is approved through a Supplemental Type Certificate (STC).",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
      "title": "Supplemental Type Certificates",
@@ -54,15 +54,15 @@
    "glossary": [
     "p2f-conversion"
    ],
-   "body": "Passenger aircraft often have plenty of structural life left when they leave passenger service. Converting them provides freighter capacity for less than a new production freighter would cost. It also fills sizes that aren't built new as freighters, such as narrowbody freighters like the A321P2F. EFW says its conversions serve the e-commerce, express and general cargo markets. There's no conversion cost data on this site, so no cost comparison is shown.",
+   "body": "Passenger aircraft often have plenty of structural life left when they leave passenger service. Converting them provides freighter capacity for less than a new production freighter would cost. It also fills sizes that aren't built new as freighters, such as narrowbody freighters like the A321P2F. Conversion providers say these freighters serve the e-commerce, express and general cargo markets. There's no conversion cost data on this site, so no cost comparison is shown.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
-   "basis": "General explanation. The market statement is EFW's; the cost reasoning is general, not data from this site."
+   "basis": "General explanation. The market statement comes from a conversion provider; the cost reasoning is general, not data from this site."
   },
   {
    "id": "main-deck-door",
@@ -70,17 +70,17 @@
    "glossary": [
     "main-deck-cargo-door"
    ],
-   "body": "The main-deck cargo door is a large opening in the side of the fuselage. Containers and pallets go through it onto the main deck, so its width and height decide the largest unit load device that fits. EFW's A321P2F door is 142 in wide and 85 in high. Its A330P2F door is 141 in by 101 in.",
+   "body": "The main-deck cargo door is a large opening in the side of the fuselage. Containers and pallets go through it onto the main deck, so its width and height decide the largest unit load device that fits. On the A321P2F the door is 142 in wide and 85 in high. On the A330P2F it is 141 in by 101 in.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -100,9 +100,9 @@
      "url": "https://www.iata.org/en/programs/cargo/unit-load-devices/"
     },
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
      "title": "A330-200F",
@@ -118,20 +118,20 @@
    "glossary": [
     "cargo-loading-system"
    ],
-   "body": "The cargo loading system (CLS) is the equipment in the floor that lets ground staff move ULDs from the door to their positions and lock them down. It's made up of roller tracks, ball mats near the door, side guides and locks. In a powered system (PCLS), drive units move the containers. EFW describes a powered loading system on the A330P2F in which containers are power-driven into position.",
+   "body": "The cargo loading system (CLS) is the equipment in the floor that lets ground staff move ULDs from the door to their positions and lock them down. It's made up of roller tracks, ball mats near the door, side guides and locks. In a powered system (PCLS), drive units move the containers. The A330P2F conversion has a powered loading system in which containers are power-driven into position.",
    "references": [
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
-   "basis": "General explanation of the parts of a loading system. The EFW statement is sourced."
+   "basis": "General explanation of the parts of a loading system. The conversion provider's statement is sourced."
   },
   {
    "id": "payload-range",
@@ -172,9 +172,9 @@
      "url": "https://www.boeing.com/commercial/freighters"
     },
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "General explanation. The Boeing example is sourced."
@@ -184,12 +184,12 @@
   {
    "step": 1,
    "title": "Selecting the aircraft",
-   "body": "A suitable passenger aircraft is chosen, based on its type, weight variant and structural condition, and brought into the conversion facility. EFW's A321P2F STC covers all weight variants of the A321-200.",
+   "body": "A suitable passenger aircraft is chosen, based on its type, weight variant and structural condition, and brought into the conversion facility. The A321P2F conversion's STC covers all weight variants of the A321-200.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -204,17 +204,17 @@
   {
    "step": 3,
    "title": "Rebuilding the floor",
-   "body": "The floor is rebuilt to carry cargo loads. EFW says the floor is rebuilt and that stringers and frames are replaced or reinforced.",
+   "body": "The floor is rebuilt to carry cargo loads. For the A321P2F, the published description says the floor is rebuilt and that stringers and frames are replaced or reinforced.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -225,14 +225,14 @@
    "body": "A large opening is cut in the side of the fuselage and the main-deck cargo door is fitted. The fuselage around it is reinforced.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -240,17 +240,17 @@
   {
    "step": 5,
    "title": "Closing windows and doors",
-   "body": "The windows are replaced with plugs and the rear passenger doors are locked shut (EFW).",
+   "body": "The windows are replaced with plugs and the rear passenger doors are locked shut.",
    "references": [
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -258,17 +258,17 @@
   {
    "step": 6,
    "title": "Barrier, loading system and fire protection",
-   "body": "A rigid barrier is fitted to separate the crew from the cargo. EFW's A321P2F barrier is designed for loads of up to 9 g. A cargo loading system and fire protection for a Class E cargo compartment go in as well.",
+   "body": "A rigid barrier is fitted to separate the crew from the cargo. On the A321P2F the barrier is designed for loads of up to 9 g. A cargo loading system and fire protection for a Class E cargo compartment go in as well.",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -284,9 +284,9 @@
      "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/stc"
     },
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ],
    "basis": "From the cited sources."
@@ -296,7 +296,7 @@
   {
    "code": "A330-200F",
    "freighter_type": "production_freighter",
-   "summary": "Airbus's factory-built freighter in the A330 family. Airbus lists it separately from the A330-200P2F and A330-300P2F conversions, which EFW carries out.",
+   "summary": "Airbus's factory-built freighter in the A330 family. Airbus lists it separately from the A330-200P2F and A330-300P2F conversions, which an independent conversion company carries out.",
    "not_to_confuse_with": "A330-200P2F (converted A330-200 passenger aircraft)",
    "references": [
     {
@@ -305,9 +305,9 @@
      "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
     },
     {
-     "title": "A330P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a330p2f/"
+     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ]
   },
@@ -344,32 +344,32 @@
    "not_to_confuse_with": "747-400BCF / 747-400BDSF converted freighters",
    "references": [
     {
-     "title": "Boeing Delivers Japan Airlines' First 747-400 Freighter (12 Oct 2004)",
+     "title": "Manufacturer press release on the first 747-400 Freighter delivery (12 Oct 2004)",
      "publisher": "Boeing",
-     "url": "https://boeing.mediaroom.com/2004-10-12-Boeing-Delivers-Japan-Airlines-First-747-400-Freighter"
+     "url": ""
     },
     {
-     "title": "First 747-400 Boeing Converted Freighter Redelivered to Cathay Pacific (19 Dec 2005)",
+     "title": "Manufacturer press release on the first 747-400 Boeing Converted Freighter (19 Dec 2005)",
      "publisher": "Boeing",
-     "url": "https://boeing.mediaroom.com/2005-12-19-First-747-400-Boeing-Converted-Freighter-Redelivered-to-Cathay-Pacific"
+     "url": ""
     },
     {
-     "title": "Boeing, Atlas Air Celebrate Delivery of Final 747 (31 Jan 2023)",
+     "title": "Manufacturer press release on the delivery of the final 747 (31 Jan 2023)",
      "publisher": "Boeing",
-     "url": "https://boeing.mediaroom.com/2023-01-31-Boeing,-Atlas-Air-Celebrate-Delivery-of-Final-747,-an-Airplane-that-Transformed-Aviation-and-Global-Air-Travel"
+     "url": ""
     }
    ]
   },
   {
    "code": "A321P2F",
    "freighter_type": "converted_freighter",
-   "summary": "A passenger-to-freighter conversion of the A321-200, carried out by Elbe Flugzeugwerke (EFW) with data support from Airbus. It's the only one of the five that is a conversion.",
+   "summary": "A passenger-to-freighter conversion of the A321-200, carried out by an independent conversion company with data support from Airbus. It's the only one of the five that is a conversion.",
    "not_to_confuse_with": "A321 passenger aircraft; other A321 conversion programmes",
    "references": [
     {
-     "title": "A320/A321P2F freighter conversion",
-     "publisher": "Elbe Flugzeugwerke (EFW)",
-     "url": "https://www.elbeflugzeugwerke.com/en/solutions/freighter-conversion/a320-a321p2f/"
+     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "publisher": "Conversion provider",
+     "url": ""
     }
    ]
   }
