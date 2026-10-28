@@ -6,7 +6,6 @@ import { ErrorBox, Loading, PageHeader, References } from "../components/ui";
 import { useApi } from "../components/useApi";
 import { DIAGRAMS } from "../diagrams/Diagrams";
 import { Formulas } from "../components/Formula";
-import { label } from "../format";
 
 export function KnowledgeHubPage() {
   const [q, setQ] = useState("");
