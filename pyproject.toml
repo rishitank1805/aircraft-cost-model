@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "httpx>=0.27"]
+dev = ["pytest>=8.0", "httpx>=0.27", "watchfiles>=0.21"]  # watchfiles: run_explorer.py --reload
 
 [tool.setuptools.packages.find]
 where = ["src"]

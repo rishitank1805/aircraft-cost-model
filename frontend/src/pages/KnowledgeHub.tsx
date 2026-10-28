@@ -41,7 +41,7 @@ export function KnowledgeHubPage() {
               <Formulas items={t.formulas} />
               <p><span className="font-semibold text-navy">Why it matters. </span>{t.why_it_matters}</p>
               <p className="rounded-md bg-cyan-50 p-3"><span className="font-semibold text-navy">Example. </span>{t.example}</p>
-              {t.related_specs.length > 0 && <p className="text-sm">Where you'll see it: {t.related_specs.map(label).filter((x, i, all) => all.indexOf(x) === i).join(", ")}</p>}
+              
               <p className="text-xs text-slate-500">{t.basis}</p>
               <References refs={t.references} />
             </div>

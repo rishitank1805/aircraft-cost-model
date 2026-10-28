@@ -26,7 +26,6 @@
      "url": "https://www.faa.gov/airports/engineering/aircraft_char_database"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "OEW + payload + fuel at takeoff",
@@ -61,7 +60,6 @@
      "url": "https://www.faa.gov/airports/engineering/aircraft_char_database"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "Takeoff weight − fuel burned",
@@ -95,8 +93,7 @@
      "publisher": "U.S. Federal Aviation Administration",
      "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "mzfw",
@@ -119,7 +116,7 @@
      "url": "https://www.faa.gov/sites/faa.gov/files/2023-09/Weight_Balance_Handbook.pdf"
     },
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
@@ -129,7 +126,6 @@
      "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "OEW + payload",
@@ -162,8 +158,7 @@
      "publisher": "Boeing",
      "url": "https://www.boeing.com/commercial/freighters"
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "range",
@@ -250,7 +245,6 @@
      "url": "docs/flight_performance.md"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "Block fuel",
@@ -281,7 +275,6 @@
      "url": "https://www.grc.nasa.gov/www/k-12/airplane/sfc.html"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "TSFC",
@@ -322,7 +315,6 @@
      "url": "https://www.grc.nasa.gov/www/k-12/airplane/aturbf.html"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "Bypass ratio",
@@ -356,7 +348,6 @@
      "url": "docs/flight_performance.md"
     }
    ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data.",
    "formulas": [
     {
      "result": "Block time",
@@ -408,8 +399,7 @@
      "publisher": "U.S. Federal Aviation Administration",
      "url": "https://www.faa.gov/regulations_policies/policy_guidance/benefit_cost/econ-value-section-4-op-costs.pdf"
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "passenger-vs-freighter",
@@ -440,7 +430,7 @@
      "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
     },
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     }
@@ -470,7 +460,7 @@
      "url": "https://www.iata.org/en/programs/cargo/unit-load-devices/"
     },
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
@@ -479,8 +469,7 @@
      "publisher": "Airbus",
      "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "cargo-pallet",
@@ -507,12 +496,11 @@
      "url": "https://www.aircraft.airbus.com/en/aircraft/freighters/a330-200f"
     },
     {
-     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A330P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "main-deck-cargo-door",
@@ -528,17 +516,16 @@
    "aliases": [],
    "references": [
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
     {
-     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A330P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "cargo-loading-system",
@@ -557,12 +544,12 @@
    ],
    "references": [
     {
-     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A330P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     }
@@ -590,12 +577,12 @@
    ],
    "references": [
     {
-     "title": "Conversion provider's public page on the A320/A321P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A320/A321P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
     {
-     "title": "Conversion provider's public page on the A330P2F conversion (retrieved 2026-10-16)",
+     "title": "Conversion provider's public page on the A330P2F conversion",
      "publisher": "Conversion provider",
      "url": ""
     },
@@ -604,8 +591,7 @@
      "publisher": "U.S. Federal Aviation Administration",
      "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/stc"
     }
-   ],
-   "basis": "Definition based on the first reference. Examples come from the cited sources or from this site's data."
+   ]
   },
   {
    "slug": "doc",

@@ -103,6 +103,8 @@ describe("plain language", () => {
     expect(plainText("values come from different sources: faa_aircraft_characteristics_database, openap_aircraft_properties"))
       .toBe("values come from different sources: FAA Aircraft Characteristics Database, OpenAP aircraft data");
     expect(plainText("capacity 24,210 L x 0.8025 kg/L")).toBe("capacity 24,210 L × 0.8025 kg/L");
+    expect(plainText("Boeing: https://www.boeing.com/commercial/freighters (retrieved 2026-10-16)")).toBe("Boeing");
+    expect(plainText("Conversion provider (public web page) (retrieved 2026-10-16)")).toBe("Conversion provider (public web page)");
     expect(plainPeriod("2023-Q04..2024-Q03")).toBe("Q4 2023 to Q3 2024");
     expect(plainPeriod("YE2023Q2")).toBe("year to June 2023");
     // nothing that looks like code is left

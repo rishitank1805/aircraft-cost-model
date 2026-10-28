@@ -193,6 +193,7 @@ const RULES: [RegExp, string | ((...m: string[]) => string)][] = [
     "A typical jet fuel density, used to turn litres into kilograms. Real fuel varies a little."],
   [/^Earth radius 6371\.0088 km; spherical model$/, "Earth treated as a sphere with a radius of 6,371 km."],
   [/ x (?=\d)/g, " × "],
+  [/\s*\(retrieved \d{4}-\d{2}-\d{2}\)/g, ""],
 ];
 
 // Links (official agencies only, after stripping) are kept as they are; other snake_case words are translated.
